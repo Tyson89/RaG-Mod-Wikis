@@ -122,3 +122,9 @@ nav:
           - Server setup and class names: mods/immersive-vehicles/server-setup-and-class-names.md
           - Server configuration: mods/immersive-vehicles/json-file-and-explanation.md
           - Vehicle-modding guide: mods/immersive-vehicles/modding.md
+  - RaG Dragons:
+      - Overview: mods/dragons/index.md
+      - Gameplay and rewards: mods/dragons/gameplay-and-rewards.md
+      - Server guides:
+          - Setup, class names, and troubleshooting: mods/dragons/server-setup-and-class-names.md
+          - Server configuration: mods/dragons/server-configuration.md

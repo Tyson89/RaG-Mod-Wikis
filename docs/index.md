@@ -36,6 +36,14 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open vehicle documentation](mods/immersive-vehicles/index.md)
 
+-   :material-fire:{ .lg .middle } **RaG Dragons**
+
+    ---
+
+    Configurable dragon attacks, fire breath and fireballs, combat rewards, trophies, and server events.
+
+    [:octicons-arrow-right-24: Open Dragons documentation](mods/dragons/index.md)
+
 </div>
 
 ## Where to begin
@@ -43,4 +51,3 @@ One home for installation guides, server configuration, gameplay systems, class 
 Server owners should start with the setup and configuration pages for the mod they run. Mod developers integrating with the RaG ecosystem should begin with [RaG Core](mods/core/index.md).
 
 Use the search box to find settings, class names, error messages, and API symbols across every mod at once.
-
