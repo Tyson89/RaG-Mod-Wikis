@@ -1,0 +1,124 @@
+site_name: RaG Mod Wikis
+site_description: Central documentation for RaG DayZ mods
+site_url: https://tyson89.github.io/RaG-Mod-Wikis/
+repo_url: https://github.com/Tyson89/RaG-Mod-Wikis
+repo_name: Tyson89/RaG-Mod-Wikis
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  icon:
+    logo: material/book-open-page-variant
+
+plugins:
+  - search:
+      lang: en
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+
+extra_css:
+  - stylesheets/extra.css
+
+copyright: Copyright &copy; RaG Tyson
+
+nav:
+  - Home: index.md
+  - RaG Core:
+      - Overview: mods/core/index.md
+      - Getting started: mods/core/getting-started.md
+      - Developer APIs:
+          - Configuration API: mods/core/configuration-api.md
+          - Logging API: mods/core/logging-api.md
+          - Custom liquids: mods/core/custom-liquids.md
+          - Item and placement API: mods/core/item-and-placement-api.md
+          - Connection and RPC helpers: mods/core/connection-and-rpc-helpers.md
+          - Notifications and effects: mods/core/notifications-and-effects.md
+      - Server configuration: mods/core/server-configuration.md
+  - RaG BaseBuilding:
+      - Overview: mods/basebuilding/index.md
+      - Player guides:
+          - Getting started: mods/basebuilding/getting-started.md
+          - Building parts and class names: mods/basebuilding/building-parts-and-class-names.md
+          - Book crafting: mods/basebuilding/book-crafting.md
+          - Construction materials: mods/basebuilding/construction-materials.md
+          - Attachments and storage: mods/basebuilding/attachments-and-storage.md
+          - Locks, damage, and raiding: mods/basebuilding/locks-damage-and-raiding.md
+      - Server guides:
+          - Server setup: mods/basebuilding/server-setup.md
+          - Server configuration: mods/basebuilding/server-configuration.md
+      - Credits and permissions: mods/basebuilding/credits-and-permissions.md
+  - RaG Baseitems:
+      - Overview: mods/baseitems/index.md
+      - Server administration:
+          - Setup and troubleshooting: mods/baseitems/server-setup-and-troubleshooting.md
+          - Server configuration: mods/baseitems/json-file-explanation.md
+          - Key classnames: mods/baseitems/key-classnames.md
+          - Codelock integration: mods/baseitems/codelock-integration.md
+      - Workstations:
+          - Workbench: mods/baseitems/workbench.md
+          - Car lift: mods/baseitems/carlift.md
+          - Repair Station: mods/baseitems/repair-station.md
+          - Weapon Cleaner: mods/baseitems/weapon-cleaner.md
+          - Ammo Cleaner: mods/baseitems/ammo-cleaner.md
+          - Sewing Machine: mods/baseitems/sewing-machine.md
+          - Table Saw: mods/baseitems/table-saw.md
+          - Coffee Machine: mods/baseitems/coffee-machine.md
+          - Smoker: mods/baseitems/smoker.md
+          - Solar Panel: mods/baseitems/solar-panel.md
+      - Other systems:
+          - Sleeping Bags: mods/baseitems/sleeping-bags.md
+          - Christmas Event: mods/baseitems/christmas-event.md
+          - Other Interactive Items: mods/baseitems/other-interactive-items.md
+      - Credits and permissions: mods/baseitems/credits-and-permissions.md
+  - RaG Immersive Vehicles:
+      - Overview: mods/immersive-vehicles/index.md
+      - Player guides:
+          - Getting started: mods/immersive-vehicles/getting-started.md
+          - Engine oil: mods/immersive-vehicles/engine-oil.md
+          - Wheels and jacks: mods/immersive-vehicles/wheels-and-jacks.md
+          - Heating, lights, and passenger safety: mods/immersive-vehicles/heating-lights-and-passenger-safety.md
+          - Driving, damage, and repairs: mods/immersive-vehicles/driving-damage-and-repairs.md
+      - Server and modding:
+          - Server setup and class names: mods/immersive-vehicles/server-setup-and-class-names.md
+          - Server configuration: mods/immersive-vehicles/json-file-and-explanation.md
+          - Vehicle-modding guide: mods/immersive-vehicles/modding.md
