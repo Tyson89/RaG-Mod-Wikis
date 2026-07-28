@@ -30,4 +30,4 @@ RaG Thunderstruck turns severe weather into a server-controlled hazard. When the
 - [Support RaG Tyson on Ko-fi](https://ko-fi.com/rag_tyson)
 
 !!! warning "No repacking"
-    RaG Thunderstruck may not be repacked or reuploaded. Use the original Workshop item and its dependency.
+    RaG Thunderstruck may not be repacked or reuploaded. Use the original Workshop release.

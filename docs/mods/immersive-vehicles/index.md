@@ -36,3 +36,6 @@ RaG Core is a hard dependency. Load `RaG_Core` before `RaG_Immersive_Vehicles` o
 - Drivers exiting while the vehicle is not in neutral stop the engine.
 
 Legacy claims about an 8-energy start cost, reduced alternator charging, a 25°C heat cap, or repeated start attempts from damaged vital attachments are not present in the analyzed source and are intentionally omitted.
+
+!!! warning "No repacking"
+    RaG Immersive Vehicles may not be repacked or reuploaded. Use the original Workshop release.

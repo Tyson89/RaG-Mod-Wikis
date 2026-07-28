@@ -35,3 +35,6 @@ RaG Core is a hard dependency. Load `RaG_Core` before `RaG_BaseBuilding` on both
 ## Support the project
 
 [Support RaG Tyson on Ko-fi](https://ko-fi.com/rag_tyson)
+
+!!! warning "No repacking"
+    RaG BaseBuilding may not be repacked or reuploaded. Use the original Workshop release.

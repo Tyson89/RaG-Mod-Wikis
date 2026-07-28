@@ -45,3 +45,6 @@ Do not copy RaG Core classes into your addon. Declare `RaG_Core` and `RaG_Core_S
 - [RaG Immersive Vehicles](../immersive-vehicles/index.md)
 - [RaG Dragons](../dragons/index.md)
 - [RaG Thunderstruck](../thunderstruck/index.md)
+
+!!! warning "No repacking"
+    RaG Core may not be repacked or reuploaded. Use the original Workshop release.

@@ -45,3 +45,6 @@ Most large objects are deployed from a `_kit` classname. Workbench outputs and s
 - [Discord](https://discord.gg/MRfe4c9h3x)
 - [Ko-fi](https://ko-fi.com/rag_tyson)
 - [Patreon](https://patreon.com/RaGTyson)
+
+!!! warning "No repacking"
+    RaG Baseitems may not be repacked or reuploaded. Use the original Workshop release.

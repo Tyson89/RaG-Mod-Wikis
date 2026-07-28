@@ -29,3 +29,6 @@ The mod's built-in spawner is configured for Chernarus by default. Other maps ne
 - [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3310715247)
 - [RaG Core configuration](../core/server-configuration.md)
 - [Support RaG Tyson on Ko-fi](https://ko-fi.com/rag_tyson)
+
+!!! warning "No repacking"
+    RaG Dragons may not be repacked or reuploaded. Use the original Workshop release.
