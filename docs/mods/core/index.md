@@ -44,3 +44,4 @@ Do not copy RaG Core classes into your addon. Declare `RaG_Core` and `RaG_Core_S
 - [RaG Baseitems](../baseitems/index.md)
 - [RaG Immersive Vehicles](../immersive-vehicles/index.md)
 - [RaG Dragons](../dragons/index.md)
+- [RaG Thunderstruck](../thunderstruck/index.md)

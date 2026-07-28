@@ -44,6 +44,14 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open Dragons documentation](mods/dragons/index.md)
 
+-   :material-weather-lightning:{ .lg .middle } **RaG Thunderstruck**
+
+    ---
+
+    Weather-driven lightning strikes, configurable damage and impact items, warning indicators, and protected-player rules.
+
+    [:octicons-arrow-right-24: Open Thunderstruck documentation](mods/thunderstruck/index.md)
+
 </div>
 
 ## Where to begin
