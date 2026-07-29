@@ -46,5 +46,5 @@ Do not copy RaG Core classes into your addon. Declare `RaG_Core` and `RaG_Core_S
 - [RaG Dragons](../dragons/index.md)
 - [RaG Thunderstruck](../thunderstruck/index.md)
 
-!!! warning "No repacking"
-    RaG Core may not be repacked or reuploaded. Use the original Workshop release.
+!!! warning "No monetization, repacking, or reuploading"
+    RaG Core may be used on an approved monetized server, but the mod itself may not be monetized, repacked, or reuploaded. Use the original Workshop release.

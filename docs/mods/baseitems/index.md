@@ -46,5 +46,5 @@ Most large objects are deployed from a `_kit` classname. Workbench outputs and s
 - [Ko-fi](https://ko-fi.com/rag_tyson)
 - [Patreon](https://patreon.com/RaGTyson)
 
-!!! warning "No repacking"
-    RaG Baseitems may not be repacked or reuploaded. Use the original Workshop release.
+!!! warning "No monetization, repacking, or reuploading"
+    RaG Baseitems may be used on an approved monetized server, but the mod itself may not be monetized, repacked, or reuploaded. Use the original Workshop release.

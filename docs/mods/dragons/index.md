@@ -30,5 +30,5 @@ The mod's built-in spawner is configured for Chernarus by default. Other maps ne
 - [RaG Core configuration](../core/server-configuration.md)
 - [Support RaG Tyson on Ko-fi](https://ko-fi.com/rag_tyson)
 
-!!! warning "No repacking"
-    RaG Dragons may not be repacked or reuploaded. Use the original Workshop release.
+!!! warning "No monetization, repacking, or reuploading"
+    RaG Dragons may be used on an approved monetized server, but the mod itself may not be monetized, repacked, or reuploaded. Use the original Workshop release.

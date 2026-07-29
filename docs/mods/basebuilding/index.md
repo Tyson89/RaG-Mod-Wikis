@@ -36,5 +36,5 @@ RaG Core is a hard dependency. Load `RaG_Core` before `RaG_BaseBuilding` on both
 
 [Support RaG Tyson on Ko-fi](https://ko-fi.com/rag_tyson)
 
-!!! warning "No repacking"
-    RaG BaseBuilding may not be repacked or reuploaded. Use the original Workshop release.
+!!! warning "No monetization, repacking, or reuploading"
+    RaG BaseBuilding may be used on an approved monetized server, but the mod itself may not be monetized, repacked, or reuploaded. Use the original Workshop release.

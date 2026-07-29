@@ -29,5 +29,5 @@ RaG Thunderstruck turns severe weather into a server-controlled hazard. When the
 - [RaG Core documentation](../core/index.md)
 - [Support RaG Tyson on Ko-fi](https://ko-fi.com/rag_tyson)
 
-!!! warning "No repacking"
-    RaG Thunderstruck may not be repacked or reuploaded. Use the original Workshop release.
+!!! warning "No monetization, repacking, or reuploading"
+    RaG Thunderstruck may be used on an approved monetized server, but the mod itself may not be monetized, repacked, or reuploaded. Use the original Workshop release.

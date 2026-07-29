@@ -32,8 +32,8 @@ The interaction object is deleted after use, so that grave cannot be searched ag
 
 The default reward chance is approximately 50.5%. The default AI is `ZmbM_Mummy`.
 
-!!! warning "Custom-placed grave defect in the inspected build"
-    The current scripts create the helper for `StaticObj_*`, `Land_*`, BuilderItems, and VPP grave variants at world origin instead of at the placed grave. Vanilla `Static_*` map graves use the correct position. The Workshop advertises custom-placed support, but the inspected build does not implement it correctly. Test the exact release installed on your server before designing an event around custom graves.
+!!! note "Custom-placed grave version"
+    Custom-placed grave support is fixed in commit `bd688e0` and later. These builds create and position the interaction helper using the grave's `GetWorldPosition()`. Builds from before that fix can place the helper at world origin and should be updated.
 
 ## Boogieman ambush
 
