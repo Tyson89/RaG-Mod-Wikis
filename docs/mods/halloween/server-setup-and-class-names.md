@@ -95,8 +95,6 @@ The scripts recognize these vanilla world-object families:
 - equivalent BuilderItems `bldr_*` variants when that integration is compiled;
 - equivalent VPP StaticItems `vbldr_*` variants when that integration is compiled.
 
-Custom-placed grave positioning is supported in commit `bd688e0` and later. Older builds can place the interaction helper at world origin and should be updated. See [Gameplay and encounters](gameplay-and-encounters.md#searchable-graves).
-
 ## Supported boogieman objects
 
 The ambush trigger is attached to:
@@ -115,7 +113,6 @@ The custom boogieman variants use their placed world position for the ambush tri
 | Startup reports missing scripts or `RaG_Core` | Core is missing, outdated, or loaded after Halloween. Both mods must be installed on server and clients. |
 | `RaG_Halloween.json` is not generated | Confirm the active server profile, folder permissions, Core's configuration initialization, and the mod load order. |
 | A grave has no action | `Tombstone_Enabled` must be `1`, the object must be supported, the one-time initialization roll must pass, and the player needs a non-ruined shovel. |
-| A custom-placed grave has no usable action | Update to a build containing fix `bd688e0` or later. Then confirm the class and integration are supported, `Tombstone_Enabled` is `1`, and the one-time initialization roll passed. |
 | A boogieman does nothing | Confirm `BoogieMan_Enabled`, use a supported class, and remember that its 5-meter trigger is consumed after the first player enters. |
 | Pumpkin grenade or encounter spawns nothing | Validate every configured classname and keep every active selection array non-empty. Load any mod that supplies a custom class. |
 | Too many or too few AI spawn | Check that each minimum is less than or equal to its matching maximum. |

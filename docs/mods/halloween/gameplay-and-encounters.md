@@ -32,9 +32,6 @@ The interaction object is deleted after use, so that grave cannot be searched ag
 
 The default reward chance is approximately 50.5%. The default AI is `ZmbM_Mummy`.
 
-!!! note "Custom-placed grave version"
-    Custom-placed grave support is fixed in commit `bd688e0` and later. These builds create and position the interaction helper using the grave's `GetWorldPosition()`. Builds from before that fix can place the helper at world origin and should be updated.
-
 ## Boogieman ambush
 
 When `BoogieMan_Enabled` is enabled, supported boogieman props receive a 5-meter player trigger.
