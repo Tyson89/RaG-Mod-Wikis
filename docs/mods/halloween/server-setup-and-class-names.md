@@ -27,73 +27,41 @@ Actual folder names can differ, but the dependency order must not.
 
 The generated file is the schema for the installed build. Preserve it during updates and merge custom values into a newly generated file if the schema changes.
 
-## Public class names
+## Main class names
 
-| Class name | Use |
-| --- | --- |
-| `rag_pumpkingrenade` | Armed non-lethal grenade that produces configured rewards or AI on contact. |
-| `rag_spooky_pedestal` | Placeable or event-spawned interactive pedestal. |
-| `rag_coffin` | Large, immovable reward container normally created by the pedestal. |
-| `Land_rag_static_dragon` | Decorative animated dragon for editor/admin placement. |
+| Class name | Scope | Use |
+| --- | ---: | --- |
+| `rag_pumpkingrenade` | Public inventory item | Armed non-lethal grenade that produces configured rewards or AI on contact. |
+| `rag_spooky_pedestal` | Public world object | Placeable or event-spawned interactive pedestal. |
+| `rag_coffin` | Public world object | Large, immovable reward container normally created by the pedestal. |
+| `Land_rag_static_dragon` | Protected world object | Decorative animated dragon for editor/admin placement, not normal loot. |
 
 `rag_tombstone_interact_obj`, `BoogiemanTrigger`, and the pedestal light classes are implementation details. Do not add them to `types.xml`, traders, or custom events.
 
-## Central economy examples
+## Distribution and placement
 
-### Pumpkin grenade
+The source project does not ship Central Economy XML or official economy values. Set counts, lifetimes, restock values, categories, and usages for your own server instead of treating third-party examples as mod defaults.
 
-The mod does not automatically distribute pumpkin grenades. Add `rag_pumpkingrenade` to your economy, trader, or custom reward system.
+- `rag_pumpkingrenade` can be distributed through your Central Economy, trader, reward, or admin system.
+- `rag_spooky_pedestal` can be placed with an editor/admin tool or added to a custom event.
+- `rag_coffin` is normally created by an activated pedestal.
+- `Land_rag_static_dragon` has protected scope and is intended for editor or compatible admin-tool placement.
 
-Example `types.xml` entry:
-
-```xml
-<type name="rag_pumpkingrenade">
-    <nominal>5</nominal>
-    <lifetime>10800</lifetime>
-    <restock>1800</restock>
-    <min>2</min>
-    <quantmin>-1</quantmin>
-    <quantmax>-1</quantmax>
-    <cost>100</cost>
-    <flags count_in_cargo="0" count_in_hoarder="0" count_in_map="1" count_in_player="0" crafted="0" deloot="0"/>
-    <category name="containers"/>
-    <usage name="Town"/>
-    <usage name="Village"/>
-    <usage name="School"/>
-</type>
-```
-
-Tune the nominal and minimum for your server instead of copying those example counts blindly.
-
-### Spooky pedestal
-
-Give event-spawned pedestals an economy lifetime:
-
-```xml
-<type name="rag_spooky_pedestal">
-    <lifetime>14400</lifetime>
-    <flags count_in_cargo="0" count_in_hoarder="0" count_in_map="1" count_in_player="0" crafted="0" deloot="0"/>
-</type>
-```
-
-Then add the pedestal as a child of a suitable static event, such as a bonfire or Santa crash:
-
-```xml
-<child lootmax="0" lootmin="0" max="1" min="1" type="rag_spooky_pedestal"/>
-```
-
-Edit the existing event rather than pasting an incomplete replacement event. The pedestal deletes itself 60 seconds after a player activates it, so the parent event controls when another one can appear.
+An activated pedestal deletes itself after 60 seconds. An untouched pedestal has no script deletion timer; its lifetime depends on the system used to spawn or place it.
 
 ## Supported grave objects
 
-The scripts recognize these vanilla world-object families:
+The scripts recognize these exact classes and numbered families:
 
-- `Static_Cemetery_Grave1` through `Static_Cemetery_Grave4`;
-- `Static_Dead_MassGrave_8m` and `Static_Dead_MassGrave_15m`;
-- `Static_Dead_pile1` through `Static_Dead_pile4`;
-- equivalent `StaticObj_*` and `Land_Dead_MassGrave` variants;
-- equivalent BuilderItems `bldr_*` variants when that integration is compiled;
-- equivalent VPP StaticItems `vbldr_*` variants when that integration is compiled.
+| Source | Supported classes |
+| --- | --- |
+| Vanilla static objects | `Static_Cemetery_Grave1` through `Static_Cemetery_Grave4`; `Static_Dead_MassGrave_8m`; `Static_Dead_MassGrave_15m`; `Static_Dead_pile1` through `Static_Dead_pile4` |
+| Vanilla `StaticObj` objects | `StaticObj_Cemetery_Grave1` through `StaticObj_Cemetery_Grave4`; `StaticObj_Dead_MassGrave_8m`; `StaticObj_Dead_MassGrave_15m`; `StaticObj_Dead_pile1` through `StaticObj_Dead_pile4` |
+| Other vanilla object | `Land_Dead_MassGrave` |
+| BuilderItems integration | `bldr_Cemetery_Grave1` through `bldr_Cemetery_Grave4`; `bldr_Dead_MassGrave_8m`; `bldr_Dead_MassGrave_15m`; `bldr_Dead_pile1` through `bldr_Dead_pile4` |
+| VPP Admin Tools integration | `vbldr_cemetery_grave1` through `vbldr_cemetery_grave4`; `vbldr_dead_massgrave`; `vbldr_dead_massgrave_8m`; `vbldr_dead_massgrave_15m`; `vbldr_dead_pile1` through `vbldr_dead_pile4` |
+
+BuilderItems and VPP classes are available only when their matching integration is compiled and loaded. Custom-placed supported variants use their placed world position for the search interaction and result.
 
 ## Supported boogieman objects
 
@@ -112,12 +80,12 @@ The custom boogieman variants use their placed world position for the ambush tri
 | --- | --- |
 | Startup reports missing scripts or `RaG_Core` | Core is missing, outdated, or loaded after Halloween. Both mods must be installed on server and clients. |
 | `RaG_Halloween.json` is not generated | Confirm the active server profile, folder permissions, Core's configuration initialization, and the mod load order. |
-| A grave has no action | `Tombstone_Enabled` must be `1`, the object must be supported, the one-time initialization roll must pass, and the player needs a non-ruined shovel. |
+| A grave has no action | `Tombstone_Enabled` must be `1`, the exact object class must be supported, the one-time initialization roll must pass, and the player must stand upright with a non-ruined shovel in range. |
 | A boogieman does nothing | Confirm `BoogieMan_Enabled`, use a supported class, and remember that its 5-meter trigger is consumed after the first player enters. |
 | Pumpkin grenade or encounter spawns nothing | Validate every configured classname and keep every active selection array non-empty. Load any mod that supplies a custom class. |
 | Too many or too few AI spawn | Check that each minimum is less than or equal to its matching maximum. |
 | Pedestal gives fewer coffins after raising its chance | This is the current script behavior. Lower `Pedestal_ChanceToSpawnCoffin` to make coffins more likely. |
-| Pedestal remains forever | It deletes only after a player uses **Are you Brave?**. An untouched pedestal follows its Central Economy lifetime. |
+| Pedestal remains forever | It deletes 60 seconds after a player uses **Are you Brave?**. An untouched pedestal has no script deletion timer; its lifetime depends on its placement or spawn system. |
 | Static dragon cannot be found as loot | It is a decorative `Land_*` object with protected scope, not a normal economy inventory item. Place it with an editor or compatible admin tool. |
 
 ## Safe configuration rules

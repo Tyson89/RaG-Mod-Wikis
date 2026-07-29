@@ -18,9 +18,9 @@ RaG Halloween adds four server-controlled encounters and one decorative prop to 
 
 ## Behavior at a glance
 
-- Pumpkin grenades are armed automatically and activate on contact after being thrown.
+- Pumpkin grenades are armed automatically and activate on their first server-side contact.
 - A grenade produces either 2-5 configured reward items or 1-3 configured AI with the defaults.
-- Eligible vanilla graves get a searchable interaction at server initialization according to a configured chance.
+- Supported graves and corpse piles, including supported custom-placed variants, get a searchable interaction when each object initializes, according to a configured chance.
 - Searching a grave with a non-ruined shovel produces one reward or one configured AI, then consumes that interaction.
 - Walking within 5 meters of an enabled boogieman prop triggers a sound and particle effect plus 3-6 configured AI, then consumes the trigger.
 - The spooky pedestal runs a 60-second animated sequence. Its coffin-or-AI result appears after 24 seconds.

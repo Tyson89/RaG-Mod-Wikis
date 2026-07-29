@@ -117,7 +117,7 @@ Stop the server before editing the file. Keep valid JSON syntax, retain `Version
 | `PumpkinGrenade_MaxSpawnableAIAmount` | `3` | Maximum AI count for the non-reward outcome. |
 | `PumpkinGrenade_SpawnableAI` | Four white-wolf entries | Candidate classes selected independently for each AI spawn. |
 
-There is no pumpkin-grenade enable setting. Control availability through the Central Economy, traders, and other distribution systems.
+There is no pumpkin-grenade enable setting. Control availability through your Central Economy, traders, and other distribution systems. The source project does not supply official economy XML values.
 
 ### Spooky pedestal and coffin
 
