@@ -41,6 +41,3 @@ The completed cabin provides:
 
 !!! warning "No monetization, repacking, or reuploading"
     Public Workshop permissions allow use on an approved monetized server only when this mod is not part of monetization. The mod itself may not be monetized, repacked, or reuploaded. Use the original Workshop release.
-
-!!! note "Current-source correction"
-    Workshop text still advertises hide/show inventory and an indoor fireplace. Current source defines no cabin cargo, hide/show action, fireplace class, or fireplace attachment. Do not configure around those claims unless the installed build demonstrably differs from current source.
