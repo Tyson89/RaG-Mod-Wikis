@@ -146,3 +146,9 @@ nav:
       - Server guides:
           - Setup, class names, and troubleshooting: mods/chickencoop/server-setup-and-class-names.md
           - Server configuration: mods/chickencoop/server-configuration.md
+  - RaG Snowman:
+      - Overview: mods/snowman/index.md
+      - Gameplay and skinning rewards: mods/snowman/gameplay-and-rewards.md
+      - Server guides:
+          - Setup, spawning, class names, and troubleshooting: mods/snowman/server-setup-and-class-names.md
+          - Server configuration: mods/snowman/server-configuration.md

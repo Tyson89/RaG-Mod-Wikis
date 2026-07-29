@@ -68,6 +68,14 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open ChickenCoop documentation](mods/chickencoop/index.md)
 
+-   :material-snowflake:{ .lg .middle } **RaG Snowman**
+
+    ---
+
+    Fight a bear-based Evil Snowman, survive its custom effects, and configure random skinning rewards.
+
+    [:octicons-arrow-right-24: Open Snowman documentation](mods/snowman/index.md)
+
 </div>
 
 ## Where to begin
