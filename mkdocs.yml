@@ -152,3 +152,9 @@ nav:
       - Server guides:
           - Setup, spawning, class names, and troubleshooting: mods/snowman/server-setup-and-class-names.md
           - Server configuration: mods/snowman/server-configuration.md
+  - RaG Hunting Cabin:
+      - Overview: mods/hunting-cabin/index.md
+      - Building, features, and dismantling: mods/hunting-cabin/building-features-and-dismantling.md
+      - Server guides:
+          - Setup, class names, compatibility, and troubleshooting: mods/hunting-cabin/server-setup-and-class-names.md
+          - Server and CodeLock configuration: mods/hunting-cabin/server-configuration.md

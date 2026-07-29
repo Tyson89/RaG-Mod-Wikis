@@ -76,6 +76,14 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open Snowman documentation](mods/snowman/index.md)
 
+-   :material-home-roof:{ .lg .middle } **RaG Hunting Cabin**
+
+    ---
+
+    Craft and build a one-piece cabin with eight windows, lights, configurable material costs, and several lock options.
+
+    [:octicons-arrow-right-24: Open Hunting Cabin documentation](mods/hunting-cabin/index.md)
+
 </div>
 
 ## Where to begin
