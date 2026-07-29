@@ -59,6 +59,9 @@ markdown_extensions:
 extra_css:
   - stylesheets/extra.css
 
+extra_javascript:
+  - javascripts/tab-overflow.js
+
 copyright: Copyright &copy; RaG Tyson
 
 nav:
@@ -74,50 +77,42 @@ nav:
           - Connection and RPC helpers: mods/core/connection-and-rpc-helpers.md
           - Notifications and effects: mods/core/notifications-and-effects.md
       - Server configuration: mods/core/server-configuration.md
-  - Building & Items:
-      - Overview: categories/building-and-items.md
-      - RaG BaseBuilding:
-          - Overview: mods/basebuilding/index.md
-          - Player guides:
-              - Getting started: mods/basebuilding/getting-started.md
-              - Building parts and class names: mods/basebuilding/building-parts-and-class-names.md
-              - Book crafting: mods/basebuilding/book-crafting.md
-              - Construction materials: mods/basebuilding/construction-materials.md
-              - Attachments and storage: mods/basebuilding/attachments-and-storage.md
-              - Locks, damage, and raiding: mods/basebuilding/locks-damage-and-raiding.md
-          - Server guides:
-              - Server setup: mods/basebuilding/server-setup.md
-              - Server configuration: mods/basebuilding/server-configuration.md
-          - Credits and permissions: mods/basebuilding/credits-and-permissions.md
-      - RaG Baseitems:
-          - Overview: mods/baseitems/index.md
-          - Server administration:
-              - Setup and troubleshooting: mods/baseitems/server-setup-and-troubleshooting.md
-              - Server configuration: mods/baseitems/json-file-explanation.md
-              - Key classnames: mods/baseitems/key-classnames.md
-              - Codelock integration: mods/baseitems/codelock-integration.md
-          - Workstations:
-              - Workbench: mods/baseitems/workbench.md
-              - Car lift: mods/baseitems/carlift.md
-              - Repair Station: mods/baseitems/repair-station.md
-              - Weapon Cleaner: mods/baseitems/weapon-cleaner.md
-              - Ammo Cleaner: mods/baseitems/ammo-cleaner.md
-              - Sewing Machine: mods/baseitems/sewing-machine.md
-              - Table Saw: mods/baseitems/table-saw.md
-              - Coffee Machine: mods/baseitems/coffee-machine.md
-              - Smoker: mods/baseitems/smoker.md
-              - Solar Panel: mods/baseitems/solar-panel.md
-          - Other systems:
-              - Sleeping Bags: mods/baseitems/sleeping-bags.md
-              - Christmas Event: mods/baseitems/christmas-event.md
-              - Other Interactive Items: mods/baseitems/other-interactive-items.md
-          - Credits and permissions: mods/baseitems/credits-and-permissions.md
-      - RaG Hunting Cabin:
-          - Overview: mods/hunting-cabin/index.md
-          - Building, features, and dismantling: mods/hunting-cabin/building-features-and-dismantling.md
-          - Server guides:
-              - Setup, class names, compatibility, and troubleshooting: mods/hunting-cabin/server-setup-and-class-names.md
-              - Server and CodeLock configuration: mods/hunting-cabin/server-configuration.md
+  - RaG BaseBuilding:
+      - Overview: mods/basebuilding/index.md
+      - Player guides:
+          - Getting started: mods/basebuilding/getting-started.md
+          - Building parts and class names: mods/basebuilding/building-parts-and-class-names.md
+          - Book crafting: mods/basebuilding/book-crafting.md
+          - Construction materials: mods/basebuilding/construction-materials.md
+          - Attachments and storage: mods/basebuilding/attachments-and-storage.md
+          - Locks, damage, and raiding: mods/basebuilding/locks-damage-and-raiding.md
+      - Server guides:
+          - Server setup: mods/basebuilding/server-setup.md
+          - Server configuration: mods/basebuilding/server-configuration.md
+      - Credits and permissions: mods/basebuilding/credits-and-permissions.md
+  - RaG Baseitems:
+      - Overview: mods/baseitems/index.md
+      - Server administration:
+          - Setup and troubleshooting: mods/baseitems/server-setup-and-troubleshooting.md
+          - Server configuration: mods/baseitems/json-file-explanation.md
+          - Key classnames: mods/baseitems/key-classnames.md
+          - Codelock integration: mods/baseitems/codelock-integration.md
+      - Workstations:
+          - Workbench: mods/baseitems/workbench.md
+          - Car lift: mods/baseitems/carlift.md
+          - Repair Station: mods/baseitems/repair-station.md
+          - Weapon Cleaner: mods/baseitems/weapon-cleaner.md
+          - Ammo Cleaner: mods/baseitems/ammo-cleaner.md
+          - Sewing Machine: mods/baseitems/sewing-machine.md
+          - Table Saw: mods/baseitems/table-saw.md
+          - Coffee Machine: mods/baseitems/coffee-machine.md
+          - Smoker: mods/baseitems/smoker.md
+          - Solar Panel: mods/baseitems/solar-panel.md
+      - Other systems:
+          - Sleeping Bags: mods/baseitems/sleeping-bags.md
+          - Christmas Event: mods/baseitems/christmas-event.md
+          - Other Interactive Items: mods/baseitems/other-interactive-items.md
+      - Credits and permissions: mods/baseitems/credits-and-permissions.md
   - RaG Immersive Vehicles:
       - Overview: mods/immersive-vehicles/index.md
       - Player guides:
@@ -130,35 +125,39 @@ nav:
           - Server setup and class names: mods/immersive-vehicles/server-setup-and-class-names.md
           - Server configuration: mods/immersive-vehicles/json-file-and-explanation.md
           - Vehicle-modding guide: mods/immersive-vehicles/modding.md
-  - Gameplay & Events:
-      - Overview: categories/gameplay-and-events.md
-      - RaG Dragons:
-          - Overview: mods/dragons/index.md
-          - Gameplay and rewards: mods/dragons/gameplay-and-rewards.md
-          - Server guides:
-              - Setup, class names, and troubleshooting: mods/dragons/server-setup-and-class-names.md
-              - Server configuration: mods/dragons/server-configuration.md
-      - RaG Thunderstruck:
-          - Overview: mods/thunderstruck/index.md
-          - Gameplay and protection: mods/thunderstruck/gameplay-and-protection.md
-          - Server guides:
-              - Setup and troubleshooting: mods/thunderstruck/server-setup-and-troubleshooting.md
-              - Server configuration: mods/thunderstruck/server-configuration.md
-      - RaG Halloween:
-          - Overview: mods/halloween/index.md
-          - Gameplay and encounters: mods/halloween/gameplay-and-encounters.md
-          - Server guides:
-              - Setup, class names, and troubleshooting: mods/halloween/server-setup-and-class-names.md
-              - Server configuration: mods/halloween/server-configuration.md
-      - RaG ChickenCoop:
-          - Overview: mods/chickencoop/index.md
-          - Searching, food, and the crazy chicken: mods/chickencoop/gameplay.md
-          - Server guides:
-              - Setup, class names, and troubleshooting: mods/chickencoop/server-setup-and-class-names.md
-              - Server configuration: mods/chickencoop/server-configuration.md
-      - RaG Snowman:
-          - Overview: mods/snowman/index.md
-          - Gameplay and skinning rewards: mods/snowman/gameplay-and-rewards.md
-          - Server guides:
-              - Setup, spawning, class names, and troubleshooting: mods/snowman/server-setup-and-class-names.md
-              - Server configuration: mods/snowman/server-configuration.md
+  - RaG Dragons:
+      - Overview: mods/dragons/index.md
+      - Gameplay and rewards: mods/dragons/gameplay-and-rewards.md
+      - Server guides:
+          - Setup, class names, and troubleshooting: mods/dragons/server-setup-and-class-names.md
+          - Server configuration: mods/dragons/server-configuration.md
+  - RaG Thunderstruck:
+      - Overview: mods/thunderstruck/index.md
+      - Gameplay and protection: mods/thunderstruck/gameplay-and-protection.md
+      - Server guides:
+          - Setup and troubleshooting: mods/thunderstruck/server-setup-and-troubleshooting.md
+          - Server configuration: mods/thunderstruck/server-configuration.md
+  - RaG Halloween:
+      - Overview: mods/halloween/index.md
+      - Gameplay and encounters: mods/halloween/gameplay-and-encounters.md
+      - Server guides:
+          - Setup, class names, and troubleshooting: mods/halloween/server-setup-and-class-names.md
+          - Server configuration: mods/halloween/server-configuration.md
+  - RaG ChickenCoop:
+      - Overview: mods/chickencoop/index.md
+      - Searching, food, and the crazy chicken: mods/chickencoop/gameplay.md
+      - Server guides:
+          - Setup, class names, and troubleshooting: mods/chickencoop/server-setup-and-class-names.md
+          - Server configuration: mods/chickencoop/server-configuration.md
+  - RaG Snowman:
+      - Overview: mods/snowman/index.md
+      - Gameplay and skinning rewards: mods/snowman/gameplay-and-rewards.md
+      - Server guides:
+          - Setup, spawning, class names, and troubleshooting: mods/snowman/server-setup-and-class-names.md
+          - Server configuration: mods/snowman/server-configuration.md
+  - RaG Hunting Cabin:
+      - Overview: mods/hunting-cabin/index.md
+      - Building, features, and dismantling: mods/hunting-cabin/building-features-and-dismantling.md
+      - Server guides:
+          - Setup, class names, compatibility, and troubleshooting: mods/hunting-cabin/server-setup-and-class-names.md
+          - Server and CodeLock configuration: mods/hunting-cabin/server-configuration.md

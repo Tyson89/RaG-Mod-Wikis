@@ -17,6 +17,74 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.md-tabs .rag-tabs-enhanced {
+  align-items: stretch;
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) 2.25rem;
+  overflow: visible;
+}
+
+.rag-tabs-enhanced .md-tabs__list {
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.rag-tabs-enhanced .md-tabs__list::-webkit-scrollbar {
+  display: none;
+}
+
+.rag-tabs-scroll {
+  align-items: center;
+  background: linear-gradient(
+    to var(--rag-tabs-fade-direction),
+    var(--md-primary-fg-color) 68%,
+    transparent
+  );
+  border: 0;
+  color: var(--md-primary-bg-color);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 1.5rem;
+  justify-content: center;
+  margin: 0;
+  opacity: 0.9;
+  padding: 0;
+  transition: opacity 120ms ease;
+  z-index: 1;
+}
+
+.rag-tabs-scroll--left {
+  --rag-tabs-fade-direction: right;
+}
+
+.rag-tabs-scroll--right {
+  --rag-tabs-fade-direction: left;
+}
+
+.rag-tabs-scroll:hover:not(:disabled),
+.rag-tabs-scroll:focus-visible:not(:disabled) {
+  opacity: 1;
+}
+
+.rag-tabs-scroll:focus-visible {
+  outline: 0.1rem solid var(--md-accent-fg-color);
+  outline-offset: -0.15rem;
+}
+
+.rag-tabs-scroll:disabled {
+  cursor: default;
+  opacity: 0.2;
+}
+
+.rag-tabs-enhanced:not(.rag-tabs-overflowing) .rag-tabs-scroll {
+  pointer-events: none;
+  visibility: hidden;
+}
+
 .md-typeset h1 {
   font-weight: 750;
   letter-spacing: -0.035em;
@@ -61,4 +129,3 @@
     font-size: 1.8rem;
   }
 }
-
