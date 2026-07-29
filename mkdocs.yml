@@ -140,3 +140,9 @@ nav:
       - Server guides:
           - Setup, class names, and troubleshooting: mods/halloween/server-setup-and-class-names.md
           - Server configuration: mods/halloween/server-configuration.md
+  - RaG ChickenCoop:
+      - Overview: mods/chickencoop/index.md
+      - Searching, food, and the crazy chicken: mods/chickencoop/gameplay.md
+      - Server guides:
+          - Setup, class names, and troubleshooting: mods/chickencoop/server-setup-and-class-names.md
+          - Server configuration: mods/chickencoop/server-configuration.md

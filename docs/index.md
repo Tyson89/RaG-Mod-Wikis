@@ -60,6 +60,14 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open Halloween documentation](mods/halloween/index.md)
 
+-   :material-egg:{ .lg .middle } **RaG ChickenCoop**
+
+    ---
+
+    Search map chicken coops for configurable food or feathers, cook and peel eggs, and risk an angry-chicken ambush.
+
+    [:octicons-arrow-right-24: Open ChickenCoop documentation](mods/chickencoop/index.md)
+
 </div>
 
 ## Where to begin
