@@ -52,6 +52,14 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open Thunderstruck documentation](mods/thunderstruck/index.md)
 
+-   :material-halloween:{ .lg .middle } **RaG Halloween**
+
+    ---
+
+    Pumpkin grenades, searchable graves, boogieman ambushes, the spooky pedestal, configurable rewards, and decorative props.
+
+    [:octicons-arrow-right-24: Open Halloween documentation](mods/halloween/index.md)
+
 </div>
 
 ## Where to begin

@@ -134,3 +134,9 @@ nav:
       - Server guides:
           - Setup and troubleshooting: mods/thunderstruck/server-setup-and-troubleshooting.md
           - Server configuration: mods/thunderstruck/server-configuration.md
+  - RaG Halloween:
+      - Overview: mods/halloween/index.md
+      - Gameplay and encounters: mods/halloween/gameplay-and-encounters.md
+      - Server guides:
+          - Setup, class names, and troubleshooting: mods/halloween/server-setup-and-class-names.md
+          - Server configuration: mods/halloween/server-configuration.md
