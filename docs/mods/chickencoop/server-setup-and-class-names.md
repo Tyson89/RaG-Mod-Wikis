@@ -1,21 +1,15 @@
 # Setup, class names, and troubleshooting
 
-## Required mod and load order
+## Required mod
 
-[RaG Core](../core/index.md) is required on the server and every client. Load Core first:
-
-```text
-@RaG_Core;@RaG_ChickenCoop
-```
-
-Actual folder names may differ. Dependency order must not.
+[RaG Core](../core/index.md) is required on the server and every client. Install and enable both mods. Declared addon dependencies control PBO ordering; server mod-list order does not.
 
 ## Installation
 
 1. Stop the server.
 2. Install the original RaG Core and RaG ChickenCoop Workshop releases.
 3. Copy both signature keys into the server's `keys` directory if the host does not do that automatically.
-4. Add both mods to the client/server mod parameter, with Core first.
+4. Add both mods to the client/server mod set.
 5. Start the server once.
 6. Stop it after this file appears:
 
@@ -65,8 +59,8 @@ The source project ships no official Central Economy XML values.
 
 | Symptom | Check |
 | --- | --- |
-| Server reports missing `RaG_Core` classes or scripts | Core is missing, outdated, or loaded after ChickenCoop. Install matching versions on server and clients, then load Core first. |
-| JSON does not generate | Confirm the active server profile, folder permissions, RaG Core startup, and load order. Expected path is `$profile:\RaG_Core\Configs\RaG_ChickenCoop\RaG_ChickenCoop.json`. |
+| Server reports missing `RaG_Core` classes or scripts | Core is missing, outdated, or mismatched between server and clients. Install matching versions. |
+| JSON does not generate | Confirm the active server profile, folder permissions, RaG Core startup, and that both required mods are enabled. Expected path is `$profile:\RaG_Core\Configs\RaG_ChickenCoop\RaG_ChickenCoop.json`. |
 | Coop has no search action | Verify exact object class `Land_misc_chickenCoop`, matching client/server mod versions, and normal action distance. Similar-looking custom coop classes are unsupported. |
 | Coop reports it was looted | One completed search consumes that object until it initializes again, normally during a later server startup. |
 | Search produces nothing | This is common: default reward failure is 59%. Including the independent chicken roll, default chance of no item and no chicken is 52.51%. |

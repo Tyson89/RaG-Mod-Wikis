@@ -1,14 +1,8 @@
 # Server Setup
 
-## Dependency and load order
+## Dependency
 
-RaG Core is a hard dependency declared by `RaG_BaseBuilding`. Load both mods on the server and require both from clients:
-
-```text
-@RaG_Core;@RaG_BaseBuilding
-```
-
-If you use different folder names, preserve the same order. Missing or outdated RaG Core scripts can prevent the configuration, logging, or placement system from loading.
+RaG Core is a hard dependency declared by `RaG_BaseBuilding`. Install and enable both mods on the server and clients. DayZ resolves addon/PBO ordering from declared dependencies, not the server mod-list sequence. Missing or outdated RaG Core scripts can prevent configuration, logging, or placement systems from loading.
 
 ## Generated configuration
 

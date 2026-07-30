@@ -2,12 +2,12 @@
 
 RaG Thunderstruck turns severe weather into a server-controlled hazard. When the configured rain and overcast thresholds are met, exposed players can be struck by lightning, lose health, have their equipment damaged, spawn configured items at the impact point, and leave a burning impact area behind.
 
-[RaG Core](../core/index.md) is a hard dependency. Load `RaG_Core` before `RaG_Thunderstruck` on the server and every client.
+[RaG Core](../core/index.md) is a hard dependency. Install and enable both mods on the server and every client. Declared addon dependencies control PBO ordering.
 
 ## Start here
 
 - [Gameplay and protection](gameplay-and-protection.md) explains weather activation, strike chance, damage, the warning icon, safe states, and the tinfoil hat.
-- [Server setup and troubleshooting](server-setup-and-troubleshooting.md) covers installation, load order, first start, updates, and common failure modes.
+- [Server setup and troubleshooting](server-setup-and-troubleshooting.md) covers installation, dependencies, first start, updates, and common failure modes.
 - [Server configuration](server-configuration.md) documents the public `Thunderstruck.json` settings.
 
 ## Behavior at a glance

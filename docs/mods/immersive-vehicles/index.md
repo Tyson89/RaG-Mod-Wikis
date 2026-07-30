@@ -2,7 +2,7 @@
 
 RaG Immersive Vehicles adds mechanical consequences and cabin features to DayZ vehicles: working engine oil, wheel wear, jacks and secured wheels, wet-surface sliding, collision damage, heating, interior lights, high beams, and exposed-occupant AI targeting.
 
-RaG Core is a hard dependency. Load `RaG_Core` before `RaG_Immersive_Vehicles` on both the server and every client.
+RaG Core is a hard dependency. Install and enable both mods on the server and every client. Declared addon dependencies control PBO ordering.
 
 ## Player guides
 
@@ -14,7 +14,7 @@ RaG Core is a hard dependency. Load `RaG_Core` before `RaG_Immersive_Vehicles` o
 
 ## Server and modding guides
 
-- [Server setup and class names](server-setup-and-class-names.md) - dependency, economy entries, load order, and troubleshooting.
+- [Server setup and class names](server-setup-and-class-names.md) - dependencies, economy entries, and troubleshooting.
 - [Server configuration](json-file-and-explanation.md) - the live version 2 JSON schema and every setting.
 - [Vehicle-modding guide](modding.md) - requirements for third-party vehicle compatibility.
 - [RaG Core configuration](../core/server-configuration.md) - shared configuration and logging.

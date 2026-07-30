@@ -1,21 +1,15 @@
 # Setup, spawning, class names, and troubleshooting
 
-## Required mod and load order
+## Required mod
 
-[RaG Core](../core/index.md) is required on the server and every client. Load Core first:
-
-```text
-@RaG_Core;@RaG_Evil_Snowman
-```
-
-Actual folder names may differ. Dependency order must not. Snowman scripts use RaG Core configuration and logging classes even though `CfgPatches.requiredAddons` lists only vanilla DayZ packages.
+[RaG Core](../core/index.md) is required on the server and every client. Install and enable both mods. Dependency metadata controls addon/PBO ordering; server mod-list order does not.
 
 ## Installation
 
 1. Stop the server.
 2. Install the original RaG Core and RaG Evil Snowman Workshop releases.
 3. Copy both signature keys into the server's `keys` directory if the host does not do that automatically.
-4. Add both mods to the client/server mod parameter, with Core first.
+4. Add both mods to the client/server mod set.
 5. Start the server once.
 6. Stop it after this file appears:
 
@@ -64,8 +58,8 @@ Current source ships no `types.xml`, `events.xml`, `cfgeventspawns.xml`, `cfgenv
 
 | Symptom | Check |
 | --- | --- |
-| Server reports missing `RaGConfigVersioned`, `RaGConfigIO`, `RaGConfigAPI`, or `RaG_CoreLogger` | RaG Core is missing, outdated, or loaded after Snowman. Install matching versions on server and clients, then load Core first. |
-| JSON does not generate | Confirm active server profile, folder permissions, RaG Core startup, and load order. Expected path is `$profile:\RaG_Core\Configs\RaG_SnowMan\RaG_SnowMan.json`. |
+| Server reports missing `RaGConfigVersioned`, `RaGConfigIO`, `RaGConfigAPI`, or `RaG_CoreLogger` | RaG Core is missing, outdated, or mismatched between server and clients. Install matching versions. |
+| JSON does not generate | Confirm the active server profile, folder permissions, RaG Core startup, and that both required mods are enabled. Expected path is `$profile:\RaG_Core\Configs\RaG_SnowMan\RaG_SnowMan.json`. |
 | Editing old `RaG_Snowman\RaG_SnowMan.json` changes nothing | Expected on current source. Edit the RaG Core path instead. |
 | No Snowmen appear | Mod has no automatic spawner or current source XML. Configure `rag_snowman` through a valid animal event, territory setup, event framework, or mission script. |
 | Snowman exists but has no custom light | Light is client-side and hidden during daylight. Also verify matching client/server mod versions. |

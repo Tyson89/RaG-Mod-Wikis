@@ -1,21 +1,15 @@
 # Setup, compatibility, and troubleshooting
 
-## Required mod and load order
+## Required mod
 
-[RaG Core](../core/index.md) is declared hard dependency in `CfgPatches.requiredAddons`. Load both mods on server and every client, Core first:
-
-```text
-@RaG_Core;@RaG_Immersive_Wells
-```
-
-Actual folder names may differ. Dependency order must not.
+[RaG Core](../core/index.md) is a declared hard dependency in `CfgPatches.requiredAddons`. Install and enable both mods on the server and every client. DayZ resolves addon/PBO ordering from declared dependencies; changing the server `-mod` sequence does not change it.
 
 ## Installation
 
 1. Stop server.
 2. Install original RaG Core and RaG Immersive Wells Workshop releases.
 3. Copy both signature keys into server `keys` directory if host does not do that automatically.
-4. Add both mods to client/server mod parameter, with Core first.
+4. Add both mods to the client/server mod set.
 5. Start server once.
 6. Stop it after this file appears:
 
@@ -55,13 +49,7 @@ That well:
 - bypasses `WellWaterChance`;
 - reports no animated-well effects.
 
-Load RaG Baseitems before Immersive Wells so optional block can compile:
-
-```text
-@RaG_Core;@RaG_BaseItems;@RaG_Immersive_Wells
-```
-
-RaG Baseitems is optional. It is not declared hard dependency.
+RaG Baseitems is optional. Install and enable it on the server and clients when this well is used. No server mod-list ordering is required.
 
 ## Custom-well compatibility
 
@@ -97,8 +85,8 @@ Merely looking like well or returning water liquid type is not enough. Non-`Well
 
 | Symptom | Check |
 | --- | --- |
-| Server reports missing `RaGConfigVersioned`, `RaGConfigIO`, `RaGConfigAPI`, or RaG Core particle symbols | RaG Core missing, outdated, or loaded after Immersive Wells. Use matching builds and Core first on server and clients. |
-| JSON does not generate | Confirm active server profile, folder permissions, RaG Core startup, and load order. Expected path is `$profile:\RaG_Core\Configs\RaG_Immersive_Wells\RaG_Immersive_Wells.json`. |
+| Server reports missing `RaGConfigVersioned`, `RaGConfigIO`, `RaGConfigAPI`, or RaG Core particle symbols | RaG Core is missing, outdated, or mismatched between server and clients. Use matching current builds. |
+| JSON does not generate | Confirm the active server profile, folder permissions, RaG Core startup, and that both required mods are enabled. Expected path is `$profile:\RaG_Core\Configs\RaG_Immersive_Wells\RaG_Immersive_Wells.json`. |
 | Editing profile-root JSON changes nothing | Current source uses RaG Core config subdirectory. Edit exact path above. |
 | Roughly half wells are broken with default config | Expected. Default usable chance is about 50.5%. |
 | `WellWaterChance: 0` leaves rare working well | Expected off-by-one behavior. Roll includes zero. |
@@ -108,7 +96,7 @@ Merely looking like well or returning water liquid type is not enough. Non-`Well
 | Cholera never transfers | Set toggle to `1`, validate JSON, restart, then complete direct-drink or fill animation loops. Washing does not transfer it. |
 | Cholera affects bottle | Expected. Fill action inserts cholera agent into container, not player. |
 | Pond filling breaks | Current source guards non-well targets. Test mod conflict changing `ActionFillBottleBase`; Immersive Wells alone leaves ponds on vanilla path. |
-| RaG Baseitems well gets randomized or animates | Optional compile block did not activate. Load Baseitems before Immersive Wells and use matching current builds. |
+| RaG Baseitems well gets randomized or animates | Optional compile block did not activate. Confirm RaG Baseitems is enabled and use matching current builds. |
 
 ## Safe configuration rules
 

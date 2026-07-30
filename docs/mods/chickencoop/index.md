@@ -8,12 +8,12 @@ The mod also adds:
 - non-decaying gingerbread and chocolate bunnies;
 - a custom aggressive chicken with increased health and a close-range shock effect.
 
-[RaG Core](../core/index.md) is a hard dependency. Load `RaG_Core` before `RaG_ChickenCoop` on the server and every client.
+[RaG Core](../core/index.md) is a hard dependency. Install and enable both mods on the server and every client. Declared addon dependencies control PBO ordering.
 
 ## Start here
 
 - [Searching, food, and the crazy chicken](gameplay.md) explains player interactions, reward flow, egg preparation, and hostile-chicken behavior.
-- [Setup, class names, and troubleshooting](server-setup-and-class-names.md) covers installation, load order, supported coops, distribution, and common failures.
+- [Setup, class names, and troubleshooting](server-setup-and-class-names.md) covers installation, dependencies, supported coops, distribution, and common failures.
 - [Server configuration](server-configuration.md) documents the current version 1 JSON schema and exact probability calculations.
 
 ## Behavior at a glance

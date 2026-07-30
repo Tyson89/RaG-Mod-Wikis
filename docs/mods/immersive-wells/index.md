@@ -2,12 +2,12 @@
 
 RaG Immersive Wells makes DayZ wells less predictable. Each well can be usable or broken after server initialization. Working animated pumps gain a moving handle, pump sound, and water particle. Servers may also let direct drinking or filled containers receive cholera.
 
-[RaG Core](../core/index.md) is a hard dependency. Load `RaG_Core` before `RaG_Immersive_Wells` on the server and every client.
+[RaG Core](../core/index.md) is a hard dependency. Install and enable both mods on the server and every client. Addon dependencies control PBO ordering; server mod-list order does not.
 
 ## Start here
 
 - [Well behavior and cholera](well-behavior-and-cholera.md) explains random water availability, player interactions, audiovisual effects, exact probabilities, and cholera transfer.
-- [Setup, compatibility, and troubleshooting](server-setup-and-compatibility.md) covers installation, load order, supported well classes, RaG Baseitems integration, custom wells, and common failures.
+- [Setup, compatibility, and troubleshooting](server-setup-and-compatibility.md) covers installation, dependencies, supported well classes, RaG Baseitems integration, custom wells, and common failures.
 - [Server configuration](server-configuration.md) documents the current version 1 JSON schema and its unvalidated values.
 
 ## Behavior at a glance

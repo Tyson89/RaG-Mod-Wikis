@@ -1,14 +1,8 @@
 # Server Setup and Class Names
 
-## Dependency and load order
+## Dependencies
 
-RaG Core and RaG Core Scripts are hard dependencies in the mod config. Load Core first:
-
-```text
-@RaG_Core;@RaG_Immersive_Vehicles
-```
-
-Use the same order on clients. A missing or outdated RaG Core can break configuration loading, client synchronization, logging, or the engine-oil liquid type.
+RaG Core and RaG Core Scripts are hard dependencies in the mod config. Install and enable the required mods on the server and clients. DayZ resolves addon/PBO ordering from declared dependencies; server mod-list order does not. Missing or outdated RaG Core can break configuration loading, client synchronization, logging, or the engine-oil liquid type.
 
 ## Generated configuration
 

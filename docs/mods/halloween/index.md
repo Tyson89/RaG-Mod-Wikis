@@ -8,12 +8,12 @@ RaG Halloween adds four server-controlled encounters and one decorative prop to 
 - an animated spooky pedestal that ends with either a loot coffin or configured AI;
 - a static animated dragon for map decoration.
 
-[RaG Core](../core/index.md) is a hard dependency. Load `RaG_Core` before `RaG_Halloween` on the server and every client.
+[RaG Core](../core/index.md) is a hard dependency. Install and enable both mods on the server and every client. Declared addon dependencies control PBO ordering.
 
 ## Start here
 
 - [Gameplay and encounters](gameplay-and-encounters.md) explains every interaction, its timing, and how rewards or AI are selected.
-- [Server setup, class names, and troubleshooting](server-setup-and-class-names.md) covers installation, load order, economy setup, supported world objects, and known problems.
+- [Server setup, class names, and troubleshooting](server-setup-and-class-names.md) covers installation, dependencies, economy setup, supported world objects, and known problems.
 - [Server configuration](server-configuration.md) documents the version 1 `RaG_Halloween.json` schema and the actual chance calculations used by the scripts.
 
 ## Behavior at a glance

@@ -1,21 +1,15 @@
 # Setup, class names, compatibility, and troubleshooting
 
-## Required mod and load order
+## Required mod
 
-[RaG Core](../core/index.md) is a hard dependency declared in `CfgPatches.requiredAddons`. Load both mods on server and every client:
-
-```text
-@RaG_Core;@RaG_Hunting_Cabin
-```
-
-Actual folder names may differ. Dependency order must not.
+[RaG Core](../core/index.md) is a hard dependency declared in `CfgPatches.requiredAddons`. Install and enable both mods on the server and every client. DayZ resolves addon/PBO ordering from declared dependencies; server mod-list order does not.
 
 ## Installation
 
 1. Stop server.
 2. Install original RaG Core and RaG Hunting Cabin Workshop releases.
 3. Copy both signature keys into server `keys` directory if host does not do that automatically.
-4. Add both mods to client/server mod parameter, with Core first.
+4. Add both mods to the client/server mod set.
 5. Start server once.
 6. Stop it after this file appears:
 
@@ -31,13 +25,7 @@ Generated file is schema for installed build. Back it up during updates and merg
 
 ### CodeLock Mod
 
-Load CodeLock before Hunting Cabin so `CodeLock` conditional source is available:
-
-```text
-@RaG_Core;@CodeLock;@RaG_Hunting_Cabin
-```
-
-Exact CodeLock folder name may differ. With integration active, this file is also generated:
+Enable CodeLock Mod on the server and clients. With the integration active, this file is also generated:
 
 ```text
 $profile:\CodeLock\RaG_Hunting_Cabin_CodeLockConfig.json
@@ -49,13 +37,7 @@ See [Server and CodeLock configuration](server-configuration.md).
 
 Hunting Cabin commit `2054740` removed embedded Expansion compatibility on March 7, 2026. Current support is in separate `RaG_Expansion_Compat` source.
 
-Use load order:
-
-```text
-@RaG_Core;@DayZ-Expansion...;@RaG_Hunting_Cabin;@RaG_Expansion_Compat
-```
-
-Expansion package names vary. Load its base-building component before compatibility mod. Hunting Cabin alone is not current Expansion compatibility.
+Install and enable required DayZ Expansion base-building components, Hunting Cabin, and RaG Expansion Compat. Their declared dependencies control addon/PBO ordering. Hunting Cabin alone is not current Expansion compatibility.
 
 ## Public class names
 
@@ -123,8 +105,8 @@ Cabin kit source already bypasses its normal collision result. If players cannot
 
 | Symptom | Check |
 | --- | --- |
-| Server reports missing `RaGConfigVersioned`, `RaGConfigIO`, `RaGConfigAPI`, or other RaG Core classes | RaG Core missing, outdated, or loaded after Hunting Cabin. Use matching versions and Core first. |
-| Main JSON does not generate | Confirm active server profile, folder permissions, RaG Core startup, and load order. Expected path is `$profile:\RaG_Core\Configs\RaG_Hunting_Cabin\RaG_Hunting_Cabin.json`. |
+| Server reports missing `RaGConfigVersioned`, `RaGConfigIO`, `RaGConfigAPI`, or other RaG Core classes | RaG Core is missing, outdated, or mismatched between server and clients. Use matching versions. |
+| Main JSON does not generate | Confirm the active server profile, folder permissions, RaG Core startup, and that both required mods are enabled. Expected path is `$profile:\RaG_Core\Configs\RaG_Hunting_Cabin\RaG_Hunting_Cabin.json`. |
 | Kit recipe missing | Set `CanCraftHuntingCabinKit` to `1`, validate JSON, restart. Recipe still needs at least `10` planks and `50` nails. |
 | Kit will not place | Check territory/permission mods and server-side placement overrides. Cabin source bypasses its own collision result, but other systems can deny placement. |
 | Build action missing | Attach all four material types with configured quantities, aim at stairs, stand, and use non-ruined hammer or hatchet. |
@@ -135,8 +117,8 @@ Cabin kit source already bypasses its normal collision result. If players cannot
 | Door or windows closed after restart | Expected. Persistence restore explicitly closes open door and every window. |
 | Lights are off after restart | Expected. On/off booleans are not saved. |
 | Combination lock blocks door | Enter correct combination or destroy lock with hand saw/hacksaw. Five six-second cycles are required. |
-| CodeLock JSON missing | CodeLock conditional integration did not compile. Confirm CodeLock loaded before Hunting Cabin on server and clients. |
-| Expansion Code Lock does not work | Install current RaG Expansion Compat after Expansion and Hunting Cabin. Embedded support was removed from Hunting Cabin. |
+| CodeLock JSON missing | CodeLock conditional integration did not compile. Confirm current CodeLock and Hunting Cabin builds are enabled on server and clients. |
+| Expansion Code Lock does not work | Install and enable current RaG Expansion Compat plus its Expansion and Hunting Cabin dependencies. Embedded support was removed from Hunting Cabin. |
 | **Force Synchronize** appears | Cabin is empty. Action recreates cabin to repair sync; it also resets states and admin flag. Do not use casually. |
 | Expected storage, hide/show inventory, or fireplace is absent | Current source does not implement those Workshop claims. |
 

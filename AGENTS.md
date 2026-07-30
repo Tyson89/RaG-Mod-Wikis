@@ -14,11 +14,17 @@ Treat the matching source folder as the authority for:
 
 - current behavior and feature availability;
 - configuration schemas, defaults, validation, and file paths;
-- class names, dependencies, and load order;
+- class names, dependencies, and `CfgPatches.requiredAddons` declarations;
 - timing, probability, spawning, damage, rewards, and persistence;
 - integrations, compatibility, troubleshooting, and known limitations.
 
 Inspect the relevant scripts, configs, included XML/JSON examples, and repository history when behavior depends on a particular revision. Base documentation on the current source revision unless the user explicitly requests documentation for an older version.
+
+## Dependency guidance
+
+Do not recommend or prescribe server command-line mod load orders. RaG mods declare their addon dependencies, and DayZ resolves PBO/addon ordering from those dependencies. Server `-mod` list order does not change that resolution.
+
+Document which mods are required on server and clients. When ordering matters internally, document the authoritative `CfgPatches.requiredAddons[]` relationship instead of presenting an `@ModA;@ModB` command-line order.
 
 ## Packed PBO prohibition
 

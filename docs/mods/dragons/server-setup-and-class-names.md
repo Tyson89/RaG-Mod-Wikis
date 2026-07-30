@@ -1,14 +1,8 @@
 # Server setup, class names, and troubleshooting
 
-## Required mod and load order
+## Required mod
 
-[RaG Core](../core/index.md) is a hard dependency. Load both mods on the server and every client, with Core first:
-
-```text
-@RaG_Core;@RaG_Dragons
-```
-
-Folder names can differ, but the order must not. The internal patch names are `RaG_Core` and `RaG_Dragon`.
+[RaG Core](../core/index.md) is a hard dependency. Install and enable both mods on the server and every client. DayZ resolves addon/PBO ordering from declared dependencies, not the server mod-list sequence. The internal patch names are `RaG_Core` and `RaG_Dragon`.
 
 ## First start
 
@@ -82,7 +76,7 @@ RaG Dragons uses two logging paths:
 
 | Symptom | Check |
 | --- | --- |
-| Server or client script errors during startup | RaG Core is missing, outdated, or loaded after RaG Dragons. |
+| Server or client script errors during startup | RaG Core is missing, outdated, or mismatched between server and clients. |
 | No configuration file | Confirm the server profile path and that both mods reached `MissionServer.OnInit()`. |
 | No dragon ever spawns | `SpawnInterval` must be above `0`, at least one location must be enabled, and the enabled entry needs at least one valid position. |
 | Old `Interval` setting has no effect | Rename it to `SpawnInterval`; `Interval` is obsolete in schema version 2. |

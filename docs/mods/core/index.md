@@ -8,7 +8,7 @@ If you only operate a server, see [Server configuration](server-configuration.md
 
 | Feature | Use it when you need | Documentation |
 | --- | --- | --- |
-| Dependency and script setup | Reliable load order for Game, World, and Mission scripts | [Getting started](getting-started.md) |
+| Dependency and script setup | Reliable addon ordering through `requiredAddons[]` | [Getting started](getting-started.md) |
 | Versioned JSON configuration | Per-mod files under the shared `RaG_Core/Configs` tree | [Configuration API](configuration-api.md) |
 | Buffered per-mod logs | Separate channels, levels, rotation, and retention | [Logging API](logging-api.md) |
 | Custom liquids | Drinkable liquids, fuels, coolants, groups, colors, and container rules | [Custom liquids](custom-liquids.md) |
@@ -36,7 +36,7 @@ Do not copy RaG Core classes into your addon. Declare `RaG_Core` and `RaG_Core_S
 2. Use [Configuration API](configuration-api.md) for server-owned settings.
 3. Give your addon its own [logging channel](logging-api.md).
 4. Add only the feature-specific integrations you need.
-5. Test client and dedicated-server startup, persistence, reconnects, and load order before release.
+5. Test client and dedicated-server startup, persistence, reconnects, and dependency resolution before release.
 
 ## RaG mod documentation
 

@@ -1,21 +1,15 @@
 # Server setup, class names, and troubleshooting
 
-## Required mod and load order
+## Required mod
 
-[RaG Core](../core/index.md) is required on the server and every client. Load Core first:
-
-```text
-@RaG_Core;@RaG_Halloween
-```
-
-Actual folder names can differ, but the dependency order must not.
+[RaG Core](../core/index.md) is required on the server and every client. Install and enable both mods. Declared addon dependencies control PBO ordering; server mod-list order does not.
 
 ## Installation
 
 1. Stop the server.
 2. Install the original RaG Core and RaG Halloween Workshop releases.
 3. Copy both signature keys into the server's `keys` directory if the host does not do that automatically.
-4. Add both mods to the client/server mod parameter, with Core first.
+4. Add both mods to the client/server mod set.
 5. Start the server once.
 6. Stop it after this file is generated:
 
@@ -78,8 +72,8 @@ The custom boogieman variants use their placed world position for the ambush tri
 
 | Symptom | Check |
 | --- | --- |
-| Startup reports missing scripts or `RaG_Core` | Core is missing, outdated, or loaded after Halloween. Both mods must be installed on server and clients. |
-| `RaG_Halloween.json` is not generated | Confirm the active server profile, folder permissions, Core's configuration initialization, and the mod load order. |
+| Startup reports missing scripts or `RaG_Core` | Core is missing, outdated, or mismatched between server and clients. Both mods must be installed on server and clients. |
+| `RaG_Halloween.json` is not generated | Confirm the active server profile, folder permissions, Core configuration initialization, and that both required mods are enabled. |
 | A grave has no action | `Tombstone_Enabled` must be `1`, the exact object class must be supported, the one-time initialization roll must pass, and the player must stand upright with a non-ruined shovel in range. |
 | A boogieman does nothing | Confirm `BoogieMan_Enabled`, use a supported class, and remember that its 5-meter trigger is consumed after the first player enters. |
 | Pumpkin grenade or encounter spawns nothing | Validate every configured classname and keep every active selection array non-empty. Load any mod that supplies a custom class. |

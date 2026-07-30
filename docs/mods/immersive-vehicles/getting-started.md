@@ -2,10 +2,7 @@
 
 ## Requirements
 
-Load the mods in this order on the server and clients:
-
-1. `RaG_Core`
-2. `RaG_Immersive_Vehicles`
+The server and every client need RaG Core and RaG Immersive Vehicles. Declared addon dependencies control PBO ordering; server mod-list order does not.
 
 ## Useful items
 

@@ -38,7 +38,7 @@ These IDs are part of the persistent liquid format. Do not reuse or redefine the
 
 ## Dependency
 
-Your liquid addon must load after both Core patches:
+Declare both Core patches as dependencies of the liquid addon:
 
 ```cpp
 requiredAddons[] =

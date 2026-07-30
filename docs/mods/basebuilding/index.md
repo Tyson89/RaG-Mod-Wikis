@@ -2,7 +2,7 @@
 
 RaG BaseBuilding adds a modular construction system to DayZ: 21 craftable kits, snap-point placement, configurable material costs, doors and gates, floor hatches, storage, attachments, and admin build tools.
 
-RaG Core is a hard dependency. Load `RaG_Core` before `RaG_BaseBuilding` on both the client and server.
+RaG Core is a hard dependency. Install and enable both mods on the server and every client. Declared addon dependencies control PBO ordering.
 
 ## Player guides
 
@@ -15,7 +15,7 @@ RaG Core is a hard dependency. Load `RaG_Core` before `RaG_BaseBuilding` on both
 
 ## Server guides
 
-- [Server setup](server-setup.md) - dependency, load order, generated files, economy guidance, and troubleshooting.
+- [Server setup](server-setup.md) - dependencies, generated files, economy guidance, and troubleshooting.
 - [Server configuration](server-configuration.md) - every `RaG_BaseBuilding.json` setting explained.
 - [RaG Core configuration](../core/server-configuration.md) - shared logging and framework settings.
 - [Credits and permissions](credits-and-permissions.md) - project history and usage rules.

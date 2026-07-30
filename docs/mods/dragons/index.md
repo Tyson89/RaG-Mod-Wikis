@@ -2,12 +2,12 @@
 
 RaG Dragons adds server-driven dragon encounters to DayZ. Dragons fly to configured map locations, burn exposed players and infected, retaliate against attackers with fireballs, and can be skinned for configurable rewards and a color-matched head.
 
-[RaG Core](../core/index.md) is a hard dependency. Load `RaG_Core` before `RaG_Dragon` on the server and every client.
+[RaG Core](../core/index.md) is a hard dependency. Install and enable both mods on the server and every client. Declared addon dependencies control PBO ordering.
 
 ## Start here
 
 - [Gameplay and rewards](gameplay-and-rewards.md) explains encounters, fire damage, hunting, skinning, and trophies.
-- [Server setup, class names, and troubleshooting](server-setup-and-class-names.md) covers load order, first start, logs, custom maps, and spawnable classes.
+- [Server setup, class names, and troubleshooting](server-setup-and-class-names.md) covers dependencies, first start, logs, custom maps, and spawnable classes.
 - [Server configuration](server-configuration.md) documents the current version 2 JSON schema and spawn lifecycle.
 
 ## Current behavior at a glance

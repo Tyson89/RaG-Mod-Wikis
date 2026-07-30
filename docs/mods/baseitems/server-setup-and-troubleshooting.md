@@ -1,14 +1,8 @@
 # Server Setup and Troubleshooting
 
-## Required mods and load order
+## Required mods
 
-[RaG Core](../core/index.md) is a hard dependency. Load Core before Baseitems on both the server and every client.
-
-```text
-@RaG_Core;@RaG_Baseitems
-```
-
-Use the actual folder names installed on your host. Do not install the old standalone Liquid Framework; its functionality is in RaG Core.
+[RaG Core](../core/index.md) is a hard dependency. Install and enable Core and Baseitems on the server and every client. Declared addon dependencies control PBO ordering; server mod-list order does not. Do not install the old standalone Liquid Framework; its functionality is in RaG Core.
 
 ## First start
 
@@ -59,7 +53,7 @@ Codelock support is conditional: its actions and separate raid configuration loa
 
 | Symptom | Likely cause |
 | --- | --- |
-| Server or client script error at startup | RaG Core missing, outdated, or loaded after Baseitems. |
+| Server or client script error at startup | RaG Core is missing, outdated, or mismatched between server and clients. |
 | Configuration does not change behavior | Wrong profile folder, malformed JSON, or server not restarted. |
 | Workbench action is missing | Blueprint not attached, hammer missing, recipe disabled, or materials below the exact threshold. |
 | Powered machine will not start | No compatible power connection, required attachment missing, or machine/item ruined. |

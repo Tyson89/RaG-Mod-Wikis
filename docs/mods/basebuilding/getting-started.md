@@ -2,10 +2,7 @@
 
 ## Requirements
 
-The server and every connecting client need both mods, in this order:
-
-1. `RaG_Core`
-2. `RaG_BaseBuilding`
+The server and every connecting client need RaG Core and RaG BaseBuilding. Declared addon dependencies control PBO ordering; server mod-list order does not.
 
 ## Craft a kit
 

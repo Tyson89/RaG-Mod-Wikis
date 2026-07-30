@@ -123,7 +123,7 @@ See [Server and CodeLock configuration](server-configuration.md).
 
 Current Hunting Cabin repository removed its embedded Expansion compatibility. Separate RaG Expansion Compat source adds Expansion lock/open state handling when both `RAG_HUNTING_CABIN` and `EXPANSIONMODBASEBUILDING` are defined.
 
-Install that compatibility mod after required RaG and Expansion components. Do not expect current Hunting Cabin alone to handle Expansion Code Locks.
+Install and enable that compatibility mod plus its required RaG and Expansion components. Declared dependencies control addon/PBO ordering. Do not expect current Hunting Cabin alone to handle Expansion Code Locks.
 
 ## Damage
 

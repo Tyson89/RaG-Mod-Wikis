@@ -1,21 +1,15 @@
 # Server setup and troubleshooting
 
-## Required mod and load order
+## Required mod
 
-[RaG Core](../core/index.md) is required on the server and every client. Load Core first:
-
-```text
-@RaG_Core;@RaG_Thunderstruck
-```
-
-Actual folder names can differ, but the dependency order must not. Use the original Workshop releases; Thunderstruck may not be repacked or reuploaded.
+[RaG Core](../core/index.md) is required on the server and every client. Install and enable both mods. Declared addon dependencies control PBO ordering; server mod-list order does not. Use the original Workshop releases; Thunderstruck may not be repacked or reuploaded.
 
 ## Installation
 
 1. Stop the server.
 2. Install RaG Core and RaG Thunderstruck from the Workshop.
 3. Copy each mod's key into the server's `keys` directory when your hosting setup does not do that automatically.
-4. Add both mods to the client/server mod parameter, with Core first.
+4. Add both mods to the client/server mod set.
 5. Start the server once to generate `Thunderstruck.json` in the configured server profile directory.
 6. Stop the server and edit the generated file.
 7. Restart and test during qualifying weather.
@@ -53,7 +47,7 @@ Avoid testing with `ReducedPlayerHealth` at a lethal or near-zero value on a liv
 
 | Symptom | Check |
 | --- | --- |
-| Server or client reports missing scripts or dependencies | RaG Core is missing, outdated, or loaded after Thunderstruck. Both mods must be on the server and client. |
+| Server or client reports missing scripts or dependencies | RaG Core is missing, outdated, or mismatched between server and clients. Both mods must be enabled on server and clients. |
 | `Thunderstruck.json` is not created | Confirm the active server profile path, file permissions, and that the mod loaded without startup errors. |
 | Weather qualifies but no icon appears | `ShowWeatherIcon` must be `1`; the player must also be alive, conscious, exposed, outside a vehicle, outside supported safe zones, and without supported god mode. |
 | Icon appears but nobody is struck | The icon means the weather qualifies. Check `HitChanceRange` and `HitChance`; low probability can legitimately produce long gaps. |
@@ -74,7 +68,7 @@ When reporting a reproducible problem, collect:
 - server and client script logs from the same session;
 - the generated `Thunderstruck.json`, with private server details removed;
 - the installed Workshop update timestamps for Core and Thunderstruck;
-- the active mod load order;
+- the active mod list and installed versions;
 - the map and weather mod in use;
 - safe-zone or admin tools involved;
 - exact steps and whether the player was under cover, in a vehicle, or wearing the tinfoil hat.

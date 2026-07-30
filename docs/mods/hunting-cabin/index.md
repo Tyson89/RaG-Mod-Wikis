@@ -12,12 +12,12 @@ The completed cabin provides:
 - optional Expansion Code Lock support through the separate RaG Expansion Compat mod;
 - configurable crafting, construction costs, dismantling refunds, kit returns, and snowy roof textures.
 
-[RaG Core](../core/index.md) is a hard dependency. Load `RaG_Core` before `RaG_Hunting_Cabin` on the server and every client.
+[RaG Core](../core/index.md) is a hard dependency. Install and enable both mods on the server and every client. Declared addon dependencies control PBO ordering.
 
 ## Start here
 
 - [Building, features, and dismantling](building-features-and-dismantling.md) covers kit crafting, construction, doors, windows, lights, damage, and refunds.
-- [Setup, class names, compatibility, and troubleshooting](server-setup-and-class-names.md) covers installation, load order, economy entries, optional lock mods, and common failures.
+- [Setup, class names, compatibility, and troubleshooting](server-setup-and-class-names.md) covers installation, dependencies, economy entries, optional lock mods, and common failures.
 - [Server and CodeLock configuration](server-configuration.md) documents both generated JSON files and current source behavior.
 
 ## Behavior at a glance

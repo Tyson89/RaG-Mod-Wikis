@@ -1,6 +1,6 @@
 # Getting Started
 
-RaG Core must load before every addon that compiles against its classes or config definitions. Treat it as a hard client-and-server dependency when your addon uses any documented API.
+Treat RaG Core as a hard client-and-server dependency when an addon uses any documented API. Declare the dependency in `CfgPatches.requiredAddons[]`; DayZ uses it to resolve addon/PBO ordering.
 
 ## Required config dependencies
 
@@ -23,7 +23,7 @@ class CfgPatches
 };
 ```
 
-`RaG_Core` contains the main config and shared assets. `RaG_Core_Scripts` guarantees that Core's script-side definitions load before your addon.
+`RaG_Core` contains the main config and shared assets. The `RaG_Core_Scripts` dependency guarantees Core script-side definitions resolve before the consuming addon.
 
 ## Script modules
 
@@ -69,15 +69,9 @@ RaG Core exposes the `RAG_CORE` compile define. It is useful only for an optiona
 
 If your addon cannot function without Core, use the hard `requiredAddons[]` dependency and do not hide missing dependencies behind a compile guard.
 
-## Runtime load order
+## Runtime dependency resolution
 
-Load RaG Core before your addon on both the server and clients. A typical order is:
-
-```text
-@CF;@RaG Core;@My Mod
-```
-
-Only include dependencies your addon actually requires; `@CF` above is just an example.
+Install and enable RaG Core and the consuming addon on the server and clients. Do not use the server `-mod` sequence as an ordering mechanism. DayZ resolves PBO/addon order from `requiredAddons[]`. Declare only dependencies the addon actually requires.
 
 ## Which layer contains each API?
 
@@ -91,7 +85,7 @@ Only include dependencies your addon actually requires; `@CF` above is just an e
 
 Before adding gameplay code:
 
-1. Start a dedicated server with Core before your addon.
+1. Start a dedicated server with Core and the addon enabled.
 2. Confirm there are no missing patch, unknown class, or script compile errors.
 3. Register one test configuration with the [Configuration API](configuration-api.md).
 4. Confirm the JSON appears under `$profile:\RaG_Core\Configs\<module>\`.

@@ -2,12 +2,12 @@
 
 RaG Evil Snowman adds a hostile, bear-based snowman predator with custom sounds, a blue night light, and a configurable skinning reward pool. It also adds an edible custom carrot.
 
-[RaG Core](../core/index.md) is a hard dependency. Load `RaG_Core` before `RaG_Evil_Snowman` on the server and every client.
+[RaG Core](../core/index.md) is a hard dependency. Install and enable both mods on the server and every client. Declared addon dependencies control PBO ordering.
 
 ## Start here
 
 - [Gameplay and skinning rewards](gameplay-and-rewards.md) explains combat behavior, death effects, skinning, and the custom carrot.
-- [Setup, spawning, class names, and troubleshooting](server-setup-and-class-names.md) covers installation, load order, event placement, public classes, and common failures.
+- [Setup, spawning, class names, and troubleshooting](server-setup-and-class-names.md) covers installation, dependencies, event placement, public classes, and common failures.
 - [Server configuration](server-configuration.md) documents the current version 1 JSON schema and reward weighting.
 
 ## Behavior at a glance
