@@ -92,6 +92,14 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open Hunting Cabin documentation](mods/hunting-cabin/index.md)
 
+-   :material-shield:{ .lg .middle } **RaG Viking Pack**
+
+    ---
+
+    Viking weapons, armor, clothing, coins, deployable props, a fuel-burning lantern, a warning raven, and a storage shelter.
+
+    [:octicons-arrow-right-24: Open Viking Pack documentation](mods/viking-pack/index.md)
+
 -   :material-gift:{ .lg .middle } **RaG Wheel of Fortune**
 
     ---

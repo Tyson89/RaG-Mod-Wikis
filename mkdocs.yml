@@ -167,6 +167,12 @@ nav:
       - Server guides:
           - Setup, class names, compatibility, and troubleshooting: mods/hunting-cabin/server-setup-and-class-names.md
           - Server and CodeLock configuration: mods/hunting-cabin/server-configuration.md
+  - RaG Viking Pack:
+      - Overview: mods/viking-pack/index.md
+      - Gameplay, equipment, and placeables: mods/viking-pack/gameplay-and-items.md
+      - Server guides:
+          - Setup, class names, and troubleshooting: mods/viking-pack/server-setup-and-class-names.md
+          - Server configuration: mods/viking-pack/server-configuration.md
   - RaG Wheel of Fortune:
       - Overview: mods/wheel-of-fortune/index.md
       - Gameplay, prizes, and daily limits: mods/wheel-of-fortune/gameplay-and-prizes.md
