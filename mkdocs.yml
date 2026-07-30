@@ -1,8 +1,6 @@
 site_name: RaG Mod Wikis
 site_description: Central documentation for RaG DayZ mods
 site_url: https://tyson89.github.io/RaG-Mod-Wikis/
-repo_url: https://github.com/Tyson89/RaG-Mod-Wikis
-repo_name: Tyson89/RaG-Mod-Wikis
 
 theme:
   name: material
