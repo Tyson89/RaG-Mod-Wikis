@@ -93,7 +93,11 @@ When enabled, server creates a 300-meter trigger around wearer. Warning fires wh
 - an `AnimalBase` for which `IsDanger()` returns true; or
 - a `ZombieBase` for which `IsSpecialThreat()` returns true.
 
-Base Viking Pack implementation returns `false` for every infected. Vanilla infected therefore do not trigger warnings unless another mod overrides `IsSpecialThreat()`.
+`IsDanger()` is a vanilla DayZ boolean. Base animal implementation returns `false`; vanilla wolf and bear classes override it to `true`. Modded animals inheriting that behavior also count as dangerous unless they explicitly override `IsDanger()` to return `false`.
+
+RaG Evil Snowman triggers raven warning. Its config class inherits vanilla `Animal_UrsusArctos`, and current Snowman script also explicitly overrides `IsDanger()` to return `true`.
+
+`IsSpecialThreat()` is separate. Viking Pack adds this custom boolean to `ZombieBase` and makes its default return value `false`. Raven deliberately checks this method for infected instead of vanilla `ZombieBase.IsDanger()`. Vanilla infected therefore do not trigger warnings unless another mod overrides `IsSpecialThreat()` to return `true`.
 
 Each warning:
 

@@ -136,7 +136,8 @@ All five helmet classes use same **Viking Helmet** display name. Use class suffi
 | Kit places nothing | Confirm RaG Core loaded and server log has no `Could not spawn item!` error. Use exact kit class. |
 | Placeable cannot be dismantled | Empty cargo and attachments, use non-ruined screwdriver, hammer, or pliers, and check territory permissions. |
 | Table display slot missing | Table supports only slots declared in current config; notably no `rag_viking_helmet5`, coin, coinbag, spear, warhammer, or leather-clothing slots. |
-| Raven gives no infected warning | Expected for base source. Only infected classes from another mod overriding `ZombieBase.IsSpecialThreat()` can trigger it. |
+| Raven warns for bears, wolves, or RaG Evil Snowman | Expected. They return `true` from vanilla `IsDanger()` animal hook; Snowman config also inherits vanilla bear. |
+| Raven gives no infected warning | Expected for base source. Raven does not use vanilla infected `IsDanger()` result; only infected classes overriding Viking Pack's `ZombieBase.IsSpecialThreat()` to `true` trigger it. |
 | Raven disappears | Each unfed warning removes `5` health. Attach any seed stack to `Ravenseed` slot. |
 | Raven warning toggle unavailable while worn | Detach raven to hands, toggle warning mode, then reattach to armband. |
 | **Add Lard** missing on fresh lantern | Source refreshes `m_CanReceiveUpgrade` only when attachment is detached. Attach rags, keep lantern off, detach rags once, then reattach them. |
