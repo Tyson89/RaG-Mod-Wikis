@@ -52,8 +52,6 @@ Player loses daily attempt when later processing fails because:
 
 There is no fallback prize and no automatic retry. Validate every result before opening wheel to players.
 
-Undetected landing field is worse: `GetWheelIndex()` returns `-1`, prize switch exits without clearing player or resetting spin state, and wheel remains blocked as finished. Restart server or recreate affected wheel through placement system.
-
 ## Result fields
 
 Wheel has 16 detected fields:

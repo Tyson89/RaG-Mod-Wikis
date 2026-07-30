@@ -65,19 +65,6 @@ Several bases may be placed. Each object has independent animation and five-seco
 
 Result: one spin per Steam64 ID across all wheels. More wheels increase access and throughput for different players, not daily spins per player.
 
-## Current-source limitations
-
-- Daily spin count is fixed at one.
-- Daily reset date is not checked continuously.
-- No token, payment, item-in-hand, territory, faction, or permission requirement exists.
-- No per-wheel reward profile exists; all wheels share one JSON.
-- No prize ownership protection exists.
-- No fallback reward or failed-spin refund exists.
-- Undetected landing field can leave wheel permanently busy until object recreation or server restart.
-- No admin command resets one player.
-- No direct odds settings exist.
-- No player-facing countdown exists.
-
 ## Troubleshooting
 
 | Symptom | Check |
