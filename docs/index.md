@@ -36,6 +36,14 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open vehicle documentation](mods/immersive-vehicles/index.md)
 
+-   :material-water-pump:{ .lg .middle } **RaG Immersive Wells**
+
+    ---
+
+    Random well availability, animated pump handles, water sounds and particles, and optional cholera exposure.
+
+    [:octicons-arrow-right-24: Open Immersive Wells documentation](mods/immersive-wells/index.md)
+
 -   :material-fire:{ .lg .middle } **RaG Dragons**
 
     ---

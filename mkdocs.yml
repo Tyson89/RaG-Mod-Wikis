@@ -125,6 +125,12 @@ nav:
           - Server setup and class names: mods/immersive-vehicles/server-setup-and-class-names.md
           - Server configuration: mods/immersive-vehicles/json-file-and-explanation.md
           - Vehicle-modding guide: mods/immersive-vehicles/modding.md
+  - RaG Immersive Wells:
+      - Overview: mods/immersive-wells/index.md
+      - Well behavior and cholera: mods/immersive-wells/well-behavior-and-cholera.md
+      - Server guides:
+          - Setup, compatibility, and troubleshooting: mods/immersive-wells/server-setup-and-compatibility.md
+          - Server configuration: mods/immersive-wells/server-configuration.md
   - RaG Dragons:
       - Overview: mods/dragons/index.md
       - Gameplay and rewards: mods/dragons/gameplay-and-rewards.md
