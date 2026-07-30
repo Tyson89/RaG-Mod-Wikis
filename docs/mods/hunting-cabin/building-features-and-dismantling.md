@@ -145,7 +145,7 @@ Dedicated **Destroy Hunting Cabin** source exists but is explicitly marked unuse
 
 Requirements:
 
-1. Stand within `5.3` meters of cabin center.
+1. Stand inside the Hunting Cabin.
 2. Aim at door selection.
 3. Empty cabin attachments.
 4. Hold a non-ruined crowbar, hatchet, or sledgehammer.
