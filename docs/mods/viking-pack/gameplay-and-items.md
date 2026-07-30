@@ -84,7 +84,7 @@ Container's actual liquid must be blood, clean water, river water, or beer. Reci
 
 ## Viking Raven
 
-`rag_viking_raven` occupies armband slot and accepts any `SeedBase` item in its `Ravenseed` slot.
+`rag_viking_raven` occupies armband slot and accepts any `SeedBase` item in its slot.
 
 Use raven in hands to enable or disable warnings, then attach it to armband. Warning mode persists across restarts.
 
