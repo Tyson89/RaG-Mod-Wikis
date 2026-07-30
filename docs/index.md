@@ -92,6 +92,14 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open Hunting Cabin documentation](mods/hunting-cabin/index.md)
 
+-   :material-gift:{ .lg .middle } **RaG Wheel of Fortune**
+
+    ---
+
+    Place interactive prize wheels with configurable field rewards, jackpot effects, and persistent daily player limits.
+
+    [:octicons-arrow-right-24: Open Wheel of Fortune documentation](mods/wheel-of-fortune/index.md)
+
 </div>
 
 ## Where to begin

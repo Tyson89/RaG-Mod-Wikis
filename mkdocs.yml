@@ -167,3 +167,9 @@ nav:
       - Server guides:
           - Setup, class names, compatibility, and troubleshooting: mods/hunting-cabin/server-setup-and-class-names.md
           - Server and CodeLock configuration: mods/hunting-cabin/server-configuration.md
+  - RaG Wheel of Fortune:
+      - Overview: mods/wheel-of-fortune/index.md
+      - Gameplay, prizes, and daily limits: mods/wheel-of-fortune/gameplay-and-prizes.md
+      - Server guides:
+          - Setup, placement, class names, and troubleshooting: mods/wheel-of-fortune/server-setup-and-class-names.md
+          - Server configuration and spin data: mods/wheel-of-fortune/server-configuration.md
