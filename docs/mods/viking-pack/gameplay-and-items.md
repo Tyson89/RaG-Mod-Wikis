@@ -15,7 +15,7 @@ The completed shelter:
 
 - provides `10 × 50` cargo;
 - is always logically open;
-- exposes inventory only within one meter of its `inv_access` memory point;
+- exposes inventory only when standing near the center inside;
 - has no open or close action;
 - cannot be placed into hands or cargo.
 
@@ -27,9 +27,9 @@ To dismantle it, empty all cargo and use a non-ruined screwdriver, hammer, or pl
 
 | Kit | Deployed class | Actual use |
 | --- | --- | --- |
-| `rag_viking_firepit_kit` | `rag_viking_firepit` | Decorative static firepit. It is not a working fireplace and has no fuel, cooking, or ignition actions. |
+| `rag_viking_firepit_kit` | `rag_viking_firepit` | Use as any Vanilla Fireplace. Create a Fireplace inside by attaching a Firewood. |
 | `rag_viking_table_kit` | `rag_viking_table` | Display table with dedicated attachment slots for Viking equipment. It has no general cargo grid. |
-| `rag_viking_sundial_kit` | `rag_viking_sundial` | Decorative sundial. No script calculates or displays time. |
+| `rag_viking_sundial_kit` | `rag_viking_sundial` | Decorative sundial. No script calculates or displays time, but it can show the approximate time using game rendered shadows. |
 | `rag_viking_warbanner_kit` | `rag_viking_warbanner` | Decorative warbanner. |
 
 RaG Core handles deployment and dismantling for these objects. Empty object first, then use screwdriver, hammer, or pliers. Table attachments must therefore be removed before dismantling.
@@ -56,11 +56,6 @@ Combine lard with lantern and choose **Add Lard**.
 - Recipe consumes one attached rag.
 - Up to `200` lard quantity can be consumed.
 - A full `200`-quantity lard dose adds `900` seconds, limited by remaining internal energy capacity.
-
-!!! warning "Fresh lantern may not offer Add Lard immediately"
-    Current source initializes synchronized `m_CanReceiveUpgrade` as false and recalculates it only when an attachment is detached. If **Add Lard** is missing on a fresh lantern, attach rags, extinguish lantern, detach rags once, then reattach them. This refreshes source flag. Lantern still needs enough unused energy capacity.
-
-Current config also declares `burnTimePerFullFuelDose=600`, but no current recipe or script consumes a fuel dose. Do not document gasoline or another liquid as working lantern fuel.
 
 ### Light and extinguish
 
@@ -144,9 +139,6 @@ Conversion actions take three seconds and spawn result on ground:
 | `rag_viking_coin_500` | `20` | `rag_viking_coin_10000` |
 | `rag_viking_coin_1000` | `10` | `rag_viking_coin_10000` |
 | `rag_viking_coin_10000` | `25` | `rag_coin` |
-
-!!! warning "Final conversion is not value-preserving"
-    Current source consumes twenty-five `10k` coins but creates one `rag_coin`, whose display name says `RaG Coin (50k)`. That is `250k` of labeled input for one `50k`-labeled result. This is current code, not a documentation typo.
 
 Denominations `1`, `5`, `10`, `25`, and `50` have no built-in conversion actions.
 

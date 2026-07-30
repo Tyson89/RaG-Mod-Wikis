@@ -126,18 +126,6 @@ rag_viking_leather_gloves
 
 All five helmet classes use same **Viking Helmet** display name. Use class suffix to select model.
 
-## Current-source limitations
-
-- Firepit is decorative, not working fireplace.
-- Sundial has no scripted clock or time display.
-- Warbanner has no buff, territory, or flag-pole behavior.
-- Table has fixed display attachments but no general cargo grid.
-- Base Viking Pack marks no infected as raven special threat.
-- `DisableDamageForPlaceables` affects shelter only.
-- Coinbag cannot hold `rag_coin`; it accepts only nine Ancient Viking Coin denominations.
-- Final `25 × 10k` coin conversion yields one item labeled `50k`.
-- No JSON setting changes item stats or conversion ratios.
-
 ## Troubleshooting
 
 | Symptom | Check |
