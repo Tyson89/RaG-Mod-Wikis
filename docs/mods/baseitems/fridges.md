@@ -1,28 +1,31 @@
 # Fridges
 
-RaG Baseitems provides three powered fridges. All three use the same cooling, storage, power, and Codelock behavior.
+RaG Baseitems provides three powered fridges. They keep food and drinks cold and make perishable food last much longer.
 
-## Setup
+## How to use a fridge
 
-1. Deploy the fridge from its `_kit` classname.
-2. Put supported food or drink in its cargo.
-3. Close the fridge doors.
-4. Plug the 15 m power cord into a compatible power source. The fridge switches itself on when power becomes available.
+1. Deploy the fridge from its kit.
+2. Connect its 15 m power cord to a power source.
+3. Store supported food or drinks inside.
+4. Close the doors to start cooling.
 
-The fridges use plug type `2` and consume **0.14 energy per second**. The [Solar Panel](solar-panel.md) can power compatible devices.
+Fridges switch themselves on when connected to working power. They use **0.14 energy per second** and can be powered by compatible sources such as the [Solar Panel](solar-panel.md).
 
-## Cooling and storage
+## Cooling and food decay
 
-- Each fridge has **10 x 50 cargo slots**.
-- Cargo is cooled to **4 °C** while the fridge is powered and closed.
-- The cooling check runs every **5 seconds**. Items already between 3.5 °C and 4.5 °C are left unchanged.
-- Opening the fridge stops cooling, even when power remains connected. Closing it resumes cooling.
-- Losing or disconnecting power stops the fridge. It switches itself on when connected to an active power source and after a server restart when its stored connection has power.
-- Cargo accepts non-ruined, temperature-capable soda cans, bottles, and edible items. Other item types are rejected.
+While powered and closed, a fridge:
 
-Cooling sets item temperature; it does not run a separate custom food-decay timer.
+- keeps its contents near **4 °C**;
+- slows normal DayZ food decay to **15%** of its usual rate;
+- gives perishable food roughly **6.7 times longer** before it spoils.
 
-All three fridges accept a Codelock. See [Codelock Integration](codelock-integration.md).
+Fridges use the server's vanilla `FoodDecay` value from `globals.xml` as the starting rate. They reduce that rate by 85% while cooling instead of replacing the server setting.
+
+Opening the doors or losing power stops both cooling and the fridge's decay reduction. Closing the doors restores the benefit while power is available.
+
+Each model has a large **10 x 50 inventory grid**. It accepts non-ruined soda cans, bottles, and edible items that support temperature. Other items cannot be stored inside.
+
+All three models work the same and accept a Codelock. See [Codelock Integration](codelock-integration.md).
 
 ## Key classnames
 

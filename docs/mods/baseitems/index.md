@@ -24,7 +24,7 @@ RaG Baseitems adds placeable furniture, storage, workstations, decorations, powe
 | [Coffee system](coffee-machine.md) | Grinds beans and brews coffee or espresso. |
 | [Smoker](smoker.md) | Dries meat and fish with wooden-stick fuel. |
 | [Solar Panel](solar-panel.md) | Powers devices by day and uses an attached truck battery at night. |
-| [Fridges](fridges.md) | Cool supported food and drink to 4 °C while closed and powered. |
+| [Fridges](fridges.md) | Keep food and drinks cold and slow food decay while closed and powered. |
 
 ## More interactive systems
 
