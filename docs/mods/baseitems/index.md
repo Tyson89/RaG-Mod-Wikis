@@ -24,6 +24,7 @@ RaG Baseitems adds placeable furniture, storage, workstations, decorations, powe
 | [Coffee system](coffee-machine.md) | Grinds beans and brews coffee or espresso. |
 | [Smoker](smoker.md) | Dries meat and fish with wooden-stick fuel. |
 | [Solar Panel](solar-panel.md) | Powers devices by day and uses an attached truck battery at night. |
+| [Fridges](fridges.md) | Cool supported food and drink to 4 °C while closed and powered. |
 
 ## More interactive systems
 
@@ -33,7 +34,7 @@ RaG Baseitems adds placeable furniture, storage, workstations, decorations, powe
 
 ## Content categories
 
-The source also includes cabinets, drawers, chests, lockers, safes, fridges, wooden shelves, gun walls, medical storage, shelters, greenhouses, garden objects, plants, wall pictures, summer items, Christmas items, and static building props.
+The source also includes cabinets, drawers, chests, lockers, safes, wooden shelves, gun walls, medical storage, shelters, greenhouses, garden objects, plants, wall pictures, summer items, Christmas items, and static building props.
 
 Most large objects are deployed from a `_kit` classname. Workbench outputs and small placeable objects may use their final classname directly. See [Key classnames](key-classnames.md) before editing `types.xml` or trader files.
 

@@ -26,6 +26,9 @@ Spawn or sell the `_kit` for large placeable objects. Use the final classname on
 
 ```text
 rag_baseitems_solarpanel_kit
+rag_baseitems_fridge_twodoor_old_kit
+rag_baseitems_jd_fridge_kit
+rag_baseitems_retro_fridge_kit
 rag_baseitems_magpump_kit
 rag_baseitems_beer_barrel_kit
 rag_baseitems_beer_hop
