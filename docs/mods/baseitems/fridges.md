@@ -5,7 +5,7 @@ RaG Baseitems provides three powered fridges. They keep food and drinks cold and
 ## How to use a fridge
 
 1. Deploy the fridge from its kit.
-2. Connect its 15 m power cord to a power source.
+2. Connect it to a power source.
 3. Store supported food or drinks inside.
 4. Close the doors to start cooling.
 
