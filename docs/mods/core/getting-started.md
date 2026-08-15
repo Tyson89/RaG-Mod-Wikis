@@ -77,8 +77,8 @@ Install and enable RaG Core and the consuming addon on the server and clients. D
 
 | Script layer | Main integration points |
 | --- | --- |
-| `3_Game` | `RaGConfigVersioned`, `RaGConfigAPI`, `RaGCoreFS`, `RaG_CoreLogger`, constants, liquid type helpers, notification paths |
-| `4_World` | `LiquidFrameworkRegistry`, `RaGKitBase`, container bases, placement hooks, actions, particle use |
+| `3_Game` | `RaGConfigVersioned`, `RaGConfigAPI`, `RaGCoreFS`, `RaG_CoreLogger`, `RaG_RPCDirection`, `RaG_RPCRanges`, constants, liquid type helpers, notification paths |
+| `4_World` | `RaG_RPCService`, `LiquidFrameworkRegistry`, `RaGKitBase`, container bases, placement hooks, actions, particle use |
 | `5_Mission` | `ConnectionManager`, Core manager startup, the `MissionServer.SendModData` extension point |
 
 ## First integration test
@@ -102,4 +102,4 @@ Use a stable, unique prefix for every public identifier your addon owns:
 - custom-liquid classes, groups, and slots
 - RPC enum values
 
-RaG Core does not provide a global registry for third-party names or RPC numbers. Collision avoidance remains the addon author's responsibility.
+RaG Core provides a per-process RPC registry that detects registered range, ID, and name conflicts. It does not allocate globally unique values or reserve them across the wider mod ecosystem. Collision avoidance remains the addon author's responsibility.

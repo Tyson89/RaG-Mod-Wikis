@@ -13,7 +13,7 @@ If you only operate a server, see [Server configuration](server-configuration.md
 | Buffered per-mod logs | Separate channels, levels, rotation, and retention | [Logging API](logging-api.md) |
 | Custom liquids | Drinkable liquids, fuels, coolants, groups, colors, and container rules | [Custom liquids](custom-liquids.md) |
 | Reusable item classes | Deployable kits, openable containers, static objects, and placement hooks | [Item and placement API](item-and-placement-api.md) |
-| One-time client data | Avoid sending the same configuration repeatedly during a connection | [Connection and RPC helpers](connection-and-rpc-helpers.md) |
+| RPC validation and one-time client data | Register RPC metadata, validate receives, and avoid duplicate initial sends | [Connection and RPC helpers](connection-and-rpc-helpers.md) |
 | Shared UI and visual assets | Notification icons and registered particle effects | [Notifications and effects](notifications-and-effects.md) |
 
 ## Compatibility contract
@@ -25,7 +25,7 @@ The following are RaG-internal or reserved and should not be used as third-party
 - `RaG_RPC` numeric IDs
 - `RaG_ActivityLogger` channels
 - `PluginRaG_BBSnap`, unless your addon explicitly integrates with RaG BaseBuilding
-- protected implementation fields in the logger, liquid registry, or connection manager
+- protected implementation fields in the logger, liquid registry, RPC service, or connection manager
 - compile-time sections guarded by another RaG mod's define
 
 Do not copy RaG Core classes into your addon. Declare `RaG_Core` and `RaG_Core_Scripts` as dependencies and compile against the installed mod.
