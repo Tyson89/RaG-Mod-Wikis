@@ -87,10 +87,6 @@ At startup, invalid location entries are removed; blank categories become `Defau
 
 Server log receives one `[ValidationReport]` line with location, category, infected, loot, and capacity counts. `status=INVALID` means no enabled locations or no usable infected loadouts.
 
-## Removed setting
-
-`DeleteHordeOnDespawn` is no longer part of schema and has no effect. Remove it from existing JSON files. Despawn always deletes tracked living infected so global population accounting remains correct.
-
 ## Updating safely
 
 1. Stop server and back up both JSON files.
