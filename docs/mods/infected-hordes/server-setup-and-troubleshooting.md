@@ -33,6 +33,17 @@ Keep one enabled location near test player. Confirm spawn notification, gradual 
 
 For performance testing, source repository defines 100, 250, and 500 infected presets. Do not begin at 500 on production hardware. Establish baseline first.
 
+## Optional integrations
+
+No integration below is required. When installed, current source detects:
+
+- TraderPlus, Trader, and DayZ Expansion Market safe zones: protected players do not activate proximity-based hordes;
+- Basic Territories: territory members do not activate proximity-based hordes while inside their territory area;
+- vanilla permanent and dynamic contaminated areas: overlapping horde locations are excluded, and overlapping dynamic events are cancelled over active hordes;
+- RaG Dragons: overlapping active dragon and horde locations are excluded.
+
+These checks have no JSON toggles. `SpawnOnlyNearPlayers=false` bypasses protected-player activation filtering, but contaminated-area and dragon overlap checks still apply.
+
 ## Troubleshooting
 
 | Symptom | Check |
@@ -41,7 +52,8 @@ For performance testing, source repository defines 100, 250, and 500 infected pr
 | JSON files not generated | Confirm active server profile, write permission, both mods loaded, and no earlier startup error. Expected folder is `RaG_Core/Configs/RaG_InfectedHorde/`. |
 | No horde at server startup | Expected. First attempt waits `SpawnTime` minutes. |
 | Attempts run but no horde forms | Check `ActiveHordeMax`, player count, `SpawnChancePercent`, global capacity, enabled locations, proximity, and `[ValidationReport]`. |
-| `No free spawn location` | Every location disabled, occupied, too far from players, or absent. On another map, replace Chernarus defaults. |
+| `No free spawn location` | Every location disabled, occupied, too far from eligible players, overlapping contaminated/dragon event, or absent. On another map, replace Chernarus defaults. |
+| Log says `No eligible players outside protected areas` | Every living player is in supported safe zone or their Basic Territories area. Move eligible player outside, or disable proximity spawning deliberately. |
 | Horde stops forming | Check FPS pause log, global population cap, and repeated spawn failures. |
 | `No valid spawn position` repeats | Location lacks usable navmesh/open space, area too small, players too close, or candidates remain visible. Move center or increase area. Ten consecutive failures despawn horde. |
 | Custom infected disappears from JSON | Class missing or does not inherit `ZombieBase`/`DayZInfected`. Load provider mod on both sides and verify exact class name. |
@@ -50,7 +62,8 @@ For performance testing, source repository defines 100, 250, and 500 infected pr
 | Same location never returns | `ReleaseHordeLocations` is `false`; set `true` or restart server. |
 | Bodies vanish during fight | Active horde retains at most 25 tracked corpses. This cap is not configurable. |
 | Hordes are smaller/fewer than configured | `HordeActiveInfectedMax` caps reserved total. Raise carefully and watch server FPS. |
-| Hordes spawn with unexpected theme | Location category missing/misspelled or lacks matching loadout, so validator changed it to `Default`. |
+| Hordes spawn with unexpected theme | Location category missing/misspelled or lacks matching loadout, so validator changed it to `Default`. Current medical category is `Medical`, not old `FirstResponder`. |
+| Dynamic contaminated event disappears | Expected when its 120-meter event circle overlaps active horde area. Check `[ContaminatedArea_Dynamic]` debug line. |
 
 ## Useful log lines
 
@@ -62,6 +75,7 @@ Search server logs for:
 [CanRunForFPS]
 [SpawnOneInfected]
 [SpawnFailureSummary]
+[ContaminatedArea_Dynamic]
 ```
 
 Startup report should show `status=OK`. For support, include main and loadout JSON, report line, exact map, active mod set, connected player count, server FPS, and relevant error block.

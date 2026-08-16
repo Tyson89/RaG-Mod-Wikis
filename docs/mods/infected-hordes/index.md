@@ -16,9 +16,10 @@ RaG Infected Hordes creates configurable infected attacks at named map locations
 - Automatic spawn attempts run every 25 minutes by default; first attempt is not immediate.
 - Each attempt has 50% success chance before location and capacity checks.
 - Default horde size is 100-200 infected, with at most five tracked hordes and 500 reserved infected globally.
-- By default, at least two players must be online and a player must be within 1,000 meters of a free location.
+- By default, at least two players must be online and an eligible player outside supported safe zones and their Basic Territories area must be within 1,000 meters of a free location.
 - Infected form gradually, one every 250 milliseconds, and spawning pauses when server FPS falls below 25.
-- Spawn points use navmesh and collision checks, stay at least 50 meters from players, and avoid player line of sight within 200 meters.
+- Spawn points use navmesh and collision checks, stay at least 20 meters from players, and avoid player line of sight within 200 meters.
+- Horde locations cannot overlap registered contaminated areas or active RaG Dragons locations.
 - Horde lifetime begins only after its full target population forms.
 - Location category selects a themed infected and loot loadout.
 - Active hordes keep at most 25 tracked corpses; excess corpses are deleted in small batches.

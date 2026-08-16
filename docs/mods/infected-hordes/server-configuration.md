@@ -6,7 +6,7 @@ Main configuration path:
 $profile:\RaG_Core\Configs\RaG_InfectedHorde\RaG_InfectedHorde.json
 ```
 
-Stop server before editing. Keep valid JSON and retain `Version`. Restart after changes. First start generates complete Chernarus location list.
+Stop server before editing. Keep valid JSON and retain `Version`. Restart after changes. First start generates current 104-location Chernarus list.
 
 ## Current schema example
 
@@ -27,7 +27,7 @@ Example below uses shortened location list. Generated file contains full default
   "SpawnOnlyNearPlayers": true,
   "MinimumPlayersOnline": 2,
   "PlayerActivationRadius": 1000,
-  "MinimumPlayerSpawnDistance": 50,
+  "MinimumPlayerSpawnDistance": 20,
   "DeleteOnlyAlive": true,
   "ReleaseHordeLocations": true,
   "SendSpawnMessage": true,
@@ -66,10 +66,10 @@ Example below uses shortened location list. Generated file contains full default
 | --- | ---: | --- |
 | `PauseSpawningBelowFPS` | `25` | Pauses infected creation below this measured server FPS. `0` disables FPS gating; negatives become `0`. |
 | `ResumeSpawningAboveFPS` | `30` | Resume threshold. When not greater than active pause threshold, corrected to pause value plus `5`. |
-| `SpawnOnlyNearPlayers` | `true` | Requires enough players online and limits eligible location centers by player distance. |
-| `MinimumPlayersOnline` | `2` | Applied only when proximity spawning is enabled. Values below `1` become `1`. |
-| `PlayerActivationRadius` | `1000` | Meters from location center to living player. `0` makes every enabled location pass distance test. Negative values become `0`. |
-| `MinimumPlayerSpawnDistance` | `50` | Minimum distance between each candidate infected and every living player. `0` disables distance check, not 200-meter line-of-sight check. Negative values become `0`. |
+| `SpawnOnlyNearPlayers` | `true` | Requires enough players online, at least one eligible player outside supported safe zones and their Basic Territories area, and an eligible player within location range. |
+| `MinimumPlayersOnline` | `2` | Applied only when proximity spawning is enabled. Counts all connected players before protected-area filtering. Values below `1` become `1`. |
+| `PlayerActivationRadius` | `1000` | Meters from location center to eligible player. `0` disables range check, but proximity mode still requires at least one eligible player. Negative values become `0`. |
+| `MinimumPlayerSpawnDistance` | `20` | Minimum distance between each candidate infected and every living player. `0` disables distance check, not 200-meter line-of-sight check. Negative values become `0`. |
 
 ## Cleanup and messages
 
@@ -86,6 +86,12 @@ Example below uses shortened location list. Generated file contains full default
 At startup, invalid location entries are removed; blank categories become `Default`; spawn-area sizes below `1` become `1`; categories without matching loadout become `Default`. Corrected file is saved.
 
 Server log receives one `[ValidationReport]` line with location, category, infected, loot, and capacity counts. `status=INVALID` means no enabled locations or no usable infected loadouts.
+
+## Default-data update note
+
+Current source still uses main schema version `3` and loadout schema version `1`, but default location set and category assignments changed. Existing JSON files are not automatically replaced with constructor defaults.
+
+Regenerate both files to adopt current 104-location set and built-in `Medical` category. If preserving custom files, merge changes manually and keep location category names synchronized with loadout categories.
 
 ## Updating safely
 

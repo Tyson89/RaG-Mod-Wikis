@@ -26,13 +26,27 @@ $profile:\RaG_Core\Configs\RaG_InfectedHorde\RaG_InfectedHorde_Loadouts.json
 | `m_Enabled` | `false` preserves entry but excludes it from selection. |
 | `m_Position` | Exactly two numbers: world X and Z. Y is calculated from terrain. Zero position is invalid. |
 
-Most built-in Chernarus locations use `100` meter spawn areas. VMC and Biathlon Arena use `70`; Prison Island uses `50`. Other maps need custom coordinates; default Chernarus list does not adapt automatically.
+Current Chernarus defaults contain 104 locations. Spawn-area distribution is 86 at `100` meters, 10 at `50`, 3 at `60`, 4 at `70`, and Kalinovka at `200`. Other maps need custom coordinates; default Chernarus list does not adapt automatically.
+
+Default category distribution:
+
+| Category | Locations |
+| --- | ---: |
+| `Civilian` | 67 |
+| `Hunting` | 13 |
+| `Military` | 10 |
+| `Medical` | 3 |
+| `Industrial` | 3 |
+| `NBC` | 3 |
+| `Police` | 3 |
+| `Priest` | 1 |
+| `Prisoner` | 1 |
 
 Supported default category names:
 
 ```text
 Military
-FirstResponder
+Medical
 Civilian
 Hunting
 Industrial
@@ -44,6 +58,8 @@ Default
 ```
 
 `Default` does not have its own loadout. It chooses one available loadout category uniformly. Unknown location categories are rewritten to `Default` during validation.
+
+`FirstResponder` is no longer built-in default name; current source uses `Medical`. Existing custom `FirstResponder` entries remain usable only while matching loadout category exists. When migrating, rename location and loadout categories together.
 
 ## Loadout file
 
@@ -99,7 +115,7 @@ Loot is created in infected cargo. Some valid item classes do not fit particular
 | --- | --- | --- |
 | `Civilian` | Broad civilian pool | Canned food and chips |
 | `Military` | Patrol and soldier variants | Rifle/pistol ammunition and bandages |
-| `FirstResponder` | Doctors, paramedics, nurses, patients, firefighter | Medical supplies |
+| `Medical` | Doctors, paramedics, nurses, patients, firefighter | Medical supplies |
 | `Hunting` | Hunter variants | `.308` ammunition and hunting knife |
 | `Industrial` | Mechanics, construction, industrial, offshore, handyman | Tools and duct tape |
 | `Prisoner` | Prisoner | Handcuff keys and lockpick |
