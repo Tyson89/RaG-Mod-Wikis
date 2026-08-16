@@ -26,7 +26,7 @@ $profile:\RaG_Core\Configs\RaG_InfectedHorde\RaG_InfectedHorde_Loadouts.json
 | `m_Enabled` | `false` preserves entry but excludes it from selection. |
 | `m_Position` | Exactly two numbers: world X and Z. Y is calculated from terrain. Zero position is invalid. |
 
-Built-in Chernarus locations use `100` meter spawn areas. Other maps need custom coordinates; default Chernarus list does not adapt automatically.
+Most built-in Chernarus locations use `100` meter spawn areas. VMC and Biathlon Arena use `70`; Prison Island uses `50`. Other maps need custom coordinates; default Chernarus list does not adapt automatically.
 
 Supported default category names:
 

@@ -48,7 +48,7 @@ Default values permit five tracked hordes in theory, but 500 global slots and mi
 - `0`: no timed expiry; horde begins despawn once all its infected are dead.
 - Ten consecutive spawn failures: incomplete horde begins despawn immediately.
 
-On despawn, tracked entities are processed three at a time. `DeleteOnlyAlive` controls whether corpses are also deleted. While horde remains active, tracked corpses above 25 are always deleted in batches.
+On despawn, tracked entities are processed three at a time. Living infected are always deleted. `DeleteOnlyAlive` controls whether corpses are also deleted. While horde remains active, tracked corpses above 25 are always deleted in batches.
 
 `ReleaseHordeLocations` should normally remain enabled. Disabling it keeps used locations occupied until server restart, so each location can be selected only once per session.
 

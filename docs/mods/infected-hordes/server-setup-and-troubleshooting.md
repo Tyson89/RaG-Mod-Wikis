@@ -48,7 +48,7 @@ For performance testing, source repository defines 100, 250, and 500 infected pr
 | Custom loot disappears from JSON | Class missing from supported config roots. Verify exact class and provider mod. |
 | Valid loot never appears | Chance rolls independently and item must fit infected cargo. Check warning logs for creation failure. |
 | Same location never returns | `ReleaseHordeLocations` is `false`; set `true` or restart server. |
-| `DeleteHordeOnDespawn` changes back to `true` | Intentional current validation. `false` breaks tracking and is unsupported. |
+| Old JSON still contains `DeleteHordeOnDespawn` | Remove obsolete key. It is no longer read; living infected are always deleted during despawn. |
 | Bodies vanish during fight | Active horde retains at most 25 tracked corpses. This cap is not configurable. |
 | Hordes are smaller/fewer than configured | `HordeActiveInfectedMax` caps reserved total. Raise carefully and watch server FPS. |
 | Hordes spawn with unexpected theme | Location category missing/misspelled or lacks matching loadout, so validator changed it to `Default`. |

@@ -28,7 +28,6 @@ Example below uses shortened location list. Generated file contains full default
   "MinimumPlayersOnline": 2,
   "PlayerActivationRadius": 1000,
   "MinimumPlayerSpawnDistance": 50,
-  "DeleteHordeOnDespawn": true,
   "DeleteOnlyAlive": true,
   "ReleaseHordeLocations": true,
   "SendSpawnMessage": true,
@@ -76,8 +75,7 @@ Example below uses shortened location list. Generated file contains full default
 
 | Setting | Default | Effect |
 | --- | ---: | --- |
-| `DeleteHordeOnDespawn` | `true` | Must remain `true`. Current validator rewrites `false` to `true` because releasing undeleted infected breaks global tracking. |
-| `DeleteOnlyAlive` | `true` | `true` deletes living infected but leaves corpses during despawn; `false` deletes both. Active-horde corpse cap still applies. |
+| `DeleteOnlyAlive` | `true` | Living infected are always deleted during despawn. `true` leaves corpses; `false` deletes them too. Active-horde corpse cap still applies. |
 | `ReleaseHordeLocations` | `true` | Frees location after despawn. `false` leaves it occupied until restart. |
 | `SendSpawnMessage` | `true` | Sends global notification after first infected forms. |
 | `SendDespawnMessage` | `true` | Sends global notification when horde begins despawn. |
@@ -88,6 +86,10 @@ Example below uses shortened location list. Generated file contains full default
 At startup, invalid location entries are removed; blank categories become `Default`; spawn-area sizes below `1` become `1`; categories without matching loadout become `Default`. Corrected file is saved.
 
 Server log receives one `[ValidationReport]` line with location, category, infected, loot, and capacity counts. `status=INVALID` means no enabled locations or no usable infected loadouts.
+
+## Removed setting
+
+`DeleteHordeOnDespawn` is no longer part of schema and has no effect. Remove it from existing JSON files. Despawn always deletes tracked living infected so global population accounting remains correct.
 
 ## Updating safely
 
