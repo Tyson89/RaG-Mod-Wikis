@@ -87,12 +87,6 @@ At startup, invalid location entries are removed; blank categories become `Defau
 
 Server log receives one `[ValidationReport]` line with location, category, infected, loot, and capacity counts. `status=INVALID` means no enabled locations or no usable infected loadouts.
 
-## Default-data update note
-
-Current source still uses main schema version `3` and loadout schema version `1`, but default location set and category assignments changed. Existing JSON files are not automatically replaced with constructor defaults.
-
-Regenerate both files to adopt current 104-location set and built-in `Medical` category. If preserving custom files, merge changes manually and keep location category names synchronized with loadout categories.
-
 ## Updating safely
 
 1. Stop server and back up both JSON files.

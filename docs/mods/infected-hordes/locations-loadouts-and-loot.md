@@ -59,8 +59,6 @@ Default
 
 `Default` does not have its own loadout. It chooses one available loadout category uniformly. Unknown location categories are rewritten to `Default` during validation.
 
-`FirstResponder` is no longer built-in default name; current source uses `Medical`. Existing custom `FirstResponder` entries remain usable only while matching loadout category exists. When migrating, rename location and loadout categories together.
-
 ## Loadout file
 
 ```json
