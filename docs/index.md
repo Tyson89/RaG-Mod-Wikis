@@ -60,6 +60,14 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open Thunderstruck documentation](mods/thunderstruck/index.md)
 
+-   :material-account-group:{ .lg .middle } **RaG Infected Hordes**
+
+    ---
+
+    Configurable infected attacks with map locations, themed loadouts, loot, population caps, proximity checks, and FPS protection.
+
+    [:octicons-arrow-right-24: Open Infected Hordes documentation](mods/infected-hordes/index.md)
+
 -   :material-halloween:{ .lg .middle } **RaG Halloween**
 
     ---

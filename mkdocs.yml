@@ -142,6 +142,13 @@ nav:
       - Server guides:
           - Setup and troubleshooting: mods/thunderstruck/server-setup-and-troubleshooting.md
           - Server configuration: mods/thunderstruck/server-configuration.md
+  - RaG Infected Hordes:
+      - Overview: mods/infected-hordes/index.md
+      - Horde lifecycle and performance: mods/infected-hordes/gameplay-and-lifecycle.md
+      - Server guides:
+          - Setup and troubleshooting: mods/infected-hordes/server-setup-and-troubleshooting.md
+          - Server configuration: mods/infected-hordes/server-configuration.md
+          - Locations, loadouts, and loot: mods/infected-hordes/locations-loadouts-and-loot.md
   - RaG Halloween:
       - Overview: mods/halloween/index.md
       - Gameplay and encounters: mods/halloween/gameplay-and-encounters.md

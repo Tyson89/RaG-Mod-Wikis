@@ -45,6 +45,7 @@ Do not copy RaG Core classes into your addon. Declare `RaG_Core` and `RaG_Core_S
 - [RaG Immersive Vehicles](../immersive-vehicles/index.md)
 - [RaG Dragons](../dragons/index.md)
 - [RaG Thunderstruck](../thunderstruck/index.md)
+- [RaG Infected Hordes](../infected-hordes/index.md)
 
 !!! warning "No monetization, repacking, or reuploading"
     RaG Core may be used on an approved monetized server, but the mod itself may not be monetized, repacked, or reuploaded. Use the original Workshop release.
