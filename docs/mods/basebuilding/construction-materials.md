@@ -47,4 +47,10 @@ These are the version 2 `PartCosts` values in the supplied server configuration.
 
 Repairing consumes a reduced percentage of the relevant stage cost, with a minimum of one unit for each material that stage normally uses. Dismantling a normal construction stage refunds its full configured cost as stacks on the ground. Destroying a stage does not use this refund path. The separate floor-hatch ladder uses a custom dismantle action and does not refund its materials.
 
+## Zero-cost stages
+
+Set all four material values for a stage to `0.0` to make that stage material-free. Current source permits building and repairing it without nails, planks, logs, or metal sheets attached. Building still requires an allowed tool, prerequisite stages, no conflicting stage, and the configured action time. Dismantling such a stage produces no material refund.
+
+Mixed costs also work: every material set to `0.0` is ignored, while each positive value still requires the matching attachment and quantity.
+
 See [Server configuration](server-configuration.md) for the complete JSON file and explanations of every setting.

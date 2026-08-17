@@ -2,7 +2,7 @@
 
 ## Dependency
 
-RaG Core is a hard dependency declared by `RaG_BaseBuilding`. Install and enable both mods on the server and clients. DayZ resolves addon/PBO ordering from declared dependencies, not the server mod-list sequence. Missing or outdated RaG Core scripts can prevent configuration, logging, or placement systems from loading.
+RaG Core is a hard dependency declared by `RaG_BaseBuilding`. Install matching current releases of both mods on the server and clients. DayZ resolves addon/PBO ordering from declared dependencies, not the server mod-list sequence. Current BaseBuilding uses RaG Core for configuration sync and validated book RPCs; missing, outdated, or mismatched Core scripts can prevent configuration, book crafting, logging, or placement systems from loading.
 
 ## Generated configuration
 
@@ -52,7 +52,9 @@ Cycle snap points with **Right Arrow**, adjust height with **Page Up/Page Down**
 
 ### A part will not build
 
-Confirm the player has a class from `BaseBuildTools`, the exact materials for that stage, no conflicting stage, and all prerequisite stages.
+Confirm the player has a class from `BaseBuildTools`, the exact positive-cost materials for that stage, no conflicting stage, and all prerequisite stages. A stage with all four material costs at `0.0` needs no material attachments.
+
+If the action is missing immediately after connection, allow configuration synchronization to finish. If it stays missing, verify server and client run matching current releases of RaG Core and RaG BaseBuilding, then inspect RaG Core logs for rejected or failed configuration RPCs.
 
 ### A part will not dismantle
 

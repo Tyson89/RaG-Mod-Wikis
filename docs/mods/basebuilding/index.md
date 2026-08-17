@@ -4,6 +4,15 @@ RaG BaseBuilding adds a modular construction system to DayZ: 21 craftable kits, 
 
 RaG Core is a hard dependency. Install and enable both mods on the server and every client. Declared addon dependencies control PBO ordering.
 
+## Latest source changes
+
+Current documentation tracks source revision `176cc2a` from 18 August 2026.
+
+- A construction stage can now have all four `PartCosts` material values set to `0.0`. Building and repairing that stage then require no material attachments.
+- Multiplayer clients wait for the server's BaseBuilding configuration before evaluating construction material requirements. This prevents client-side source defaults from briefly overriding server costs after connection.
+- BaseBuilding Book selection requests now use RaG Core's validated RPC service. Server and client therefore need matching current releases of RaG Core and RaG BaseBuilding.
+- Non-convex model components were fixed for the angled roof, stairs, both staircase styles, and the style-2 staircase book preview.
+
 ## Player guides
 
 - [Getting started](getting-started.md) - craft, place, and build your first part.
@@ -29,7 +38,7 @@ RaG Core is a hard dependency. Install and enable both mods on the server and ev
 - Optional Christmas lights on supported parts and a portable gas lamp on the ceiling / flat roof.
 - Camouflage nets and barbed wire on model-specific attachment slots.
 - Hide/show actions for supported attachment and storage inventories.
-- Configurable crafting, material costs, action times, tool wear, placement rules, and damage policy.
+- Configurable crafting, material costs including material-free stages, action times, tool wear, placement rules, and damage policy.
 
 
 ## Support the project

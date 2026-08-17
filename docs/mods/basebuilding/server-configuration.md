@@ -477,9 +477,11 @@ Each object in `PartCosts` controls one internal construction stage:
 
 - `Part` is the internal part identifier. Do not rename it.
 - `NAILS`, `PLANKS`, `LOGS`, and `METALSHEETS` are the required material amounts.
-- Use `0.0` when a material is not required.
+- Use `0.0` when a material is not required. Set all four values to `0.0` to make that complete stage material-free.
 
-The supplied values, which currently match the analyzed source defaults for these entries, are summarized on [Construction materials](construction-materials.md). Repair actions consume a reduced percentage through DayZ's repair-material ratio, with a minimum of one unit for every material used by that stage. Dismantling a normal construction stage refunds the full configured stage cost; the separate floor-hatch ladder is an exception and provides no refund.
+Current source checks only positive material requirements. A zero-cost material needs no attachment; a stage with four zero values can be built and repaired without material attachments. Tool, prerequisite, conflict, and action-time rules still apply. Do not use negative values as a shortcut.
+
+The supplied values, which currently match the analyzed source defaults for these entries, are summarized on [Construction materials](construction-materials.md). Repair actions consume a reduced percentage through DayZ's repair-material ratio, with a minimum of one unit for every material used by that stage. Dismantling a normal construction stage refunds the full configured stage cost; a zero-cost stage refunds nothing. The separate floor-hatch ladder is an exception and provides no refund at any cost.
 
 ## Craft toggles
 

@@ -12,6 +12,8 @@
 
 The book is not consumed. Only the configured plank and nail quantities are removed. The crafted kit is created on the ground at the player's position.
 
+Book selection requests are validated server-side through RaG Core's RPC service. Use matching current releases of RaG Core and RaG BaseBuilding on server and clients; an outdated Core can break book selection even when the recipe settings are correct.
+
 ## Why a kit is missing
 
 The preview list is built from the live configuration. A kit is absent when any of these conditions applies:

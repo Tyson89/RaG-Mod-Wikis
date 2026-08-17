@@ -30,11 +30,13 @@ Snapping starts enabled. The snapping system skips occupied connection points. I
 ## Build the structure
 
 1. Place the kit.
-2. Attach the materials requested by the available construction stage: wooden logs, wooden planks, nails, or metal sheets.
+2. Attach the materials requested by the available construction stage: wooden logs, wooden planks, nails, or metal sheets. No attachment is needed for a material whose configured stage cost is `0.0`; a stage with all four costs at `0.0` is material-free.
 3. Hold a tool allowed by `BaseBuildTools` and run the build action.
 4. Repeat for every required or optional stage.
 
 The shipped source defaults allow `Hatchet` and `Hammer` for building. Your server's JSON may override that list.
+
+In multiplayer, construction material checks stay unavailable until the client receives the server's BaseBuilding configuration. This prevents the client from using source-default costs while configuration synchronization is still pending.
 
 The floor hatch has two access choices after its frame is built: construct its staircase stage or use a Hammer to build the separate hatch ladder. Those choices conflict, so dismantle one before building the other. The separate ladder uses the `Ladder` material cost, but its custom dismantle action does not refund materials. The standalone step ladder is different; place its kit directly and use the **Take to hands** action to convert it back into a kit.
 
