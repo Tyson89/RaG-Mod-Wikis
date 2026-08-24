@@ -48,7 +48,7 @@ Overlap checks apply before location selection and do not change JSON. If all en
 
 ## Formation and FPS protection
 
-Hordes form at one infected per 250 milliseconds. Work rotates across active hordes. Every infected receives independently selected class and loot from location loadout.
+Hordes form at one infected per 250 milliseconds. Work rotates across active hordes. Every infected receives a weighted class selection, then independent attachment and cargo-loot rolls from location loadout.
 
 When measured dedicated-server FPS falls below `PauseSpawningBelowFPS`, formation pauses. It resumes only at or above `ResumeSpawningAboveFPS`. Separate pause and resume thresholds prevent rapid toggling near one value.
 

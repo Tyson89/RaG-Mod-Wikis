@@ -1,6 +1,6 @@
 # RaG Infected Hordes
 
-RaG Infected Hordes creates configurable infected attacks at named map locations. Server owners control when hordes form, how many infected they contain, which locations can be selected, which infected classes appear, what loot they carry, and when the horde is removed.
+RaG Infected Hordes creates configurable infected attacks at named map locations. Server owners control when hordes form, how many infected they contain, which locations can be selected, which infected classes appear, which attachments and loot they carry, and when the horde is removed.
 
 [RaG Core](../core/index.md) is a hard dependency. Install and enable both mods on server and clients. Addon dependency declarations control PBO ordering; server `-mod` list order does not.
 
@@ -8,7 +8,7 @@ RaG Infected Hordes creates configurable infected attacks at named map locations
 
 - [Horde lifecycle and performance](gameplay-and-lifecycle.md) explains spawn attempts, player proximity, population limits, formation, FPS protection, corpse cleanup, and despawning.
 - [Server configuration](server-configuration.md) documents `RaG_InfectedHorde.json` and every top-level setting.
-- [Locations, loadouts, and loot](locations-loadouts-and-loot.md) documents both JSON structures, category matching, weighted infected selection, and loot rolls.
+- [Locations, loadouts, attachments, and loot](locations-loadouts-and-loot.md) documents both JSON structures, category matching, weighted infected selection, attachments, and loot rolls.
 - [Server setup and troubleshooting](server-setup-and-troubleshooting.md) covers installation, first start, safe updates, testing, and failure diagnosis.
 
 ## Behavior at a glance
@@ -21,7 +21,7 @@ RaG Infected Hordes creates configurable infected attacks at named map locations
 - Spawn points use navmesh and collision checks, stay at least 20 meters from players, and avoid player line of sight within 200 meters.
 - Horde locations cannot overlap registered contaminated areas or active RaG Dragons locations.
 - Horde lifetime begins only after its full target population forms.
-- Location category selects a themed infected and loot loadout.
+- Location category selects themed infected, attachment, and loot pools.
 - Active hordes keep at most 25 tracked corpses; excess corpses are deleted in small batches.
 
 ## Files

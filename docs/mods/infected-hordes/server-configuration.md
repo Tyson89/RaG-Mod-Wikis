@@ -85,7 +85,7 @@ Example below uses shortened location list. Generated file contains full default
 
 At startup, invalid location entries are removed; blank categories become `Default`; spawn-area sizes below `1` become `1`; categories without matching loadout become `Default`. Corrected file is saved.
 
-Server log receives one `[ValidationReport]` line with location, category, infected, loot, and capacity counts. `status=INVALID` means no enabled locations or no usable infected loadouts.
+Server log receives one `[ValidationReport]` line with location, category, infected, attachment, loot, and capacity counts. `status=INVALID` means no enabled locations or no usable infected loadouts. Attachments are optional and do not determine validation status.
 
 ## Updating safely
 

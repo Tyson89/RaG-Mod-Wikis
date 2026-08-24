@@ -29,7 +29,7 @@ Use staging server. Temporary test values:
 "PlayerActivationRadius": 1000
 ```
 
-Keep one enabled location near test player. Confirm spawn notification, gradual formation, themed infected, cargo loot, lifetime, despawn notification, and cleanup. Restore production values afterward.
+Keep one enabled location near test player. Confirm spawn notification, gradual formation, themed infected, attachments, cargo loot, lifetime, despawn notification, and cleanup. Use temporarily high attachment chances when testing. Restore production values afterward.
 
 For performance testing, source repository defines 100, 250, and 500 infected presets. Do not begin at 500 on production hardware. Establish baseline first.
 
@@ -57,6 +57,8 @@ These checks have no JSON toggles. `SpawnOnlyNearPlayers=false` bypasses protect
 | Horde stops forming | Check FPS pause log, global population cap, and repeated spawn failures. |
 | `No valid spawn position` repeats | Location lacks usable navmesh/open space, area too small, players too close, or candidates remain visible. Move center or increase area. Ten consecutive failures despawn horde. |
 | Custom infected disappears from JSON | Class missing or does not inherit `ZombieBase`/`DayZInfected`. Load provider mod on both sides and verify exact class name. |
+| Custom attachment disappears from JSON | Class missing from supported config roots. Verify exact class and provider mod. |
+| Valid attachment never appears | Chance rolls independently, item must fit infected attachment slot, and earlier successful entry may occupy same slot. Check `GiveLoadoutAttachments` warning. |
 | Custom loot disappears from JSON | Class missing from supported config roots. Verify exact class and provider mod. |
 | Valid loot never appears | Chance rolls independently and item must fit infected cargo. Check warning logs for creation failure. |
 | Same location never returns | `ReleaseHordeLocations` is `false`; set `true` or restart server. |
@@ -75,6 +77,7 @@ Search server logs for:
 [CanRunForFPS]
 [SpawnOneInfected]
 [SpawnFailureSummary]
+[GiveLoadoutAttachments]
 [ContaminatedArea_Dynamic]
 ```
 
