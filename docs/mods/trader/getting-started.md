@@ -39,12 +39,12 @@ Purchase succeeds only when:
 - item can be delivered;
 - every configured purchased attachment can be created.
 
-Normal purchases go to player inventory. If inventory delivery fails, server may place item five metres in front of player when `AllowGroundFallback` is enabled. Listing with `DeliveryMode: "ground"` always uses ground and must be purchased one at a time.
+Normal purchases go to player inventory. If inventory delivery fails, server may place item on surface at player position when `AllowGroundFallback` is enabled. Listing with `DeliveryMode: "ground"` always uses ground and must be purchased one at a time.
 
 Vehicle purchase uses trader's first clear vehicle spawn point. It never goes into inventory. Read [vehicle guide](vehicles-keys-and-storage.md) before buying one.
 
 !!! tip "Make space before expensive purchase"
-    Physical-currency payouts, ATM withdrawals, and inventory delivery need free inventory capacity. Ground fallback helps item purchases only. It does not help currency payouts or withdrawals.
+    Inventory is tried first. With ground fallback enabled, item delivery, change, physical sale payout, and ATM withdrawal can appear at your feet when inventory is full. Secure spawned items immediately.
 
 ## Selling
 
@@ -71,8 +71,16 @@ When enabled, sell payout scales independently for each item by:
 
 Condition and quantity factors multiply. Configured minimum payout percentage then sets floor. See [pricing guide](settings-stock-and-pricing.md).
 
-!!! warning "Vehicles cannot be sold through normal inventory sale"
-    Vehicle classes spawn through vehicle purchase path, but sale collector searches player inventory for `ItemBase`. Cars and boats are not inventory items. Server owners should set vehicle `SellPrice` to `-1`.
+## Selling vehicles
+
+Vehicle listing must have positive `SellPrice`. Sell exactly one by either route:
+
+- packed keyed car: carry assigned key containing that exact stored vehicle; only recorded key owner can sell it;
+- deployed car or boat: park exact class within 6 metres of one configured trader vehicle spawn point, empty crew, switch engine off, then sell at its listing.
+
+Assigned car sale requires recorded key owner. Unassigned car or boat sale requires last player who started engine. Starting engine records driver; next driver who starts it becomes seller. Ruined vehicle or one below listing minimum health is rejected.
+
+Sale deletes whole vehicle and everything inside/attached. Unload cargo, parts, and valuables first. Packed sale also consumes submitted key and stored file. See [vehicle sale details](vehicles-keys-and-storage.md#selling-vehicles).
 
 ## Direct trade versus basket
 
@@ -108,7 +116,8 @@ Approach mapped `RaG_ATM` and use **Use ATM**. Choose enabled physical currency,
 - Withdrawal gives entered amount in notes and debits entered amount plus withdrawal fee.
 - Fees round up to next whole currency unit.
 - **Deposit all** appears only when server allows it.
-- Withdrawal fails if inventory cannot hold payout.
+- ATM shows carried wallet and stored bank balance for selected currency.
+- Withdrawal first tries inventory; with ground fallback enabled, notes that do not fit spawn at player position.
 - Account balance persists across reconnects and restarts.
 
 ## Car keys

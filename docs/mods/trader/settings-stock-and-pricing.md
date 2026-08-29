@@ -44,7 +44,7 @@ Current default:
 | `EnableConditionSellPricing` | `true` | Multiplies sale payout by item health fraction. |
 | `EnableQuantitySellPricing` | `true` | Multiplies payout by ammo, energy, or quantity fraction. |
 | `MinimumSellPricePercent` | `10.0` | Floor after condition/quantity factors, clamped `0`–`100`. Final positive payout still at least 1. |
-| `AllowGroundFallback` | `true` | Failed normal inventory purchase may spawn five metres ahead on ground. |
+| `AllowGroundFallback` | `true` | Failed inventory purchase and physical-currency creation may spawn on surface at player position. Covers change, sale payout, deposit rollback, and ATM withdrawal. |
 | `LockVehicleWheelsOnSpawn` | `false` | Calls slot lock on purchased vehicle wheel attachments. |
 | `RestrictVehicleStorageToOwner` | `true` | Only recorded key owner or admin may pack/deploy. Does not restrict lock/unlock. |
 | `AdminSteamIds` | `[]` | Steam64 IDs bypass storage ownership plus safe-zone weapon/build/explosive/speed rules. |

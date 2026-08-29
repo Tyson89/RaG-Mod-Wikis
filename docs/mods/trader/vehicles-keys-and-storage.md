@@ -1,9 +1,10 @@
 # Vehicles, keys, and storage
 
-RaG Trader has two related systems:
+RaG Trader has three related systems:
 
 1. buying configured cars and boats at trader spawn points;
-2. assigning `RaG_CarKey` to `CarScript` vehicles for locking and portable storage.
+2. selling packed cars or physical cars/boats under ownership rules;
+3. assigning `RaG_CarKey` to `CarScript` vehicles for locking and portable storage.
 
 Vehicle purchase does not assign a key automatically. Key system supports cars derived from `CarScript`, not boats.
 
@@ -18,15 +19,66 @@ Example:
   "ClassName": "OffroadHatchback",
   "AllowDuplicate": false,
   "BuyPrice": 5000,
-  "SellPrice": -1,
+  "SellPrice": 2000,
   "Stock": 2
 }
 ```
 
 Quantity is forced to `1`. Delivery mode and normal ground fallback do not choose vehicle position.
 
-!!! warning "Set vehicle SellPrice to -1"
-    Sale collector searches player inventory for matching `ItemBase`. Cars and boats are world transports, not inventory items. Positive default vehicle sell price is not practically usable.
+Set `SellPrice: -1` only when vehicle must be buy-only. Positive price enables packed/parked sale rules below.
+
+## Selling vehicles
+
+Vehicle sale quantity is always `1`. Server checks packed vehicle keys first, then physical vehicles around configured spawn points. Exact listing class must match.
+
+### Sell packed keyed car
+
+Carry `RaG_CarKey` that is:
+
+- assigned and marked as containing packed vehicle;
+- linked to exact listed class in stored binary;
+- owned by current player identity;
+- not ruined;
+- removable and not blocked by locked inventory.
+
+On successful sale, server consumes submitted key and permanently deletes packed vehicle file. Stored vehicle gets listing's current base/dynamic sell price; its stored condition, fuel, cargo, and parts do not change payout.
+
+Other matching spare keys are not consumed. They no longer have packed vehicle, but remain assigned to sold identity. Remove them from circulation; they do not become blank keys.
+
+!!! warning "Packed sale ownership is strict"
+    `RestrictVehicleStorageToOwner: false` and `AdminSteamIds` affect pack/deploy only. They do not let holder/admin sell another owner's packed vehicle.
+
+### Sell physical car or boat
+
+Park exact class within `6` metres of any `VehicleSpawnPoints` position belonging to current trader. Then meet all conditions:
+
+- no crew in vehicle;
+- engine off;
+- not ruined;
+- global health meets listing `MinimumHealthPercent`;
+- ownership check passes.
+
+Ownership:
+
+- assigned `CarScript`: seller must be player recorded at key assignment;
+- legacy assigned car without stored owner ID: matching owner key in seller inventory is fallback proof;
+- unassigned car or any boat: seller must be last driver recorded when engine started.
+
+Last-driver record changes every time another player starts engine and persists with vehicle. Fresh unassigned vehicle with engine never started has no seller; start it once before sale.
+
+Physical sale payout follows condition pricing from global health when enabled. Quantity pricing has no vehicle effect. Packed sale does not use stored condition pricing.
+
+!!! danger "Unload before selling"
+    Successful physical sale deletes entire vehicle, attachments, and cargo. Server does not require empty inventory—only empty crew. No separate payment exists for fuel, parts, or contents.
+
+### Sale choice and stock
+
+- If player carries eligible matching packed key, packed vehicle is selected before parked vehicle.
+- Finite-stock cap still applies: vehicle sale adds one stock and fails when listing already at cap.
+- Sellable filter detects matching packed key or exact-class transport near spawn, but server owns final authorization.
+- Basket can include vehicle sale, but each vehicle line quantity remains one.
+- Failed payout restores staged packed file/key when rollback succeeds; physical vehicle stays in world until successful commit.
 
 ## Vehicle spawn points
 
@@ -201,7 +253,7 @@ Path:
 $profile:\RaG_Core\Storage\RaG_Trader\Vehicles\<id0>_<id1>_<id2>_<id3>.bin
 ```
 
-Format version currently `2`. Atomic helper may create `.bak` and temporary companion files.
+Format version currently `3`. Version 3 preserves assigned owner identity and last-driver identity needed by sale ownership. Loader accepts storage versions 1 through 3; older packed data loads without new identity fields. Atomic helper may create `.bak`, temporary, and short-lived `.sale` companion files.
 
 Do not rename or hand-edit binary. Filename is key UUID. Losing storage file makes keys report no packed vehicle. Removing a stored mod class can make recursive restore fail.
 
@@ -241,6 +293,7 @@ Current deployment forbids water surfaces and restores `CarScript`; portable sto
 - admins must use exact Steam64 ID.
 - restriction does not prevent another matching-key holder locking/unlocking.
 - restriction does not transfer ownership when spare key given away.
+- restriction/admin bypass does not grant vehicle sale authority.
 
 ## Recovery scenarios
 
@@ -268,4 +321,7 @@ Key state refreshes from file when registered server-side. Reconnect/restart. If
 - Test nested weapons, magazines, fluids, batteries, locks, damage, and cargo after every storage-code update.
 - Never place deployment hologram on roofs/ledges despite 4-metre vertical allowance.
 - Keep spare key outside vehicle. Key locked inside matching car is useless.
+- Unload every vehicle before sale; cargo and parts are deleted unpaid.
+- Decide whether condition-scaled physical sale versus flat packed sale is economically acceptable.
+- Use wide sell-point spacing and signs so players know exact parking target.
 - Do not enable wheel locking until server understands gameplay effect and removal tools.

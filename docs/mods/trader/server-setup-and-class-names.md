@@ -113,7 +113,7 @@ ATM registers as network static object shortly after initialization. Keep it rea
 | --- | ---: | --- |
 | `RaG_ATM` | `2` | Placeable banking terminal. |
 | `RaG_TraderTerminal` | `2` | Generic configured trader target. |
-| `RaG_CarKey` | `2` | Assign, lock/unlock, pack/deploy, and spare-key crafting. |
+| `RaG_CarKey` | `2` | Assign, lock/unlock, pack/deploy, spare-key crafting, and packed-car sale token. |
 | `RaG_Euro_1` | `2` | Physical value-1 Euro note. |
 | `RaG_Euro_2` | `2` | Physical value-2 Euro note. |
 | `RaG_Euro_5` | `2` | Physical value-5 Euro note. |

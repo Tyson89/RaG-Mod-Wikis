@@ -14,7 +14,7 @@ ATM bridges configured physical item currency and persistent account balance.
   "Id": "euro",
   "DisplayName": "Euro",
   "Type": "item",
-  "Denominations": [
+  "CurrencyItems": [
     { "ClassName": "RaG_Euro_1", "Value": 1, "UseQuantity": false },
     { "ClassName": "RaG_Euro_2", "Value": 2, "UseQuantity": false },
     { "ClassName": "RaG_Euro_5", "Value": 5, "UseQuantity": false },
@@ -36,12 +36,15 @@ Each note is one unit because `UseQuantity` is `false`.
 | `Id` | Non-empty and unique. Case-sensitive. |
 | `DisplayName` | UI label. |
 | `Type` | Exactly `"item"` or `"account"`. |
-| `Denominations` | Required array. Item currency must contain entries; account currency may use empty array. |
+| `CurrencyItems` | Required array. Item currency must contain entries; account currency may use empty array. |
 | `ClassName` | Existing class in `CfgVehicles`, `CfgWeapons`, or `CfgMagazines`. Unique inside currency. |
 | `Value` | Positive integer, unique inside currency. |
 | `UseQuantity` | `false`: each object one denomination unit. `true`: floored item quantity is number of units. |
 
 Item currency must include denomination with value `1`. Server sorts denominations high-to-low, builds payout greedily, and uses value-1 entry to represent any integer remainder.
+
+!!! warning "Rename old Denominations now"
+    Current schema uses `CurrencyItems`. Old `Denominations` is no longer read. Leaving old field makes item currency load with empty array; strict validation then prevents registry startup.
 
 ### Stack currency
 
@@ -52,7 +55,7 @@ Example using quantity stack where each unit is worth 1:
   "Id": "nails",
   "DisplayName": "Nails",
   "Type": "item",
-  "Denominations": [
+  "CurrencyItems": [
     {
       "ClassName": "Nail",
       "Value": 1,
@@ -75,7 +78,10 @@ Currency item is ignored when:
 - contains cargo;
 - quantity-mode stack has floor quantity `0`.
 
-For purchase, server may take high notes and create exact change. Change and sale payout must fit player inventory. No ground fallback exists for currency creation.
+For purchase, server may take high notes and create exact change. Change, sale payout, deposit rollback, and ATM withdrawal first try player inventory. With `AllowGroundFallback: true`, created currency that does not fit is placed on surface at player position. With fallback disabled, delivery failure rolls transaction back where supported.
+
+!!! tip "Secure ground payouts immediately"
+    Full inventory can turn change, sale proceeds, or ATM withdrawal into world items at player feet. Clear room before large trades and do not transact in crowded or unsafe terrain.
 
 !!! tip "Use compact denomination ladder"
     Too many one-value physical objects create inventory and performance pressure. Provide sensible larger notes while retaining value 1 for exact change.
@@ -93,7 +99,7 @@ Example:
       "Id": "credits",
       "DisplayName": "Credits",
       "Type": "account",
-      "Denominations": []
+      "CurrencyItems": []
     }
   ],
   "Traders": []
@@ -141,6 +147,8 @@ Default:
 | `Currencies[].InitialBalance` | `0` | One-time amount on first initialization, clamped to `0` and max balance. |
 
 ATM exposes only catalog currencies with `Type: "item"` and matching enabled bank entry. Account currencies do not appear because they already are stored balances.
+
+ATM UI shows both carried physical balance and stored bank balance for selected currency. Cycling currency refreshes both values.
 
 ## Fee math
 
@@ -240,7 +248,7 @@ Current limit:
 ## Economy tips
 
 - Keep `EnableTradeLogging` on; bank operations need Info log enabled for detailed audit.
-- Test inventory-full withdrawal rollback.
+- Test inventory-full withdrawal with ground fallback both enabled and disabled.
 - Test overpay/change with every denomination.
 - Avoid denomination classes that players can craft or duplicate cheaply unless intentional.
 - Keep initial balance low; it is permanent economic injection per new player.

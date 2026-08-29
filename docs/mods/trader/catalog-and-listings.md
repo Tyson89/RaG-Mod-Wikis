@@ -28,7 +28,7 @@ Compact example:
       "Id": "euro",
       "DisplayName": "Euro",
       "Type": "item",
-      "Denominations": [
+      "CurrencyItems": [
         { "ClassName": "RaG_Euro_1", "Value": 1, "UseQuantity": false },
         { "ClassName": "RaG_Euro_10", "Value": 10, "UseQuantity": false },
         { "ClassName": "RaG_Euro_100", "Value": 100, "UseQuantity": false }
@@ -202,9 +202,9 @@ Attachment must fit class and available slot. Duplicate attachment class can be 
 }
 ```
 
-Ground item spawns on surface five metres in front of player. Purchase quantity must be `1`. Leave clear, level space around trader and warn players not to face walls, roofs, cliffs, or water.
+Ground item spawns on surface at player position. Purchase quantity must be `1`. Leave clear, level space around trader; avoid roofs, cliffs, water, clutter, and other places where spawned object can overlap or become hard to recover.
 
-Global `AllowGroundFallback` affects failed inventory delivery. It does not change explicit ground listing and does not apply to payout currency or ATM withdrawal.
+Global `AllowGroundFallback` affects failed inventory delivery, physical-currency change and payouts, deposit rollback, and ATM withdrawal. It does not change explicit ground listing.
 
 ## Custom mod items
 
@@ -239,7 +239,7 @@ Use shared stock for global economy. Use separate category files for regional ma
 Current defaults contain all 2,014 public vanilla tradeable classes. Before production:
 
 - remove debug, obsolete, unwanted opened-food, book, and seasonal entries;
-- set cars and boats buy-only;
+- set deliberate car and boat sell prices; vehicle sales are enabled and ownership rules matter;
 - separate rare weapons/ammo into finite-stock categories;
 - prevent easy buy-low/sell-high loops across duplicated classes;
 - verify all third-party classes after mod updates;

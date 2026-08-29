@@ -29,7 +29,7 @@ Current source ships:
 - `RaG_CarKey`, vehicle locking, spare-key crafting, and binary vehicle storage.
 
 !!! warning "Defaults are a starting point, not a balanced economy"
-    Default catalog exposes nearly every public vanilla class and uses broad category-level prices. Serious servers should remove unwanted classes, disable vehicle selling, choose finite stock where scarcity matters, and rebalance buy/sell gaps before launch.
+    Default catalog exposes nearly every public vanilla class and uses broad category-level prices. Serious servers should remove unwanted classes, set deliberate vehicle resale values, choose finite stock where scarcity matters, and rebalance buy/sell gaps before launch.
 
 ## Important design facts
 
@@ -39,6 +39,7 @@ Current source ships:
 - Basket checkout is atomic: all lines complete, or delivered items and reserved stock are rolled back.
 - Physical currency can be found in hands, clothing, containers, attachments, and nested inventory.
 - Purchased vehicles use configured spawn points, not player inventory or ordinary ground fallback.
+- Vehicles can be sold packed through owner key or physically from trader vehicle spawn point, subject to ownership checks.
 - Vehicle purchases do not automatically assign or include a key.
 - Safe zones are optional and independent per location group.
 - Main JSON and category changes require server restart; no runtime reload exists.

@@ -35,19 +35,20 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | Search item missing | Category not referenced, class invalid and skipped, wrong trader profile, filter active, or listing price invalid. |
 | “Catalog changed; refreshing” | Client revision stale, usually reconnect/reload race. Let UI refresh; persistent repeats suggest version mismatch. |
 | Buy price shown but checkout fails “Price unavailable” | Price is `0` or wrong currency. Use positive price or `-1` disable; ensure default currency valid. |
-| No inventory capacity | Make room, use explicit ground delivery, or enable `AllowGroundFallback`. Currency payouts still require room. |
+| No inventory capacity | Make room, use explicit ground delivery, or enable `AllowGroundFallback`. With fallback enabled, created items/currency land at player position. |
 | Item spawns on ground unexpectedly | Inventory delivery failed and global fallback enabled, or listing uses `DeliveryMode: "ground"`. |
 | Purchase vanished after attachment config | One listing attachment failed; whole delivered set rolled back. Verify compatibility and slots. |
 | Cannot sell bag/gun/clothing | Empty all cargo, including cargo nested under attachments; check ruin, lock, health threshold, exact class, and removability. Remove attachments anyway because sold parent deletes them without extra payout. |
 | Sell payout lower than displayed base | Condition and quantity sell pricing enabled. Empty/damaged item pays less. |
-| Cannot sell vehicle | Expected current limitation. Set vehicle `SellPrice: -1`. |
+| Cannot sell packed vehicle | Carry assigned key containing exact listed class. Seller must be recorded key owner; key must not be ruined, locked under parent, or non-removable. Storage-owner setting/admin bypass does not override sale ownership. |
+| Cannot sell parked vehicle | Use exact listed class within 6 metres of configured trader vehicle spawn point; empty crew; engine off; meet minimum health. Assigned car requires key owner. Unassigned car/boat requires last driver who started engine. |
 | Out of stock after restart | `Stock.json` persists finite values. Reset deliberately or configure restock. |
 | Restock never happens | Both restock fields required, stock must be finite positive, global restock enabled, and server uptime must reach interval. |
 | Dynamic price never changes | Listing uses unlimited stock or feature disabled. Only finite stock changes price. |
 | ATM has no currencies | Banking disabled, no enabled matching entry, catalog currency is account type, or registry not ready. |
 | ATM transaction says too far | `InteractionDistance` too small or ATM geometry/action point awkward. |
 | Deposit fails despite visible notes | Notes ruined, contain cargo/attachments, stack quantity floors to zero, fee makes credited amount zero, or max bank balance reached. |
-| Withdrawal fails | Bank lacks amount plus rounded-up fee, payout cannot be represented, or inventory full. |
+| Withdrawal fails | Bank lacks amount plus rounded-up fee, payout cannot be represented, or inventory is full while `AllowGroundFallback` is disabled. |
 | Initial balance not reapplied | Expected. Currency ID already listed in `InitializedCurrencies`. |
 | Vehicle purchase fails | No valid spawn points, collision box blocked, class not valid transport, or all points invalid. |
 | Purchased vehicle missing parts | No exact valid profile, profile contains unknown class, or attachment incompatible/slot occupied. Check Warning/Error logs. |
@@ -76,7 +77,7 @@ Recommended production value:
 Registry errors include:
 
 - unsupported versions;
-- missing/duplicate/invalid currency IDs and denominations;
+- missing/duplicate/invalid currency IDs and `CurrencyItems`;
 - missing value-1 denomination;
 - invalid classes;
 - invalid stock/restock/health/delivery fields;
