@@ -179,6 +179,17 @@ nav:
       - Server guides:
           - Setup, class names, and troubleshooting: mods/viking-pack/server-setup-and-class-names.md
           - Server configuration: mods/viking-pack/server-configuration.md
+  - RaG Trader:
+      - Overview: mods/trader/index.md
+      - Player guide: mods/trader/getting-started.md
+      - Server guides:
+          - Setup and class names: mods/trader/server-setup-and-class-names.md
+          - Catalog, categories, and listings: mods/trader/catalog-and-listings.md
+          - Settings, stock, and pricing: mods/trader/settings-stock-and-pricing.md
+          - Locations and safe zones: mods/trader/locations-and-safezones.md
+          - Banking and currencies: mods/trader/banking-and-currencies.md
+          - Vehicles, keys, and storage: mods/trader/vehicles-keys-and-storage.md
+          - Troubleshooting and recovery: mods/trader/troubleshooting.md
   - RaG Wheel of Fortune:
       - Overview: mods/wheel-of-fortune/index.md
       - Gameplay, prizes, and daily limits: mods/wheel-of-fortune/gameplay-and-prizes.md
