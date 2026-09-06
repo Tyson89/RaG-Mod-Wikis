@@ -110,6 +110,8 @@ Open `08:00` through `19:59` world time.
 
 Open `20:00` through `05:59` world time.
 
+Opening hours and every other `Locations.json` field require a restart; live reload rejects changes to this file. Offer rotations and seasonal months use real UTC instead of world time; see [limits, offers, and demand](limits-offers-and-demand.md).
+
 Closing applies at catalog checkout too. Menu opened just before close can reject transaction afterward.
 
 ## Safe-zone geometry
@@ -120,7 +122,7 @@ Zone uses X/Z radius only:
 (playerX - centerX)^2 + (playerZ - centerZ)^2 <= radius^2
 ```
 
-It is effectively infinite-height cylinder from `-1000` to `+1000` around configured Y. Terrain elevation does not reduce horizontal radius. Radius below `1` is corrected to `1`.
+Trigger extends from `-1000` to `+1000` relative to configured Y; protection queries use horizontal radius. Terrain elevation does not reduce horizontal radius. Radius below `1` is corrected to `1`.
 
 Safe-zone center is independent from trader positions. Put center deliberately around market footprint, not blindly on first trader.
 
@@ -205,7 +207,7 @@ Matching uses inheritance. Excluding broad parent can exempt many subclasses. Us
 
 ## Overlapping zones
 
-Player can be inside several triggers. Preservation is active when any containing zone enables matching feature. Damage/build/fire queries return first active matching zone. Exit protection starts only after player leaves final tracked zone.
+Player can be inside several triggers. Preservation is active when any containing zone enables matching feature. Protection and action queries inspect containing zones for applicable rules. Exit protection starts only after player leaves final tracked zone.
 
 Avoid accidental overlap with conflicting configs. Same behavior becomes hard to explain and border testing gets messy.
 

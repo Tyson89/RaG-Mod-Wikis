@@ -33,7 +33,7 @@ Each note is one unit because `UseQuantity` is `false`.
 
 | Field | Rules |
 | --- | --- |
-| `Id` | Non-empty and unique. Case-sensitive. |
+| `Id` | Non-empty and unique, including case-insensitive duplicate checks. Use stable spelling. |
 | `DisplayName` | UI label. |
 | `Type` | Exactly `"item"` or `"account"`. |
 | `CurrencyItems` | Required array. Item currency must contain entries; account currency may use empty array. |
@@ -43,8 +43,7 @@ Each note is one unit because `UseQuantity` is `false`.
 
 Item currency must include denomination with value `1`. Server sorts denominations high-to-low, builds payout greedily, and uses value-1 entry to represent any integer remainder.
 
-!!! warning "Rename old Denominations now"
-    Current schema uses `CurrencyItems`. Old `Denominations` is no longer read. Leaving old field makes item currency load with empty array; strict validation then prevents registry startup.
+Use the exact `CurrencyItems` field shown above. An item currency with an empty denomination array fails validation.
 
 ### Stack currency
 
@@ -106,7 +105,9 @@ Example:
 }
 ```
 
-Trades debit/credit persistent account directly. No notes, payout capacity, change, or ATM needed.
+Trades debit/credit persistent account directly. No notes, payout capacity, change, or ATM needed. The example shows only currency structure: add actual trader profiles/categories and matching locations for a usable shop.
+
+For account-only operation, use `Banking.json` with `"Enabled": false` and `"Currencies": []`, or keep enabled banking exclusively for separate physical currencies. A default `euro` bank entry referencing a removed catalog currency fails validation.
 
 Current compact listing schema prices only default currency. Several currencies may exist, but listings do not define several independent price pairs.
 
@@ -185,7 +186,7 @@ Each account records initialized currency IDs. First balance access for enabled 
 
 Changing `InitialBalance` later does not re-grant players already marked initialized. This prevents restart farming.
 
-For direct `account` currency, matching enabled banking entry can also provide initial balance even though currency is not shown at ATM. `MaxBankBalance` is enforced by ATM deposit path, not generic account-currency trade credits.
+Enabled `Banking.json` accepts only known catalog currencies of type `item`. Do not add account currency as a bank entry to grant starting credits: validation rejects it. Direct account currency starts at zero unless balance is provided through controlled account administration or a custom integration. `MaxBankBalance` is an ATM deposit limit, not a generic account-trade credit cap.
 
 ## Account persistence
 
@@ -216,10 +217,10 @@ Identity must resolve to numeric platform ID. Files use atomic save and backup r
 2. Back up player JSON and `.bak`.
 3. Edit `Balances` deliberately.
 4. Keep `PlayerId` exact.
-5. Keep or remove `InitializedCurrencies` depending whether initial balance should run again.
+5. Preserve `InitializedCurrencies` unless deliberately administering first-time physical-bank initialization.
 6. Start server and verify account.
 
-Removing initialization marker can reapply configured initial amount. Use only for intentional administration.
+Initialization grants only when no balance entry exists. Removing its marker alone does not replace an existing balance. Keep both records consistent; do not use deletion as routine troubleshooting.
 
 ## ATM placement and distance
 

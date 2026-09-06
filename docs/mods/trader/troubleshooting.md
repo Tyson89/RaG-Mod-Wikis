@@ -25,14 +25,20 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | --- | --- |
 | Server/client reports missing `RaGConfigVersioned`, `RaGConfigAPI`, `RaGAtomicJsonIO`, `RaGIdentityUtility`, `RaG_RPCService`, or notification icons | RaG Core missing, outdated, or mismatched. Install matching RaG Core on server and every client. |
 | No configs generate | Check active server profile, write permissions, RaG Core initialization, and `$profile:\RaG_Core\Configs\RaG_Trader\`. |
-| Registry never becomes ready | Read Error log from first initialization line onward. With `StrictValidation: true`, one bad reference disables entire trader registry. |
+| Registry never becomes ready | Read Error log from first initialization line onward. One blocking validation error prevents registry startup; read `ConfigValidationReport.txt` and logs. |
 | Missing category error | Catalog references unsafe/missing filename. Custom missing category is not bundled; restore file. |
 | Trader not visible | Entry disabled, group disabled, invalid class/transform, registry failed, or spawn failed. |
 | Duplicate trader appears | Map object is farther than 1 metre or class differs from `EntityClassName`, so manager spawns another. Align exact class and position. |
 | Trader visible but no **Trade** action | Client has not received location bindings, object not bound, client/server mismatch, or target is wrong entity. Reconnect after checking registry/entity logs. |
 | Menu opens then purchase says too far | Server uses configured trader position and `InteractionDistance`; stay close and align bound map object with JSON. |
 | Trader closed unexpectedly | Opening hours use accelerated DayZ world hour. Closing hour is exclusive. |
-| Search item missing | Category not referenced, class invalid and skipped, wrong trader profile, filter active, or listing price invalid. |
+| Search item missing | Category not referenced, wrong trader profile, active filter, or inactive/out-of-season offer pool. Invalid classes or prices block config validation. |
+| Player trade limit reached | Check daily and weekly quotas on every same-class listing at that profile; test with non-admin account. Reset uses UTC. |
+| Demand sales disabled | Preserve `Demand.json`; inspect data validation and save failures. Deleting it grants bonuses again. |
+| Sale review expired/changed | Reopen review; items, health, ammo, energy, quantities, prices, or catalog revision changed, or 60 seconds elapsed. |
+| Review misses a held item, worn gear, key, or currency | Expected exclusions. Review accepts eligible cargo objects, not every inventory object. |
+| Reload rejected | Check candidate validation, pending recovery, active transactions, and restart-only location/currency changes. |
+| Trading suspended after interruption | Preserve `Transactions` and related persistence; bring affected players online and follow [journal recovery](administration-and-recovery.md#transaction-journals). |
 | “Catalog changed; refreshing” | Client revision stale, usually reconnect/reload race. Let UI refresh; persistent repeats suggest version mismatch. |
 | Buy price shown but checkout fails “Price unavailable” | Price is `0` or wrong currency. Use positive price or `-1` disable; ensure default currency valid. |
 | No inventory capacity | Make room, use explicit ground delivery, or enable `AllowGroundFallback`. With fallback enabled, created items/currency land at player position. |
@@ -51,10 +57,10 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | Withdrawal fails | Bank lacks amount plus rounded-up fee, payout cannot be represented, or inventory is full while `AllowGroundFallback` is disabled. |
 | Initial balance not reapplied | Expected. Currency ID already listed in `InitializedCurrencies`. |
 | Vehicle purchase fails | No valid spawn points, collision box blocked, class not valid transport, or all points invalid. |
-| Purchased vehicle missing parts | No exact valid profile, profile contains unknown class, or attachment incompatible/slot occupied. Check Warning/Error logs. |
+| Purchased vehicle missing parts | No exact profile, or actual creation failed despite validation. Invalid configured profiles block registry startup/reload. Check report and Warning/Error logs. |
 | Car key will not assign | Key already assigned, car already keyed, key/car ruined, target not `CarScript`, or identity missing. |
 | Lock action missing | Engine running, crew present, car already locked, or key mismatch. |
-| Pack action missing | Car ruined, engine running, moving over threshold, occupied, or key mismatch. |
+| Pack action missing | `EnableVehiclePacking` false, car ruined, engine running, moving over threshold, occupied, or key mismatch. |
 | Pack denied to spare-key holder | Owner restriction uses original assignment owner; possessing spare does not transfer owner. |
 | Deploy action missing | Key does not see stored binary, key unassigned, player swimming/in vehicle, or no packed vehicle. |
 | Deployment blocked | Hologram collision, over 10 metres, over 4 metres vertical, water surface, or unsuitable geometry. |
@@ -64,15 +70,9 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | Custom building/explosive still works | Current hooks cover vanilla deploy/build/arm actions. Third-party actions may bypass without integration. |
 | Admin still damage-protected | Expected. Admin bypass covers fire/build/explosive/speed and storage ownership, not damage protection. |
 
-## Strict validation
+## Configuration validation
 
-Recommended production value:
-
-```json
-{
-  "StrictValidation": true
-}
-```
+Registry publication requires zero blocking errors. Read generated `ConfigValidationReport.txt` and Error/Warning logs; there is no switch for allowing a partially invalid registry.
 
 Registry errors include:
 
@@ -88,7 +88,7 @@ Registry errors include:
 - duplicate group/trader runtime IDs;
 - invalid safe-zone center.
 
-With strict false, registry may become ready while invalid entries are skipped. This can create partial, confusing shop. Use only during migration, never as permanent way to ignore bad config.
+Validation also checks quota ranges, demand rules, offer pools, enabled physical bank currencies, vehicle attachment compatibility, and survivor loadouts. Fix the referenced configuration and validate again. See [administration and recovery](administration-and-recovery.md).
 
 ## Common exact errors
 
@@ -138,9 +138,9 @@ Main configs copy from bundled defaults only when missing.
 4. Start test server with same build to install bundled default.
 5. Stop server.
 6. Merge custom values into fresh schema.
-7. Restart with strict validation and inspect logs.
+7. Restart and require zero blocking validation errors.
 
-For category files, bundled recovery works only for stock filenames shipped by mod. Custom categories need own backup.
+For category files, bundled recovery works only for category filenames bundled with the development build. Custom categories need own backup.
 
 ## Stock recovery
 
@@ -188,7 +188,7 @@ Unsafe actions:
 
 ## Production validation checklist
 
-- strict registry ready with zero errors;
+- registry, stock, and journal ready with zero blocking errors;
 - no unexpected duplicate warnings;
 - every trader binds once;
 - every opening-hour edge tested;

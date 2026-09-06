@@ -12,6 +12,8 @@ Current default:
   "RequestCooldownMilliseconds": 250,
   "StockSaveIntervalMilliseconds": 5000,
   "EnableTradeLogging": true,
+  "EnableEconomyTelemetry": true,
+  "AdminBypassTradeLimits": true,
   "EnableAutomaticRestock": true,
   "EnableDynamicPricing": false,
   "DynamicPriceRangePercent": 25.0,
@@ -20,13 +22,13 @@ Current default:
   "MinimumSellPricePercent": 10.0,
   "AllowGroundFallback": true,
   "LockVehicleWheelsOnSpawn": false,
+  "EnableVehiclePacking": true,
   "RestrictVehicleStorageToOwner": true,
-  "AdminSteamIds": [],
-  "StrictValidation": true,
-  "RunCurrencyRegressionTests": false,
-  "RunTransactionRegressionTests": false
+  "AdminSteamIds": []
 }
 ```
+
+Bundled default enables `AllowGroundFallback`. If omitted from a hand-written settings file, script constructor defaults it to `false`; set it explicitly. Startup normalizes several numeric values below; live reload validates candidate values without that normalization.
 
 ## Settings reference
 
@@ -43,14 +45,14 @@ Current default:
 | `DynamicPriceRangePercent` | `25.0` | Price swing, clamped `0`–`90`. |
 | `EnableConditionSellPricing` | `true` | Multiplies sale payout by item health fraction. |
 | `EnableQuantitySellPricing` | `true` | Multiplies payout by ammo, energy, or quantity fraction. |
-| `MinimumSellPricePercent` | `10.0` | Floor after condition/quantity factors, clamped `0`–`100`. Final positive payout still at least 1. |
+| `MinimumSellPricePercent` | `10.0` | Floor clamped `0`–`100`: per ordinary item, but once per quantity-priced sale line. Final positive payout at least 1. |
 | `AllowGroundFallback` | `true` | Failed inventory purchase and physical-currency creation may spawn on surface at player position. Covers change, sale payout, deposit rollback, and ATM withdrawal. |
 | `LockVehicleWheelsOnSpawn` | `false` | Calls slot lock on purchased vehicle wheel attachments. |
 | `RestrictVehicleStorageToOwner` | `true` | Only recorded key owner or admin may pack/deploy. Does not restrict lock/unlock. |
 | `AdminSteamIds` | `[]` | Steam64 IDs bypass storage ownership plus safe-zone weapon/build/explosive/speed rules. |
-| `StrictValidation` | `true` | Any registry error prevents trader registry becoming ready. |
-| `RunCurrencyRegressionTests` | `false` | Developer diagnostics at server initialization. Keep off in production. |
-| `RunTransactionRegressionTests` | `false` | Developer diagnostics at server initialization. Keep off in production. |
+| `EnableEconomyTelemetry` | `true` | Saves aggregate trade statistics, currency flow, and failures. See [administration](administration-and-recovery.md#economy-telemetry). |
+| `AdminBypassTradeLimits` | `true` | Listed admins bypass daily/weekly quotas. Does not bypass stock, payment, demand availability, or vehicle sale ownership. |
+| `EnableVehiclePacking` | `true` | Allows packing cars. When false, existing packed cars can still deploy. |
 
 ## Transaction limits
 
@@ -60,6 +62,7 @@ Some limits are hardcoded:
 - ground-delivery quantity: `1`;
 - vehicle quantity: `1`;
 - request lock timeout: `30,000` milliseconds;
+- object-work budget per ordinary checkout: `500`, including purchased objects, configured attachments, and consumed required items; sale checks count inventory hierarchies;
 - client basket: `50` distinct lines;
 - server basket: `MaxBasketEntries`, up to `100`.
 
@@ -113,10 +116,10 @@ Runtime loader:
 
 - restores valid main file;
 - falls back to atomic backup when main invalid;
-- drops duplicate/orphan listing IDs;
-- normalizes invalid counts to configured listing stock;
+- rejects malformed or duplicate persisted entries during file validation; valid orphan listing IDs are dropped;
+- normalizes accepted counts outside the current listing range to configured stock; values below `-1` make the persisted file invalid;
 - adds new listings at configured stock;
-- stores unlimited as `-1`.
+- keeps unlimited listings as `-1` in memory; saved entries cover finite listings.
 
 Do not hand-edit while server runs. In-memory map can overwrite changes.
 
@@ -185,11 +188,11 @@ minimum buy = BuyPrice × (1 - R)
 maximum sell = SellPrice × (1 + R)
 ```
 
-Require minimum buy greater than maximum sell, with extra margin for cross-category duplicates.
+Require minimum buy greater than maximum sell, including demand bonus: multiply maximum sell by `1 + DemandBonusPercent / 100`. Include attachment resale, consumed materials, duplicate listings, and rounding in testing. Here `R` is a fraction, so 25% means `0.25`.
 
 ## Condition and quantity sell pricing
 
-For each sold item:
+For ordinary items without quantity pricing:
 
 ```text
 factor = 1
@@ -199,13 +202,15 @@ factor = clamp(factor, MinimumSellPricePercent / 100, 1)
 payout = round(dynamic base sell price × factor), minimum 1
 ```
 
-Example: base sell `200`, 60% health, half-full magazine, minimum 10%:
+For ammo, energy, and quantity-bearing items with quantity pricing enabled, server adds unrounded condition × quantity values across the sale line, then applies one minimum and rounds once. Minimum equals the largest applicable base-price floor within that line. Splitting a stack inside one checkout does not create a separate minimum payout for every fragment.
+
+Example: one magazine, base sell `200`, 60% health, half-full, minimum 10%:
 
 ```text
 200 × 0.60 × 0.50 = 60
 ```
 
-If item were 10% health and 10% full, raw factor `1%`; 10% floor makes payout `20`.
+If magazine were 10% health and 10% full, raw value is `2`; line floor makes payout `20`. Selling three such magazines together gives raw total `6`, then one floor of `20`, not `60`. Three separate checkouts can each apply their own floor; test this when balancing cheap stackable items.
 
 `MinimumHealthPercent` controls whether item can be sold at all. It does not change price formula.
 
@@ -228,7 +233,7 @@ Do not set cooldown too high. UI gives generic “Please wait” message for bus
 Successful buy/sell records:
 
 ```text
-event=trade|result=0|type=buy|player=<id>|location=<group/trader>|trader=<id>|listing=<id>|currency=<id>|quantity=<n>|unitPrice=<n>|totalPrice=<n>|stock=<n>
+BUY | Player: <name> (SteamID: <id>) | Item: <name> (<class>) | Quantity: <n> | Unit price: <n> <currency> | Total: <n> <currency> | Trader: <name> | Location: <group> | Stock: <n> | Listing: <id>
 ```
 
 Path pattern:

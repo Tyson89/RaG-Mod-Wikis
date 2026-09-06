@@ -53,9 +53,10 @@ Compact example:
 | `DefaultCurrencyId` | Currency used to create price for every listing. If blank and exactly one valid currency exists, that currency becomes default. |
 | `Currencies` | Unique currency definitions. See [banking and currencies](banking-and-currencies.md). |
 | `Traders` | Unique trader profiles. Profile does not place entity; `Locations.json` does. |
-| `Traders[].Id` | Exact value referenced by `Locations.json`. Case-sensitive. |
+| `Traders[].Id` | Exact value referenced by `Locations.json`. References resolve after trimming whitespace and comparing case-insensitively; keep spelling consistent. |
 | `Traders[].DisplayName` | Title sent to trader UI. |
 | `Traders[].Categories` | Category filenames without `.json`, in display/load order. |
+| `Traders[].OfferPools` | Optional rotations and seasonal availability. See [limits, offers, and demand](limits-offers-and-demand.md). |
 
 Current listing schema supports one price pair in default currency. Defining several currencies is useful for account systems or banking, but listing does not provide per-currency price array. Only default currency receives listing `BuyPrice` and `SellPrice`.
 
@@ -67,7 +68,7 @@ Path:
 $profile:\RaG_Core\Configs\RaG_Trader\Categories\Tools.json
 ```
 
-Example covering every listing field:
+Complete listing example, with optional policies disabled:
 
 ```json
 {
@@ -78,6 +79,14 @@ Example covering every listing field:
       "AllowDuplicate": false,
       "BuyPrice": 300,
       "SellPrice": 120,
+      "DailyBuyLimit": -1,
+      "WeeklyBuyLimit": -1,
+      "DailySellLimit": -1,
+      "WeeklySellLimit": -1,
+      "DemandQuantity": 0,
+      "DemandBonusPercent": 0,
+      "DemandResetHours": 0,
+      "RequiredItems": [],
       "Stock": 20,
       "RestockAmount": 2,
       "RestockIntervalSeconds": 900,
@@ -110,6 +119,12 @@ Example covering every listing field:
 | `AllowDuplicate` | `false` | Suppresses duplicate-class warning only when `true` on every copy visible at same trader. Does not merge entries. |
 | `BuyPrice` | `-1` | Base player purchase price. Positive enables buying. Use `-1` to disable. |
 | `SellPrice` | `-1` | Base trader payout. Positive enables selling. Use `-1` to disable. |
+| `DailyBuyLimit`, `WeeklyBuyLimit` | `-1` | Per-player purchase object counts per trader profile and class. `-1` unlimited, `0` blocks, positive quota. |
+| `DailySellLimit`, `WeeklySellLimit` | `-1` | Independent sale quotas, same scope and values. |
+| `DemandQuantity` | `0` | Number of sale objects eligible for shared demand bonus per period. |
+| `DemandBonusPercent` | `0` | Bonus `0`–`1000`; enabled demand requires positive value and sell price. |
+| `DemandResetHours` | `0` | UTC reset interval `0`–`8760` hours; `0` never resets automatically. |
+| `RequiredItems` | `[]` | Exact item classes consumed per purchased object, in addition to money. Repeating class requires separate objects. |
 | `Stock` | `-1` | `-1` unlimited; `0` empty; positive value is initial stock and hard maximum. |
 | `RestockAmount` | `0` | Units added each restock interval. Must pair with positive interval and finite positive stock. |
 | `RestockIntervalSeconds` | `0` | Restock interval, allowed `0` through `86400`. Must pair with positive amount. |
@@ -117,9 +132,9 @@ Example covering every listing field:
 | `DeliveryMode` | `"inventory"` | `"inventory"` or `"ground"`. Ground forces quantity `1`. |
 | `SpawnQuantity` | `0` | Positive explicit energy, ammo, or quantity for purchased item. |
 | `SpawnFullQuantity` | `true` | When explicit quantity is `0`, fill energy, magazine ammo, or quantity to maximum. |
-| `Attachments` | `[]` | Exact classes created as attachments on every purchased entity. Any failure aborts delivery. |
+| `Attachments` | `[]` | Classes attached to ordinary purchased items; failure aborts item delivery. Vehicle parts use `VehicleAttachments.json` instead. |
 
-At least one of `BuyPrice` or `SellPrice` must be positive. `0` is not usable price; use `-1` for deliberate disable.
+At least one of `BuyPrice` or `SellPrice` must be positive. Each price must be positive or exactly `-1`. Zero and values below `-1` fail validation. Pure zero-money barter is not supported.
 
 ### Listing IDs
 
@@ -162,6 +177,18 @@ For finite stock, selling increases available stock up to `Stock` hard maximum. 
 
 ## Purchased quantities and attachments
 
+### Required items are purchase costs
+
+`RequiredItems` consumes one matching inventory object for every class occurrence, per purchased object. Money is still required. For `RequiredItems: ["BurlapSack", "BurlapSack", "Rope"]`, quantity two costs four sack objects and two rope objects plus twice `BuyPrice`.
+
+Items must match exact class, be removable and non-ruined, contain no nested cargo, and pass relevant inventory locks. Input quantity is not measured: requiring a stack class consumes an entire matching stack object. There is no requirement-specific minimum health or fullness field. Attachments can be lost with a consumed parent; remove valuables before exchange.
+
+Basket selection reserves distinct existing ingredient objects across lines. One object cannot pay for two requirements, and another purchase in the same basket does not supply an ingredient. Materials are held in escrow and consumed on successful completion; ordinary failures attempt to restore them.
+
+Use dedicated consumable tokens for vouchers, or non-stack resources for material costs. Reusable access passes and pure zero-money barter require custom behavior. See [worked material example](economy-recipes.md#money-plus-consumed-materials).
+
+### Spawned contents
+
 Spawn setup checks item type in this order:
 
 1. Energy Manager item: set energy.
@@ -170,7 +197,7 @@ Spawn setup checks item type in this order:
 
 `SpawnQuantity > 0` wins. Otherwise `SpawnFullQuantity: true` fills maximum. For ordinary non-quantity items, both settings do nothing.
 
-Full magazine with optic and suppressor:
+Rifle with stock, handguard, optic, and suppressor:
 
 ```json
 {
@@ -187,6 +214,8 @@ Full magazine with optic and suppressor:
   ]
 }
 ```
+
+This example does not include a magazine or ammunition. `SpawnFullQuantity` does not load a weapon magazine that was never attached.
 
 Attachment must fit class and available slot. Duplicate attachment class can be repeated when entity has several compatible slots. If one attachment cannot be created, whole item delivery rolls back.
 
@@ -236,12 +265,23 @@ Use shared stock for global economy. Use separate category files for regional ma
 
 ## Recommended catalog cleanup
 
-Current defaults contain all 2,014 public vanilla tradeable classes. Before production:
+Bundled defaults contain 1,803 listings in 45 categories. They are a starting catalog, not a guarantee that every class suits your server. Before production:
 
-- remove debug, obsolete, unwanted opened-food, book, and seasonal entries;
+- remove any unwanted class, opened-food entry, or seasonal item;
 - set deliberate car and boat sell prices; vehicle sales are enabled and ownership rules matter;
 - separate rare weapons/ammo into finite-stock categories;
 - prevent easy buy-low/sell-high loops across duplicated classes;
 - verify all third-party classes after mod updates;
 - keep category files small enough for human review;
 - version-control production config outside live profile.
+
+## Custom scripted possibilities
+
+`RaG_TraderModdingHooks` provides server-side extension points for a companion mod:
+
+- `ValidateTransaction`: reject a trade using a transaction result code, for example when an external progression system denies access.
+- `ModifyUnitPrice`: adjust the calculated unit price; return a usable positive price for an enabled trade.
+- `DeliverPurchase`: optionally handle purchase delivery and return the delivered entities plus a delivery result.
+- `OnTransactionCompleted`: react to completed transaction processing, checking the result before awarding external rewards.
+
+These are scripting hooks, not JSON configuration fields. Reputation gates, quest-linked access, bespoke delivery, and external rewards need an actual integration. A custom delivery handler must cooperate with rollback and persistence; test failures as carefully as successful purchases. Declare the companion addon's dependency on `RaG_Trader` in `CfgPatches.requiredAddons[]` and distribute any client-required scripts to clients.

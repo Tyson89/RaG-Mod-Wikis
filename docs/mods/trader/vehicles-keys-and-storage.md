@@ -121,7 +121,7 @@ After creation:
 - boat fuel filled;
 - wheels optionally locked to parent via `LockVehicleWheelsOnSpawn`.
 
-One attachment creation failure logs warning and skips that attachment; vehicle purchase still completes. This differs from normal listing `Attachments`, where any attachment failure aborts item delivery.
+Registry validation checks the configured vehicle attachment set using temporary objects; an invalid class or slot fit blocks startup or rejects reload. If an attachment still fails during actual vehicle creation, that attachment is logged and skipped while the vehicle purchase can complete. Normal non-vehicle listing delivery instead aborts when its configured attachment creation fails.
 
 Category-listing `Attachments` are not applied to vehicle purchase path. Configure purchased vehicle parts only in `VehicleAttachments.json`.
 
@@ -165,7 +165,7 @@ Rules:
 - Repeat class for repeated slots such as wheels/headlights.
 - Attachment must be compatible with available vehicle slots.
 
-If any class in profile is unknown, entire profile is not registered. Vehicle can still spawn, full health and fluids, but without that profile's attachment set.
+A missing profile means no configured parts are supplied. A present but invalid profile is a blocking configuration error, not an accepted way to request a bare vehicle.
 
 ## Obtaining and assigning key
 
@@ -184,7 +184,7 @@ Requirements:
 - car not ruined;
 - player identity and name available.
 
-Assignment cannot be cleared or moved to another vehicle. Vehicle/key display name changes to include recorded owner and vehicle name.
+An ordinary key cannot clear or move its assignment. Authorized admins can reset the deployed vehicle through the separate admin key described below. Vehicle/key display name changes to include recorded owner and vehicle name.
 
 Purchased vehicle needs separately obtained blank key. Add `RaG_CarKey` to vehicle/tools trader or loot economy.
 
@@ -219,11 +219,11 @@ Combine:
 
 Recipe **Make spare car key** takes about one second, consumes neither, and copies assignment to blank key. Both keys operate same vehicle and reflect stored-vehicle state while registered.
 
-Make spare immediately. Losing every matching key leaves no built-in player recovery flow.
+Make spare immediately. Losing every matching key leaves no ordinary player recovery flow. A deployed car can be reset by an authorized admin; a packed car still requires recovery of its matching key/state.
 
 ## Packing vehicle
 
-Hold matching key, target car, use **Pack vehicle**.
+Hold matching key, target car, use **Pack vehicle**. `EnableVehiclePacking` must be `true`. When disabled, keys still lock/unlock and existing packed cars can still deploy; storage files are not erased.
 
 Car must:
 
@@ -253,7 +253,7 @@ Path:
 $profile:\RaG_Core\Storage\RaG_Trader\Vehicles\<id0>_<id1>_<id2>_<id3>.bin
 ```
 
-Format version currently `3`. Version 3 preserves assigned owner identity and last-driver identity needed by sale ownership. Loader accepts storage versions 1 through 3; older packed data loads without new identity fields. Atomic helper may create `.bak`, temporary, and short-lived `.sale` companion files.
+Format version currently `3`. Stored data includes assigned owner identity and last-driver identity needed by sale ownership. Loader accepts format versions 1 through 3. Atomic storage also uses `.bak`, temporary, sale, and deployment tracking files; back up the whole directory rather than only `.bin` files.
 
 Do not rename or hand-edit binary. Filename is key UUID. Losing storage file makes keys report no packed vehicle. Removing a stored mod class can make recursive restore fail.
 
@@ -273,7 +273,7 @@ Server validates:
 - server hologram collision check passes;
 - loaded vehicle key identity matches held key.
 
-On success, server restores car at requested transform, registers it, deletes storage main/backup, and updates matching keys to not stored.
+On success, server restores car at requested transform, persists deployment tracking, removes packed storage, and updates matching keys to not stored. If a storage commit or cleanup fails, preserve companion files and inspect logs before retrying.
 
 Current deployment forbids water surfaces and restores `CarScript`; portable storage is not boat storage.
 
@@ -296,6 +296,22 @@ Current deployment forbids water surfaces and restores `CarScript`; portable sto
 - restriction/admin bypass does not grant vehicle sale authority.
 
 ## Recovery scenarios
+
+### Admin key for deployed cars
+
+`RaG_CarKey_Admin` is a separate item from ordinary player keys. Server checks the holder's Steam64 ID against `Settings.json` `AdminSteamIds`. Possessing the item alone does not authorize a non-admin.
+
+Authorized admin can lock/unlock an assigned deployed car and use **Reset vehicle key**. Reset clears the vehicle's assignment, owner name/ID, last-driver ID, and lock state. It does not turn old player keys into blank keys. Those keys no longer match the reset vehicle.
+
+For a lost-key deployed car:
+
+1. Confirm the intended vehicle and owner; preserve relevant persistence before intervention.
+2. Hold non-ruined `RaG_CarKey_Admin` as a listed admin and target the deployed car.
+3. Use **Reset vehicle key**.
+4. Have the intended owner assign a fresh ordinary `RaG_CarKey`.
+5. Craft fresh spares and retire old keys. Check lock/unlock and recorded ownership.
+
+Reset is logged with admin ID, vehicle class, and previous key identity. Admin key cannot be assigned as an ordinary key and is not a universal packed-vehicle recovery token. Do not put it in public loot or normal trader listings.
 
 ### Packed vehicle, key lost
 
