@@ -110,7 +110,7 @@ Open `08:00` through `19:59` world time.
 
 Open `20:00` through `05:59` world time.
 
-Opening hours and every other `Locations.json` field require a restart; live reload rejects changes to this file. Offer rotations and seasonal months use real UTC instead of world time; see [limits, offers, and demand](limits-offers-and-demand.md).
+Opening hours and every other `Locations.json` field require a restart; live reload rejects changes to this file. Offer rotations and seasonal months use real UTC instead of world time; see [rotating and seasonal offers](rotating-and-seasonal-offers.md).
 
 Closing applies at catalog checkout too. Menu opened just before close can reject transaction afterward.
 

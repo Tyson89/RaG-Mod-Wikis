@@ -15,19 +15,21 @@ ATM bridges configured physical item currency and persistent account balance.
   "DisplayName": "Euro",
   "Type": "item",
   "CurrencyItems": [
-    { "ClassName": "RaG_Euro_1", "Value": 1, "UseQuantity": false },
-    { "ClassName": "RaG_Euro_2", "Value": 2, "UseQuantity": false },
-    { "ClassName": "RaG_Euro_5", "Value": 5, "UseQuantity": false },
-    { "ClassName": "RaG_Euro_10", "Value": 10, "UseQuantity": false },
-    { "ClassName": "RaG_Euro_20", "Value": 20, "UseQuantity": false },
-    { "ClassName": "RaG_Euro_50", "Value": 50, "UseQuantity": false },
-    { "ClassName": "RaG_Euro_100", "Value": 100, "UseQuantity": false },
-    { "ClassName": "RaG_Euro_200", "Value": 200, "UseQuantity": false }
+    { "ClassName": "RaG_Euro_1", "Value": 1, "UseQuantity": true },
+    { "ClassName": "RaG_Euro_2", "Value": 2, "UseQuantity": true },
+    { "ClassName": "RaG_Euro_5", "Value": 5, "UseQuantity": true },
+    { "ClassName": "RaG_Euro_10", "Value": 10, "UseQuantity": true },
+    { "ClassName": "RaG_Euro_20", "Value": 20, "UseQuantity": true },
+    { "ClassName": "RaG_Euro_50", "Value": 50, "UseQuantity": true },
+    { "ClassName": "RaG_Euro_100", "Value": 100, "UseQuantity": true },
+    { "ClassName": "RaG_Euro_200", "Value": 200, "UseQuantity": true }
   ]
 }
 ```
 
-Each note is one unit because `UseQuantity` is `false`.
+Built-in notes stack up to 500 per object. `UseQuantity: true` makes stack quantity the number of notes: 20 units of `RaG_Euro_50` carry a value of 1000. A stack of 500 value-200 notes carries 100,000. Splitting or combining stacks does not change their total value.
+
+Keep `UseQuantity: true` for the built-in stackable notes. Setting it to false counts an entire stack as one note, regardless of how many notes it contains.
 
 ## Currency validation
 

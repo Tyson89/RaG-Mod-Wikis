@@ -6,12 +6,10 @@
 
 Do not prescribe command-line mod order. DayZ resolves PBO/addon ordering from declared dependencies.
 
-## Private test installation
-
-RaG Trader is not publicly released. Use the development build supplied for authorized private testing; this page does not point to a public release.
+## Installation and first startup
 
 1. Stop server.
-2. Install matching RaG Core and private RaG Trader development builds.
+2. Install matching RaG Core and RaG Trader builds.
 3. If supplied builds are signed, install their supplied signature keys in server `keys` directory.
 4. Enable both mods for server and clients.
 5. Start server once.
@@ -41,16 +39,70 @@ $profile:\RaG_Core\Configs\RaG_Trader\Stock.json
 $profile:\RaG_Core\Configs\RaG_Trader\Transactions\<transaction-id>.json
 $profile:\RaG_Core\Configs\RaG_Trader\Accounts\<Steam64>.json
 $profile:\RaG_Core\Storage\RaG_Trader\Vehicles\<key-id>.bin
-$profile:\RaG_Core\Storage\RaG_Trader\Limits\<Steam64>.json
 $profile:\RaG_Core\Storage\RaG_Trader\History\<Steam64>.json
-$profile:\RaG_Core\Storage\RaG_Trader\Demand.json
 $profile:\RaG_Core\Storage\RaG_Trader\EconomyTelemetry.json
 ```
 
 Installer preserves existing files. Load hooks can normalize values and save the result. New bundled category installs only when referenced filename is missing. Custom missing category cannot be recreated from mod bundle.
 
-!!! danger "Back up before update"
-    Back up full `RaG_Trader` config, accounts, and vehicle-storage directories. Never replace live custom configs blindly with new defaults. Generate fresh defaults in test profile, then merge schema changes.
+!!! tip "Keep a clean reference profile"
+    Generate defaults in an isolated server profile. Keep live custom configurations and complete persistence backups separately. Compare any candidate against that reference before deploying it.
+
+## Build a first custom shop
+
+Use the generated defaults as a working foundation. This exercise adds a small kiosk to an existing location group without replacing currencies or banking.
+
+1. Stop the server and back up both Trader configuration and storage roots.
+2. Save the complete category below as `Categories\Starter_Supplies.json`.
+3. Append the profile object below to the existing `Catalog.json` `Traders` array. Keep existing currencies, default currency, and other profiles.
+4. Duplicate a known working physical trader entry in an enabled location group. Set its `TraderId` to `starter`, its `EntityClassName` to `RaG_TraderTerminal`, and its `Attachments` to `[]`.
+5. Choose a separate clear position measured on your actual map. Copy all three position and orientation components accurately. Keep `VehicleSpawnPoints: []` for this non-vehicle shop.
+6. Restart, read the validation report, and open the terminal. Check both purchases and the earning route with an ordinary player.
+
+Complete category:
+
+```json
+{
+  "DisplayName": "Starter Supplies",
+  "Listings": [
+    {
+      "ClassName": "Rope",
+      "BuyPrice": 100,
+      "SellPrice": 20,
+      "Stock": -1
+    },
+    {
+      "ClassName": "RaG_CarKey",
+      "BuyPrice": 250,
+      "SellPrice": -1,
+      "Stock": -1
+    },
+    {
+      "ClassName": "BearPelt",
+      "BuyPrice": -1,
+      "SellPrice": 800,
+      "Stock": -1,
+      "MinimumHealthPercent": 50.0
+    }
+  ]
+}
+```
+
+Profile object to append:
+
+```json
+{
+  "Id": "starter",
+  "DisplayName": "Starter Supplies",
+  "Categories": ["Starter_Supplies"],
+  "OfferPools": []
+}
+```
+
+These prices illustrate the wiring. Adjust the earning route for your map and starting equipment; bear hunting may be unsuitable for new survivors. Adding another physical entry with the same `TraderId` in one group creates a runtime-ID collision. Use a separate group for another instance of the same profile.
+
+!!! tip "Check three connections"
+    File `Starter_Supplies.json` supplies category `Starter_Supplies`. Catalog profile `starter` references that category. The physical entry's `TraderId` references profile `starter`. Matching a display name does not establish either reference.
 
 ## Trader entity placement
 
@@ -152,13 +204,13 @@ Source ships no `types.xml`. Server owner decides distribution:
 - expose same category at several trader locations for shared stock;
 - duplicate listing into separate category when independent stock pool is wanted.
 
-## Safe update workflow
+## Configuration acceptance workflow
 
 1. Stop server.
 2. Back up configs and runtime state.
-3. Start isolated test profile with new build to generate fresh defaults.
-4. Compare schema and class list.
-5. Merge wanted custom entries into fresh version-1 files.
+3. Start an isolated test profile with the intended build to generate defaults.
+4. Check required fields, class availability, and file references.
+5. Add the intended custom entries to version-1 files.
 6. Require zero blocking validation errors; inspect report and logs.
 7. Check Error and Warning logs.
 8. Test buy, sell, basket rollback, ATM, vehicle, key, restart persistence, and safe-zone borders.

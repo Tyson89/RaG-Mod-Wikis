@@ -13,7 +13,6 @@ Current default:
   "StockSaveIntervalMilliseconds": 5000,
   "EnableTradeLogging": true,
   "EnableEconomyTelemetry": true,
-  "AdminBypassTradeLimits": true,
   "EnableAutomaticRestock": true,
   "EnableDynamicPricing": false,
   "DynamicPriceRangePercent": 25.0,
@@ -44,22 +43,22 @@ Bundled default enables `AllowGroundFallback`. If omitted from a hand-written se
 | `EnableDynamicPricing` | `false` | Changes both buy and base sell price from finite-stock ratio. |
 | `DynamicPriceRangePercent` | `25.0` | Price swing, clamped `0`–`90`. |
 | `EnableConditionSellPricing` | `true` | Multiplies sale payout by item health fraction. |
-| `EnableQuantitySellPricing` | `true` | Multiplies payout by ammo, energy, or quantity fraction. |
-| `MinimumSellPricePercent` | `10.0` | Floor clamped `0`–`100`: per ordinary item, but once per quantity-priced sale line. Final positive payout at least 1. |
+| `EnableQuantitySellPricing` | `true` | Scales ordinary magazine, energy, or quantity-bearing items by fullness. Splittable quantity items always use quantity scaling. Loose ammo uses round counts instead. |
+| `MinimumSellPricePercent` | `10.0` | Condition floor clamped `0`–`100` for items without quantity scaling, loose-ammo rounds, and stored vehicle condition pricing. No floor on quantity-scaled sale lines. |
 | `AllowGroundFallback` | `true` | Failed inventory purchase and physical-currency creation may spawn on surface at player position. Covers change, sale payout, deposit rollback, and ATM withdrawal. |
 | `LockVehicleWheelsOnSpawn` | `false` | Calls slot lock on purchased vehicle wheel attachments. |
 | `RestrictVehicleStorageToOwner` | `true` | Only recorded key owner or admin may pack/deploy. Does not restrict lock/unlock. |
 | `AdminSteamIds` | `[]` | Steam64 IDs bypass storage ownership plus safe-zone weapon/build/explosive/speed rules. |
 | `EnableEconomyTelemetry` | `true` | Saves aggregate trade statistics, currency flow, and failures. See [administration](administration-and-recovery.md#economy-telemetry). |
-| `AdminBypassTradeLimits` | `true` | Listed admins bypass daily/weekly quotas. Does not bypass stock, payment, demand availability, or vehicle sale ownership. |
 | `EnableVehiclePacking` | `true` | Allows packing cars. When false, existing packed cars can still deploy. |
 
 ## Transaction limits
 
 Some limits are hardcoded:
 
-- maximum quantity per transaction line: `100`;
-- ground-delivery quantity: `1`;
+- ordinary quantity per transaction line: `100` objects;
+- loose-ammo quantity per line: `10,000` rounds;
+- ordinary ground-delivery quantity: `1`; loose ammo may deliver several stacks;
 - vehicle quantity: `1`;
 - request lock timeout: `30,000` milliseconds;
 - object-work budget per ordinary checkout: `500`, including purchased objects, configured attachments, and consumed required items; sale checks count inventory hierarchies;
@@ -84,7 +83,7 @@ Each listing has one stock ceiling in category file:
 
 Finite stock transaction:
 
-- buy subtracts quantity;
+- buy subtracts trade quantity: rounds for loose ammo, objects otherwise;
 - sell adds quantity;
 - sell fails if addition exceeds configured cap;
 - transaction reserves stock before delivery/payment;
@@ -100,7 +99,7 @@ Path:
 $profile:\RaG_Core\Configs\RaG_Trader\Stock.json
 ```
 
-Typical file:
+Illustrative file with finite stock and its persisted identity map:
 
 ```json
 {
@@ -108,7 +107,11 @@ Typical file:
   "Entries": [
     { "ListingId": "tools_hatchet", "Stock": 8 },
     { "ListingId": "vehicles_civiliansedan", "Stock": 1 }
-  ]
+  ],
+  "ListingIds": {
+    "tools_hatchet||1": "tools_hatchet",
+    "vehicles_civiliansedan||1": "vehicles_civiliansedan"
+  }
 }
 ```
 
@@ -121,7 +124,7 @@ Runtime loader:
 - adds new listings at configured stock;
 - keeps unlimited listings as `-1` in memory; saved entries cover finite listings.
 
-Do not hand-edit while server runs. In-memory map can overwrite changes.
+Do not hand-edit while server runs. In-memory state can overwrite changes. Preserve `ListingIds` with counts: the identity map reserves assigned IDs for category/class/liquid occurrences, including unlimited listings. It is not a list of stock capacities.
 
 ### Intentional stock reset
 
@@ -161,61 +164,91 @@ Restock adds amount toward configured cap. Timers begin at server initialization
 
 ## Dynamic pricing
 
-Only finite positive-stock listings use it. Unlimited stock keeps base price.
-
-Formula:
+Only listings with finite positive `Stock` use dynamic pricing. Unlimited stock keeps its base price. `DynamicPriceRangePercent` controls the swing around half stock.
 
 ```text
-stockRatio = currentStock / configuredStock
-multiplier = 1 + ((0.5 - stockRatio) * 2 * rangePercent / 100)
-price = round(basePrice * multiplier), minimum 1
+ratio = clamp(stock used for this unit / configured Stock, 0, 1)
+multiplier = 1 + ((0.5 - ratio) × 2 × rangePercent / 100)
+buy unit price = max(1, ceil(BuyPrice × multiplier))
+sell base price = max(1, floor(SellPrice × multiplier))
 ```
 
-With `DynamicPriceRangePercent: 25`:
+A purchase uses stock **before removing each unit**. A sale uses stock **after adding each unit**. Multi-unit totals walk through stock one unit at a time. The first displayed unit price multiplied by quantity is not necessarily the checkout total.
 
-| Current stock | Multiplier | Base 100 becomes |
-| ---: | ---: | ---: |
-| full | `0.75` | `75` |
-| half | `1.00` | `100` |
-| empty | `1.25` | `125` |
+At a 25% range, a full-stock purchase costs 75% of base, a half-stock purchase costs base, and a nearly empty purchase approaches 125%. Empty stock cannot supply a purchase. Selling into an empty shop starts one unit above zero; a sale that fills the shop uses the 75% multiplier.
 
-Both buy and base sell price follow same stock multiplier. Price is calculated from stock before transaction. Successful result sends refreshed stock and refreshed prices to client.
+### Worked multi-item purchase
 
-Strong recommendation: keep buy price comfortably above sell price across full swing. For range `R`, rough anti-arbitrage guard is:
+For `Stock: 10`, `BuyPrice: 100`, range 25%, and current stock 10:
 
 ```text
-minimum buy = BuyPrice × (1 - R)
-maximum sell = SellPrice × (1 + R)
+first object:  stock 10 → ceil(100 × 0.75) = 75
+second object: stock  9 → ceil(100 × 0.80) = 80
+third object:  stock  8 → ceil(100 × 0.85) = 85
+total = 240; remaining stock = 7
 ```
 
-Require minimum buy greater than maximum sell, including demand bonus: multiply maximum sell by `1 + DemandBonusPercent / 100`. Include attachment resale, consumed materials, duplicate listings, and rounding in testing. Here `R` is a fraction, so 25% means `0.25`.
+Buying those three in one line or consecutively follows the same stock steps, provided nothing else changes stock between requests. Loose ammo follows these steps **per round**, even when delivery creates only one stack.
+
+For a sale with `SellPrice: 40` and current stock 7, three pristine non-quantity items use stock 8, 9, and 10: `34 + 32 + 30 = 96`. Condition and quantity deductions apply after each applicable base price.
+
+### Price-gap design
+
+Check all purchase and resale routes, especially independent regional listings. A useful conservative bound is:
+
+```text
+lowest purchase base = BuyPrice × (1 - R)
+highest resale base  = SellPrice × (1 + R)
+```
+
+Here `R` is a fraction: 25% means `0.25`. Keep the lowest purchase price above the highest resale value unless travel-based trade profit is intentional. Include supplied attachments, rounds inside magazines/boxes, crafted outputs, and custom price hooks. The validator's checks do not replace a complete economy audit.
 
 ## Condition and quantity sell pricing
 
-For ordinary items without quantity pricing:
+`MinimumHealthPercent` decides whether an item may be sold. A value of 50 accepts an item at exactly 50% global health. Ruined items are rejected regardless of threshold. The global condition switch affects payment, not that eligibility threshold.
+
+### Items without quantity scaling
+
+For an ordinary eligible item without active quantity scaling:
 
 ```text
-factor = 1
-factor *= health fraction                 when enabled
-factor *= ammo/energy/quantity fraction   when enabled
-factor = clamp(factor, MinimumSellPricePercent / 100, 1)
-payout = round(dynamic base sell price × factor), minimum 1
+health factor = health fraction when EnableConditionSellPricing is true, otherwise 1
+factor = clamp(max(health factor, MinimumSellPricePercent / 100), 0, 1)
+payout = max(1, floor(applicable base sell price × factor))
 ```
 
-For ammo, energy, and quantity-bearing items with quantity pricing enabled, server adds unrounded condition × quantity values across the sale line, then applies one minimum and rounds once. Minimum equals the largest applicable base-price floor within that line. Splitting a stack inside one checkout does not create a separate minimum payout for every fragment.
+A Hatchet with base sell 120 and 60% health pays 72 at fixed pricing. With a 10% minimum, a non-ruined 5%-health item pays at the 10% floor if its listing health threshold allows it.
 
-Example: one magazine, base sell `200`, 60% health, half-full, minimum 10%:
+### Magazines, energy, and quantity-bearing items
+
+Quantity scaling uses magazine ammo divided by maximum, electrical energy divided by maximum, or quantity divided by maximum. Magazine ammo takes priority over energy; energy takes priority over ordinary quantity.
+
+It applies when `EnableQuantitySellPricing` is true. A quantity-bearing class with `canBeSplit` also uses it when the setting is false. This prevents splitting a partly filled object into several full-value sales.
 
 ```text
-200 × 0.60 × 0.50 = 60
+raw value per object = applicable base sell price × health factor × fullness
+line payout = floor(sum of raw values)
 ```
 
-If magazine were 10% health and 10% full, raw value is `2`; line floor makes payout `20`. Selling three such magazines together gives raw total `6`, then one floor of `20`, not `60`. Three separate checkouts can each apply their own floor; test this when balancing cheap stackable items.
+There is **no minimum percentage floor** on these quantity-scaled values and no automatic minimum-one payout. A line that rounds to zero cannot complete as a direct sale and is omitted from bulk review. Empty contents contribute zero.
 
-`MinimumHealthPercent` controls whether item can be sold at all. It does not change price formula.
+At fixed base sell 200:
 
-!!! tip "Avoid paying for empty consumables"
-    Quantity scaling should stay enabled for ammo, batteries, food, liquids, and stack items. Otherwise empty and full items pay same.
+- One magazine at 60% health and 50% ammo: `200 × 0.60 × 0.50 = 60`.
+- One magazine at 10% health and 10% ammo: `200 × 0.10 × 0.10 = 2`.
+- Three of the latter together: `floor(2 + 2 + 2) = 6`.
+- Two objects worth 0.6 each in the same line: `floor(1.2) = 1`; separately, each rounds to zero.
+
+Condition scaling can be disabled independently. Fullness still matters when quantity scaling applies. A cheaper partially filled purchase should be compared against its actual resale contents, not a full object's nominal price.
+
+### Loose ammunition and stored cars
+
+Loose ammo is valued by exact rounds sold, not stack fullness. The condition factor and configured condition minimum apply to the source stack; per-round values are summed and rounded down at the end. Unsold rounds remain in their original stack. See [round examples](ammo-liquids-and-purchase-contents.md#loose-ammunition-trades-per-round).
+
+Stored-car pricing reads saved global health. With condition pricing enabled, it applies that fraction and the minimum percentage to the base sell price, then rounds down with a minimum of one. A stored car must independently meet the listing health threshold. See [vehicle sales](vehicles-keys-and-storage.md#selling-vehicles).
+
+!!! tip "Use the sale breakdown"
+    The UI's server quote explains value before deductions, quantity deduction, condition deduction, any applicable minimum adjustment, rounding, and the final amount. Use that total when testing. Stock, inventory, and prices can change before checkout, so a quote is not a reservation.
 
 ## Request locking and cooldown
 
@@ -230,11 +263,7 @@ Do not set cooldown too high. UI gives generic “Please wait” message for bus
 
 ## Trade logging
 
-Successful buy/sell records:
-
-```text
-BUY | Player: <name> (SteamID: <id>) | Item: <name> (<class>) | Quantity: <n> | Unit price: <n> <currency> | Total: <n> <currency> | Trader: <name> | Location: <group> | Stock: <n> | Listing: <id>
-```
+Successful buy/sell records include player name and Steam64 ID, bought/sold direction, item name/class, trade quantity, currency, total and unit price, trader/location, remaining stock, and listing ID. Loose-ammo quantity is rounds. Multi-unit dynamic totals need not equal the first unit price multiplied by quantity.
 
 Path pattern:
 

@@ -42,7 +42,7 @@ Carry `RaG_CarKey` that is:
 - not ruined;
 - removable and not blocked by locked inventory.
 
-On successful sale, server consumes submitted key and permanently deletes packed vehicle file. Stored vehicle gets listing's current base/dynamic sell price; its stored condition, fuel, cargo, and parts do not change payout.
+On successful sale, server consumes submitted key and permanently deletes packed vehicle file. Stored vehicle uses the listing's base/dynamic sell price and its saved global health fraction when condition pricing is enabled. It must meet `MinimumHealthPercent` and cannot be ruined. Fuel, cargo, and individual parts receive no separate payment.
 
 Other matching spare keys are not consumed. They no longer have packed vehicle, but remain assigned to sold identity. Remove them from circulation; they do not become blank keys.
 
@@ -62,12 +62,12 @@ Park exact class within `6` metres of any `VehicleSpawnPoints` position belongin
 Ownership:
 
 - assigned `CarScript`: seller must be player recorded at key assignment;
-- legacy assigned car without stored owner ID: matching owner key in seller inventory is fallback proof;
+- assigned car whose saved data has no owner ID: matching owner key in seller inventory is fallback proof;
 - unassigned car or any boat: seller must be last driver recorded when engine started.
 
 Last-driver record changes every time another player starts engine and persists with vehicle. Fresh unassigned vehicle with engine never started has no seller; start it once before sale.
 
-Physical sale payout follows condition pricing from global health when enabled. Quantity pricing has no vehicle effect. Packed sale does not use stored condition pricing.
+Physical sale payout follows condition pricing from global health when enabled. Quantity pricing has no vehicle effect. Packed sale applies the same condition setting to saved global health. Packing is not a repair or a route to full-condition resale.
 
 !!! danger "Unload before selling"
     Successful physical sale deletes entire vehicle, attachments, and cargo. Server does not require empty inventory—only empty crew. No separate payment exists for fuel, parts, or contents.
@@ -121,7 +121,7 @@ After creation:
 - boat fuel filled;
 - wheels optionally locked to parent via `LockVehicleWheelsOnSpawn`.
 
-Registry validation checks the configured vehicle attachment set using temporary objects; an invalid class or slot fit blocks startup or rejects reload. If an attachment still fails during actual vehicle creation, that attachment is logged and skipped while the vehicle purchase can complete. Normal non-vehicle listing delivery instead aborts when its configured attachment creation fails.
+Registry validation checks the configured vehicle attachment set using temporary objects; an invalid class or slot fit blocks startup or rejects reload. If a required attachment fails during actual vehicle creation, vehicle configuration fails, the spawned vehicle is deleted, and the purchase rolls back. Ordinary listing attachment failures also abort delivery.
 
 Category-listing `Attachments` are not applied to vehicle purchase path. Configure purchased vehicle parts only in `VehicleAttachments.json`.
 
@@ -234,7 +234,7 @@ Car must:
 - have no crew;
 - not already be packed under same key ID.
 
-When `RestrictVehicleStorageToOwner: true`, only recorded key owner or Steam64 admin can pack. Owner uses stable identity ID recorded at assignment. Older key data without ID falls back to player-name match.
+When `RestrictVehicleStorageToOwner: true`, only recorded key owner or Steam64 admin can pack. Owner uses stable identity ID recorded at assignment. Key data without an owner ID falls back to player-name match.
 
 Pack process:
 
@@ -253,7 +253,7 @@ Path:
 $profile:\RaG_Core\Storage\RaG_Trader\Vehicles\<id0>_<id1>_<id2>_<id3>.bin
 ```
 
-Format version currently `3`. Stored data includes assigned owner identity and last-driver identity needed by sale ownership. Loader accepts format versions 1 through 3. Atomic storage also uses `.bak`, temporary, sale, and deployment tracking files; back up the whole directory rather than only `.bin` files.
+Storage format is `4`. Stored data includes assigned owner identity, last-driver identity, and global vehicle health used for sale validation and pricing. Deployment accepts supported formats 1 through 4. If stored data has no sale-health information, selling returns **Deploy and repack this vehicle before selling it**. Deploy, inspect the vehicle, and pack it again to write the required health record. Atomic storage also uses `.bak`, temporary, sale, and deployment tracking files; back up the whole directory rather than only `.bin` files.
 
 Do not rename or hand-edit binary. Filename is key UUID. Losing storage file makes keys report no packed vehicle. Removing a stored mod class can make recursive restore fail.
 
@@ -338,6 +338,6 @@ Key state refreshes from file when registered server-side. Reconnect/restart. If
 - Never place deployment hologram on roofs/ledges despite 4-metre vertical allowance.
 - Keep spare key outside vehicle. Key locked inside matching car is useless.
 - Unload every vehicle before sale; cargo and parts are deleted unpaid.
-- Decide whether condition-scaled physical sale versus flat packed sale is economically acceptable.
+- Set vehicle resale values using global health pricing; fuel and separately valuable parts do not receive an extra payout.
 - Use wide sell-point spacing and signs so players know exact parking target.
 - Do not enable wheel locking until server understands gameplay effect and removal tools.

@@ -10,7 +10,7 @@ Trader can also be closed by configured in-game opening hours. Hours use DayZ wo
 
 Trader UI supports:
 
-- category selection;
+- category tabs and optional **Search all categories**;
 - search by display name or exact class name;
 - **All**, **Buyable**, **Sellable**, **In stock**, **Favorites**, and recent-purchase filters;
 - **Sellable only**, which checks current player inventory;
@@ -19,14 +19,16 @@ Trader UI supports:
 - rotatable and zoomable 3D preview;
 - current currency balance, stock, inventory load, prices, and item description.
 
-**In stock** hides only listings at `0`. Unlimited stock displays as **Unlimited**.
+**In stock** hides only listings at `0`. Unlimited stock displays as **Unlimited**. The restock countdown appears for eligible finite listings below capacity; it estimates replenishment and does not reserve the next delivery.
+
+**Search all categories** expands a non-empty search across this trader's categories. With no search text, the selected category still applies. It never searches another trader's catalog.
 
 ### Useful search habits
 
 - Search class fragment when translated display name is unclear.
-- Enable **Sellable only** before clearing loot. It checks basic sale eligibility; an item inside a container can qualify, but an item containing cargo cannot. Server still checks quotas, stock capacity, and ownership.
-- Check quantity before clicking. Normal transaction allows up to 100 objects, but ground-delivered items and vehicles allow exactly one. Attachment/material work and basket limits can reduce practical checkout size.
-- Sell price shown for quantity greater than one is combined preview total for matching inventory items, not a per-item price.
+- Enable **Sellable only** before clearing loot. It checks basic sale eligibility; an item inside a container can qualify, but an item containing cargo cannot. Server still checks stock capacity, liquid contents, and ownership.
+- Check quantity before clicking. Ordinary lines allow up to 100 objects; loose ammo allows up to 10,000 rounds. Ground-delivered ordinary items and vehicles allow exactly one. Attachment/material work and basket limits can reduce practical checkout size.
+- Read **Estimated total** for the selected quantity. The displayed per-item or per-round base price does not include every condition, contents, or stock adjustment.
 
 ## Favorites, recent purchases, and compatibility
 
@@ -36,6 +38,16 @@ Select an item, then enable **Compatible only** to find related catalog entries.
 
 Compatibility uses temporary preview objects. It helps find matching classes; it does not guarantee room in your actual weapon's occupied slots or account for every custom scripted mod restriction. Buy one and test before buying a large set.
 
+## Read the selected offer
+
+Purchase contents show requested objects or rounds, fill per item, required liquid, and included attachments. Do not assume the 3D preview includes a magazine, battery, or accessory in the price.
+
+Loose-ammo quantity counts **rounds**; magazine and ammo-box quantities count **objects**. A loose-ammo sale can remove part of a stack and leave the remainder. Liquid-specific offers supply the named liquid and accept only matching non-empty containers. See [ammunition and liquid examples](ammo-liquids-and-purchase-contents.md).
+
+Buy and sell totals are requested from the server for the selected quantity. Allow the quote to refresh after changing selection, quantity, or inventory. Sale details show value before deductions, quantity and condition adjustments, any applicable minimum, rounding, and the final payout. Dynamic pricing can charge successive units differently, so multiplying the first unit price by quantity can be wrong.
+
+An item marked **Config error** is disabled by server configuration. Reducing quantity or adding money cannot fix it; give its class and trader location to an admin.
+
 ## Buying
 
 Purchase succeeds only when:
@@ -44,13 +56,12 @@ Purchase succeeds only when:
 - trader is open;
 - player remains within interaction distance;
 - enough stock exists and listing is currently available under offer-pool rules;
-- player has remaining daily/weekly allowance;
 - every required material is present and eligible to be consumed;
 - player has enough selected currency;
 - item can be delivered;
 - every configured purchased attachment can be created.
 
-Normal purchases go to player inventory. If inventory delivery fails, server may place item on surface at player position when `AllowGroundFallback` is enabled. Listing with `DeliveryMode: "ground"` always uses ground and must be purchased one at a time.
+Normal purchases go to player inventory. If inventory delivery fails, server may place item on surface at player position when `AllowGroundFallback` is enabled. Listing with `DeliveryMode: "ground"` always uses ground. Ordinary objects must be purchased one at a time; loose ammo can arrive in several stacks.
 
 Vehicle purchase uses trader's first clear vehicle spawn point. It never goes into inventory. Read [vehicle guide](vehicles-keys-and-storage.md) before buying one.
 
@@ -80,7 +91,7 @@ When enabled, sell payout scales independently for each item by:
 - electrical energy fraction; or
 - quantity fraction.
 
-Condition and quantity factors multiply. Configured minimum payout percentage then sets a floor. Quantity-priced objects are aggregated within each sale line before that floor and final rounding; tiny fragments do not each earn a separate floor in the same line. See [pricing guide](settings-stock-and-pricing.md).
+Condition and quantity factors multiply. Quantity-priced objects are summed within their sale line and rounded down once, with no minimum percentage floor. Very small totals can round to zero and cannot be sold alone. Splittable quantity items remain quantity-priced even if the general quantity switch is off. Loose ammo is valued per round, with condition scaling but no stack-fullness penalty. See [pricing guide](settings-stock-and-pricing.md).
 
 ## Selling vehicles
 
@@ -104,20 +115,18 @@ Use **Sell all eligible** for a server-generated preview of bulk cargo sales. Th
 
 Review excludes items in hands, worn/attached items, car keys, vehicles, configured currency classes, and objects with attachments. Cargo objects still need to pass normal ruin, health, nested-cargo, lock, and removability checks. An unattached spare item inside a backpack can be included even if it is valuable to you.
 
-Review selects at most 100 objects per class, 500 objects total, and the configured basket line limit. Stock capacity can further reduce the preview. A truncation notice means it is not all eligible loot. Duplicate classes use the first qualifying listing encountered, not automatically the highest-paying listing.
+Review selects at most 100 objects per class/liquid line, 500 objects total, and the configured basket line limit. Loose-ammo lines also cap at 10,000 rounds and can select part of a stack. Stock capacity can further reduce the preview. A truncation notice means it is not all eligible loot. Duplicate class/liquid combinations use the first qualifying listing encountered, not automatically the highest-paying listing. Avoid overlapping unrestricted and liquid-specific buyback listings; distinct exact-liquid entries make selection clearer.
 
 Object counts differ from contents: two partly loaded magazines are two objects, while measured quantity reports their combined rounds. Energy-bearing items show accumulated charge percentages; stack/quantity items show combined units.
 
-Confirmation rechecks the same item objects, health, quantity, ammunition, energy, eligibility, and total price. Movement out of inventory, use, damage, price changes, expiry, or catalog reload can invalidate review. Request another review instead of assuming the old payout remains reserved. Quotas still apply at confirmation; review does not promise allowance is available.
+Confirmation rechecks the same item objects, health, quantity, ammunition, energy, eligibility, and total price. Movement out of inventory, use, damage, a different liquid type, price changes, expiry, or catalog reload can invalidate review. Request another review instead of assuming the old payout remains reserved. Review does not reserve stock capacity or its quoted price.
 
 !!! tip "Use a smaller selection for selective sales"
-    Bulk review confirms its whole listed set. If a player quota or an unwanted class prevents that sale, cancel, select fewer listings or reduce quantity, then use **Sell**.
+    Bulk review confirms its whole listed set. If a stock limit or an unwanted class prevents that sale, cancel, select fewer listings or reduce quantity, then use **Sell**.
 
-## Required purchase materials and demand
+## Required purchase materials
 
-The selected listing can show required items as well as money. Each required object is consumed per purchased object; increasing quantity multiplies material requirements. A material need not be pristine, but it must be non-ruined, removable, and free of nested cargo and relevant locks. Empty it and remove attached valuables first.
-
-Demand remaining identifies objects still eligible for a shared sale bonus. Other players can use those slots before your checkout. Daily and weekly quotas are separate personal limits. Both are server rules; neither is bypassed by a favorite, recent-purchase filter, or reconnect.
+The selected listing can show required items as well as money. Each required object is consumed per purchased object, or per round for loose ammo; increasing quantity multiplies material requirements. A material need not be pristine, but it must be non-ruined, removable, and free of nested cargo and relevant locks. Empty it and remove attached valuables first.
 
 ## Selection, basket, and checkout
 
@@ -133,7 +142,7 @@ Click a card to select it; Ctrl-click cards to select several. The quantity fiel
 
 One request contains buys or sells, never both, and uses one currency. Adding an existing purchase listing increases its quantity. UI basket holds at most 50 distinct entries; server can impose a lower `MaxBasketEntries` limit.
 
-Each ordinary line allows up to 100 objects. Ground-delivery and vehicle lines require quantity one. The object-work budget can reject a large transaction before the line limit: purchased objects, required ingredients, and configured attachments all contribute. Multi-selection sales cannot include the same class through two different listing IDs.
+Each ordinary line allows up to 100 objects; loose-ammo lines allow up to 10,000 rounds. Ordinary ground-delivery and vehicle lines require quantity one. The object-work budget can reject a large transaction before the line limit: purchased objects, required ingredients, and configured attachments all contribute. Multi-selection sales cannot repeat the same class/liquid combination through different listing IDs. Different exact-liquid variants can use separate lines.
 
 Checkout targets all-or-nothing completion. Server reserves stock and coordinates delivery, payment, ingredients, and sale escrow for the whole request. Failure triggers rollback. An unresolved rollback or interrupted transaction can require administrator recovery; do not keep retrying if recovery errors appear.
 
@@ -142,7 +151,7 @@ Checkout targets all-or-nothing completion. Server reserves stock and coordinate
 
 ## Physical money and change
 
-Default Euro notes are individual items. Trader counts valid notes anywhere in inventory, including hands and nested storage. Ruined notes or notes containing attachments/cargo are not spendable.
+Default Euro notes stack up to 500 per object. Trader counts the number of notes multiplied by denomination value anywhere in inventory, including hands and nested storage. Ruined notes or notes containing attachments/cargo are not spendable.
 
 Server chooses notes, can overpay with smallest suitable note, and creates exact change from configured denominations. Currency needs value-1 denomination so every integer amount can be represented.
 

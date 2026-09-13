@@ -1,6 +1,6 @@
 # Administration, receipts, and recovery
 
-Private test servers need the same persistence discipline as live economies. Back up the entire trader state together with DayZ player/world persistence; isolated file restores can duplicate money or disconnect keys from vehicles.
+Trader economies depend on consistent persistence. Back up the entire trader state together with DayZ player/world persistence; isolated file restores can duplicate money or disconnect keys from vehicles.
 
 ## Validation report
 
@@ -8,14 +8,14 @@ Private test servers need the same persistence discipline as live economies. Bac
 $profile:\RaG_Core\Configs\RaG_Trader\ConfigValidationReport.txt
 ```
 
-Registry validation checks configuration versions, currency definitions, prices, listing classes, limits, demand fields, offer pools, references, transforms, banking entries, vehicle attachments, and survivor loadouts. Attachment checks create temporary objects to test actual fit.
+Registry validation checks configuration versions, currency definitions, prices, listing classes, liquid requirements, ammo resale values, offer pools, references, transforms, banking entries, vehicle attachments, and survivor loadouts. Attachment checks create temporary objects to test actual fit.
 
-Report status is `PASSED`, `WARNINGS`, or `FAILED`. Blocking errors prevent registry publication. Warnings deserve review but do not necessarily block startup. There is no configuration switch to accept a partially invalid registry.
+Report status is `PASSED`, `WARNINGS`, or `FAILED`. Blocking errors prevent registry publication. Warnings deserve review but do not necessarily block startup. Listing-local faults disable the affected listing while valid listings can remain usable. Structural errors in shared configuration block registry publication.
 
 Report groups include missing classes, invalid prices, broken attachments, duplicate entries, unsupported currencies, and general configuration. Read Error/Warning logs too: category-loading failures can occur before report generation, and live-reload restriction details are logged even when the report lacks a dedicated section. Check report timestamp before trusting a previous result.
 
 !!! tip "Fix cause, then validate again"
-    An unknown vehicle part can block the whole registry. Check mod availability and exact class first; then attachment slot compatibility. Changing the trader's position cannot fix a catalog or attachment error.
+    An unknown part in `VehicleAttachments.json` can block the whole registry. Check mod availability and exact class first; then attachment slot compatibility. Changing the trader's position cannot fix a catalog or attachment error.
 
 ## Admin access
 
@@ -23,14 +23,33 @@ Add quoted Steam64 IDs to `Settings.json`:
 
 ```json
 {
-  "AdminSteamIds": ["76561198000000000"],
-  "AdminBypassTradeLimits": true
+  "AdminSteamIds": ["76561198000000000"]
 }
 ```
 
 This is a settings fragment. Keep all other settings. Establish the first admin through a server restart; reload authorization uses the currently active admin list, not the candidate file being loaded.
 
-Trader UI exposes **Reload configs** and **Retry recovery** to listed admins. These requests have a shared server-wide ten-second cooldown. Wait for the result notification before trying another operation.
+Trader UI exposes **Diagnostics**, **Reload configs**, and **Retry recovery** to listed admins. Reload and recovery requests share a server-wide ten-second cooldown. Wait for the result notification before trying another operation.
+
+## Admin Diagnostics
+
+Open **Diagnostics** from the trader menu as a listed admin. This is a read-only inspection panel; opening it does not reload configuration, retry recovery, or alter balances.
+
+The panel shows registry readiness, recovery-journal readiness, disabled-listing count, pending-transaction count, and paged entries. Select an entry to inspect its details; use **Refresh** after a configuration or recovery operation. Pages contain up to 40 entries, and long detail text is truncated, so retain the full logs and report for investigation.
+
+Entries cover pending journal information, active disabled listings and their first error, and issues from the latest validation attempt. A rejected reload can therefore appear alongside the still-active registry. Check readiness and the actual active listing before assuming a candidate was published.
+
+### Resolve a disabled listing
+
+1. Read its class, listing ID, and first configuration error.
+2. Open the corresponding category file. Check exact class, prices, liquid requirement, ingredients, and attachments.
+3. For an ammo resale warning, inspect the relevant box resource and loose-ammo prices across the catalog.
+4. Correct the entry and use **Reload configs** if only reloadable fields were edited.
+5. Refresh Diagnostics, reopen the trader, and test both intended trade directions. Resolving the first error can reveal another problem in the same entry.
+
+Unknown item classes, incompatible listing attachments, and invalid liquid combinations can disable individual listings. Shared currency, location, vehicle-profile, and other structural errors can block the registry. A `WARNINGS` report can therefore describe a working market with unusable items; check disabled counts before accepting it.
+
+If startup fails before the trader UI is usable, diagnose from server files and logs. An in-game panel cannot replace offline repair of a server that never initialized its services.
 
 ## Live configuration reload
 
@@ -38,7 +57,7 @@ Reload reads all five main files plus every referenced category, validates them 
 
 | Config area | Live reload |
 | --- | --- |
-| Listing prices, stock ceilings, restock fields, requirements, limits, demand | Supported. |
+| Listing prices, stock ceilings, restock fields, materials, liquid requirements | Supported. |
 | Category content and trader category references | Supported, with valid existing location references. |
 | Trader display names and offer pools | Supported. |
 | Global settings and admin list | Supported. |
@@ -69,14 +88,14 @@ Reload is blocked while a transaction is active, journal is unavailable, or reco
 - Finite-to-unlimited transition: becomes `-1`.
 - Removed listing: omitted from prepared state.
 
-Existing restock deadlines are retained for matching listings where available; a changed interval may take effect after the pending deadline. New restocking listings start a fresh timer. Stable category/class IDs preserve stock and demand associations.
+Existing restock deadlines are retained for matching listings where available; a changed interval may take effect after the pending deadline. New restocking listings start a fresh timer. Stable category/class IDs preserve stock associations; the persisted identity map distinguishes liquid variants.
 
 !!! tip "Separate price tuning from layout work"
-    Tune prices, quotas, and offers with reload. Schedule a restart for NPC relocation, safe-zone borders, opening hours, or currency restructuring. Editing both groups together makes the reload reject the entire candidate.
+    Tune prices, stock, and offers with reload. Schedule a restart for NPC relocation, safe-zone borders, opening hours, or currency restructuring. Editing both groups together makes the reload reject the entire candidate.
 
 ## Player receipts
 
-**History** displays the player's most recent 50 successful trade receipts, newest first. Select a receipt for details: UTC time, location, currency, buy/sell direction, classes, quantities, prices, and purchase requirements. One basket is one receipt with several lines.
+**History** displays the player's most recent 50 successful trade receipts, newest first. Select a receipt for details: UTC time, location, currency, buy/sell direction, classes, quantities, prices, and purchase requirements. One basket is one receipt with several lines. Ammo receipt quantities count rounds. Use recorded line totals for dynamic-price purchases and condition-adjusted sales; a single displayed unit figure may not describe every unit in the line.
 
 ```text
 $profile:\RaG_Core\Storage\RaG_Trader\History\<Steam64>.json
@@ -101,7 +120,7 @@ Per-day tracking caps are 512 item classes and 32 currencies. Overflow activity 
 ### Useful balancing checks
 
 - Large sale flow with little purchase flow: money accumulates; review sinks and repeatable sale routes.
-- One class dominates sales: inspect its loot availability, crafting inputs, condition/quantity floor, and demand bonus.
+- One class dominates sales: inspect its loot availability, crafting inputs, condition and quantity pricing, and resale price.
 - Repeated stock-limit failures: buyback capacity may be full rather than broken.
 - Repeated delivery failures: test inventory space, payout denominations, vehicle clearance, and attachments.
 - A supposed rare item dominates purchases: check shared stock, restock rate, duplicate routes, and admin test activity.
@@ -145,13 +164,11 @@ Also retain matching DayZ player/world persistence, mod builds, and server confi
 
 | State | Consequence of discarding it |
 | --- | --- |
-| `Stock.json` | Stock reseeds from configured capacities. |
+| `Stock.json` | Stock reseeds from configured capacities; listing identity mappings are lost. |
 | `Accounts` | Bank/account balances and initialization records are lost. |
 | `Transactions` | Interrupted-trade evidence and recovery links are lost. |
 | `Vehicles` | Keys cannot restore missing stored vehicles. |
-| `Limits` | Player quotas can be granted again. |
-| `Demand.json` | Demand bonuses can be granted again. |
 | `History` | Player receipts disappear. |
 | `EconomyTelemetry.json` | Aggregate balancing data disappears. |
 
-Limits and demand intentionally reject an existing invalid main file rather than silently rolling back to an older allowance/bonus state. Restore only after assessing which transactions happened after the backup. Avoid publishing player-state directories with example configuration.
+Restore only after assessing which transactions happened after the backup. A stock or account backup can predate completed trades; restoring it alone can alter supply or balances. Avoid publishing player-state directories with example configuration.

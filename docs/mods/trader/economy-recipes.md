@@ -1,12 +1,25 @@
-# Economy recipes and private testing
+# Economy recipes and testing
 
-Examples below are design starting points, not bundled prices or promises of balance. Add listing objects inside a category's `Listings` array, reference its filename from a trader profile, and bind that profile in `Locations.json`.
+These examples are design starting points, not bundled prices or a promise of balance. Put listing objects inside a category's `Listings` array, reference that filename from a trader profile, and bind the profile in `Locations.json`. Category examples include their wrapper; listing fragments do not replace a whole file.
 
-Keep examples in separate custom categories. This makes it easier to review prices, avoid duplicate classes, and remove an experiment without dismantling the main catalog.
+Start with a few intentional shops. A smaller catalog with clear earning routes is easier to balance than selling every available class.
 
-## Reliable essentials with individual limits
+## Choose an economy pattern
 
-Goal: keep medicine available without one player draining the market.
+| Server design | Useful controls | Main test |
+| --- | --- | --- |
+| Accessible survival supplies | Unlimited buy-only essentials | Players can earn their first purchase without already owning paid gear. |
+| Scarce military equipment | Finite stock, slow restock, rotating offers | Alternative routes do not flood the market. |
+| Hunting or scavenging income | Sell-only categories, health thresholds | Renewable loot and crafting yield acceptable income. |
+| Materials-based progression | Positive money price plus consumed `RequiredItems` | Inputs exist before checkout and are consumed correctly. |
+| Regional trade routes | Separate category identities and prices | Maximum travel profit is intentional. |
+| Fuel and fluid trade | Exact `RequiredLiquidType`, fill settings | Container and contents are valued together. |
+| Portable owner garage | Keys, packing, owner restriction | Spares, ownership, and persistence work. |
+| Cashless trade | Default account currency | New accounts have a reachable earning route. |
+
+## Reliable essentials
+
+Goal: keep medicine continuously purchasable.
 
 Save as `Categories\Clinic.json`:
 
@@ -19,21 +32,19 @@ Save as `Categories\Clinic.json`:
       "BuyPrice": 300,
       "SellPrice": -1,
       "Stock": -1,
-      "DailyBuyLimit": 2,
-      "WeeklyBuyLimit": 8,
       "SpawnFullQuantity": true
     }
   ]
 }
 ```
 
-Add `"Clinic"` to the chosen profile's `Categories`. If that profile already exposes this class through `Medical`, remove the duplicate route or apply the same quotas there. An unrestricted duplicate defeats the intended limit.
+Add `"Clinic"` to the chosen profile's `Categories`. This sells one full medicine object per quantity unit, not one dose. Unlimited stock prevents shared depletion; it does not cap an individual's purchases.
 
-Unlimited stock guarantees shared supply; quotas limit each player. Two purchases mean two medicine objects, not two doses. Sell disabled prevents the same shop paying players for these supplies. Check other traders before assuming resale is impossible.
+Sell disabled prevents this listing buying the medicine back. Check other profiles for cheaper purchase or profitable resale routes. Keep essentials outside offer pools when players need dependable access.
 
 ## Finite emergency reserve
 
-Goal: a small reserve replenishes during uptime.
+Goal: replenish a small communal supply during uptime.
 
 ```json
 {
@@ -42,18 +53,19 @@ Goal: a small reserve replenishes during uptime.
   "SellPrice": 60,
   "Stock": 12,
   "RestockAmount": 2,
-  "RestockIntervalSeconds": 1800,
-  "DailyBuyLimit": 3
+  "RestockIntervalSeconds": 1800
 }
 ```
 
-With automatic restock enabled, up to two objects return every thirty minutes, capped at twelve. Stock persists across restarts. A restart does not grant twelve more. New timers begin at startup, so test this against actual restart cadence.
+With automatic restock enabled, up to two objects return every thirty minutes, capped at twelve. Long-run supply is up to four objects per hour while below capacity. Players can buy the whole reserve; stock is not a personal allowance.
 
-At full stock, the shop cannot buy another Morphine from a player. If always-available buyback matters, use an unlimited sell-only listing at a separate buyback profile; then check its price and quota alongside every purchase route.
+Stock persists across restarts. Restart does not grant twelve more, and restock timers begin again at startup. Choose an interval shorter than normal uninterrupted server uptime.
 
-## Hunting income with shared bonus
+At full stock, another player sale is rejected. For continuous buyback, add a separate unlimited sell-only listing with a deliberate price. Restocking adds goods and consumes buyback capacity; it never empties the shop to create room for sales.
 
-Goal: reward hunting, cap individual income, and give the first deliveries a bonus.
+## Hunting and scavenging income
+
+Goal: make found loot a dependable currency source.
 
 ```json
 {
@@ -61,22 +73,19 @@ Goal: reward hunting, cap individual income, and give the first deliveries a bon
   "BuyPrice": -1,
   "SellPrice": 800,
   "Stock": -1,
-  "MinimumHealthPercent": 50.0,
-  "DailySellLimit": 3,
-  "WeeklySellLimit": 12,
-  "DemandQuantity": 20,
-  "DemandBonusPercent": 50,
-  "DemandResetHours": 24
+  "MinimumHealthPercent": 50.0
 }
 ```
 
-Unlimited stock keeps buyback open. Quotas control player throughput. Demand rewards twenty objects across the shared listing each UTC day. With default condition pricing, a half-health pelt receives half of its applicable base/bonus price; it is accepted because threshold is inclusive.
+Unlimited stock keeps buyback open. At fixed prices with condition pricing enabled, a pristine pelt pays 800 and one at exactly 50% health pays 400. Lower health fails eligibility. Check actual quantity behavior before extending the pattern to meat, fish, food, or stackable goods.
 
-Test bonus exhaustion with two players. A quota is personal; demand remaining is communal. Do not describe twenty bonus slots as twenty per player.
+Expected finds per hour multiplied by expected condition-adjusted payout gives an approximate income rate. Include farming, crafting, animal density, travel, and alternative sale routes. Compare estimates with [telemetry](administration-and-recovery.md#economy-telemetry).
+
+For account currency, a reachable sell-only scavenging shop provides the first credits. Do not require an earning item obtainable only by spending credits the player cannot yet earn.
 
 ## Money plus consumed materials
 
-Goal: require scavenged resources as well as money for a tent.
+Goal: require scavenged materials as well as cash for a tent.
 
 ```json
 {
@@ -84,80 +93,146 @@ Goal: require scavenged resources as well as money for a tent.
   "BuyPrice": 1500,
   "SellPrice": -1,
   "Stock": 5,
-  "DailyBuyLimit": 1,
   "RequiredItems": ["BurlapSack", "BurlapSack", "Rope"],
   "DeliveryMode": "inventory"
 }
 ```
 
-Purchase costs 1500 plus two separate burlap sacks and one rope. Required objects are consumed, including any attached equipment they carry when otherwise eligible. They are not reusable permits. Remove valuables first.
+At fixed pricing, one tent costs 1500 plus two separate burlap sacks and one rope. Two tents need 3000, four sacks, and two ropes. Ingredients must already exist before checkout; buying rope in the same basket does not provide that basket's ingredient.
 
-Required class matching is exact. Requirements need removable, non-ruined inventory items without nested cargo and without relevant inventory locks. There is no minimum input quantity or input health percentage beyond non-ruined status. A quantity stack is consumed as an entire object, so avoid stack ingredients when the intended cost is a precise count of units.
+Required objects must be non-ruined, removable, free of nested cargo, and not blocked by inventory locks. They are consumed whole. There is no requirement-specific stack-unit count, fullness, or health threshold beyond non-ruined status. Remove attached valuables first: an eligible parent input can consume its attachments too.
 
-Buying two tents would require four sacks, two ropes, and 3000, but this example's daily limit prevents doing so in one day. Basket requirements are collected from inventory before purchases are delivered; buying the rope in the same basket does not provide that basket's ingredient.
+A dedicated token can act as a consumed voucher. Reusable membership cards, reputation gates, or free barter need scripting. Keep a positive buy price for money-plus-material transactions.
 
-!!! tip "Design voucher systems honestly"
-    A dedicated token class can act as a consumable purchase voucher. `RequiredItems` cannot express a reusable membership card, reputation threshold, or zero-currency barter. Those behaviors require custom scripting. Keep a positive `BuyPrice` even when a voucher carries most of the economic value.
+!!! tip "Keep ingredients readable"
+    Prefer a few clearly named non-stack objects. Large ingredient lists make checkout harder to understand and count toward the 500-object work budget. On loose-ammo listings, ingredients multiply per round, not per delivered stack.
 
-## Shared network or independent regional shops
+## Ammo counter
 
-For shared global supply, let north and south locations expose the same profile and category. Both see the same listing stock, demand, and profile-based player allowance.
+Goal: sell exactly the rounds a player needs.
 
-For independent regional stock, create `North_Tools.json` and `South_Tools.json` with separate listings. The same `Hatchet` class gets IDs `north_tools_hatchet` and `south_tools_hatchet`, with independent stock and demand. Different profiles also give separate player quotas.
+```json
+{
+  "ClassName": "Ammo_308Win",
+  "BuyPrice": 20,
+  "SellPrice": 5,
+  "Stock": 600,
+  "RestockAmount": 60,
+  "RestockIntervalSeconds": 1800
+}
+```
 
-Travel-based commerce can use regional prices, but calculate maximum profit before enabling it. At 25% dynamic range, north base buy 300 can fall to 225; south base sell 220 can rise to 275. A 50% demand bonus can raise that sale to about 413 after rounding. That route pays players to shuttle purchases even without finding loot.
+With dynamic pricing off, quantity 30 costs 600 and consumes 30 stock. It supplies 30 rounds across normal stack capacity. A partial sale leaves unsold rounds in inventory.
 
-If trade-route income is intentional, constrain supply, quotas, travel risk, and reset frequency. If it is not, lower resale prices or remove the duplicate route.
+Price every box and loaded magazine yielding these rounds. Cheap boxes plus expensive round buyback can create repeatable profit. See [ammo calculations](ammo-liquids-and-purchase-contents.md#price-boxes-magazines-and-rounds-together).
+
+## Fuel depot
+
+Goal: sell full gasoline canisters and buy matching partial canisters.
+
+```json
+{
+  "ClassName": "CanisterGasoline",
+  "BuyPrice": 600,
+  "SellPrice": 120,
+  "RequiredLiquidType": "Gasoline",
+  "SpawnFullQuantity": true,
+  "Stock": -1
+}
+```
+
+One purchase supplies one full canister. One sale consumes a matching non-empty canister. With fixed pricing, full health, and quantity pricing, half capacity pays 60. Wrong-liquid or empty containers fail eligibility.
+
+This is a container trade, not a refill station. Account for the reusable container and fuel availability elsewhere. Liquid matching does not check every contamination or quality state.
+
+For different liquids, add combinations that pass container compatibility validation. Set `AllowDuplicate: true` on every intentional copy of a container class and use clear category labels. See [liquid-specific listings](ammo-liquids-and-purchase-contents.md#liquid-specific-listings).
+
+## Equipment packages
+
+Goal: sell an equipped weapon with predictable contents.
+
+```json
+{
+  "ClassName": "M4A1",
+  "BuyPrice": 4000,
+  "SellPrice": 1400,
+  "Stock": 5,
+  "Attachments": [
+    "M4_OEBttstck",
+    "M4_PlasticHndgrd",
+    "M68Optic",
+    "M4_Suppressor"
+  ]
+}
+```
+
+This supplies the listed attachments. A magazine or battery is not supplied merely because the weapon or optic accepts one. Parent fill settings do not recursively fill attachments.
+
+Selling an attached weapon pays only the weapon listing and deletes its attachments. Players should strip valuables first. Compare package buy price with the combined separate resale routes for the weapon and attachments.
+
+Every attachment must fit an available slot. Invalid listing attachments disable that listing; actual delivery failure triggers rollback. Test one complete package before bulk purchase.
+
+## Shared markets and regional shops
+
+For shared supply, reference the same category from several profiles or reuse the same profile at multiple locations. All expose the same listing IDs and stocks.
+
+For independent supply, create `North_Tools.json` and `South_Tools.json`. A Hatchet in each gets a separate identity and stock. A different physical location alone does not create another stock pool.
+
+At 25% dynamic range, north base buy 300 can fall to 225 while south base sell 220 can approach 275. Independently stocked routes can therefore pay roughly 50 per object before discrete stock steps and rounding. Returns fall as purchases drain one stock and resale fills the other.
+
+For intentional travel income, choose supply, restock, resale capacity, and travel risk accordingly. Otherwise widen the price gap or remove the duplicate route. Test round trips using actual player transport capacity.
 
 ## Night dealer and seasonal stock
 
-Give a physical dealer `OpeningHoursEnabled: true`, `OpeningHour: 20`, and `ClosingHour: 6` for a DayZ-night shop. Add an offer pool to its profile for rotating rare items. Keep basic repair supplies outside that pool.
+Give a physical trader `OpeningHoursEnabled: true`, `OpeningHour: 20`, and `ClosingHour: 6` for a DayZ-night shop. Leave its safe zone disabled for a risky visit. Time acceleration makes the window shorter in real time.
 
-For seasonal offers, use real UTC `Months` in the pool. World winter and real December are different controls. Set `ActiveOffers` to the full pool size if all seasonal goods should appear together. An inactive pool blocks selling those classes there too.
+Add a profile offer pool for rare goods. `Months: [10]` gates a pool to October in real UTC. `ActiveOffers` equal to pool size shows all seasonal goods together. Visibility does not refill stock.
 
-Use separate profile IDs when different locations should have different rotations. Reusing a profile gives them the same deterministic selection.
+Identical class order and rotation interval select the same UTC sequence at different profiles. Reorder a second profile's pool to offset it; a separate profile name alone does not randomize offers.
 
-## Vehicle dealer with clear ownership rules
+Keep an unrestricted buyback profile if players should resell yesterday's offer. Inactive pools block buying and selling. See [rotating offers](rotating-and-seasonal-offers.md).
 
-Pair exact-class listings with `VehicleAttachments.json` profiles and several clear `VehicleSpawnPoints`. Sell ordinary blank `RaG_CarKey` separately. Vehicle purchases do not automatically supply or assign a key.
+## Vehicle dealer and garage policy
 
-Choose policy deliberately:
+Pair exact-class listings with `VehicleAttachments.json` and clear `VehicleSpawnPoints`. Sell blank `RaG_CarKey` separately. A purchased car does not automatically include or receive a key.
 
-- Buy-only dealer: `SellPrice: -1` prevents vehicle resale.
-- Buyback dealer: positive sell price; explain ownership and the six-metre parking requirement.
-- Persistent physical parking: `EnableVehiclePacking: false`; existing packed cars can still deploy.
-- Portable owner garage: packing enabled, `RestrictVehicleStorageToOwner: true`.
-- Shared-key garage: restriction false; any matching-key holder can pack/deploy, while sale ownership remains strict.
+- **Buy-only dealer:** `SellPrice: -1` prevents resale.
+- **Buyback dealer:** positive sell price; explain ownership and the six-metre parking requirement.
+- **Physical parking:** `EnableVehiclePacking: false` prevents packing; existing stored cars can still deploy.
+- **Owner garage:** packing enabled with `RestrictVehicleStorageToOwner: true`.
+- **Shared-key garage:** owner restriction false allows matching-key holders to pack and deploy. Sale ownership remains strict.
 
-Packed cars sell without stored-condition scaling. Physical cars use condition pricing. A repair/resale economy must account for that difference. Disabling new packing alone does not remove already packed sale routes.
+Deployed and stored cars use global-health condition pricing when enabled and must meet the health threshold. Packing does not repair a car. Fuel, cargo, and individual parts add no separate payout. Explain this before anyone sells a loaded truck.
 
-Test each sold vehicle with its actual attachments. Provide space for the largest truck, place boat spawn points on suitable water, and keep roads clear after purchase. A configured sale point is also a purchase point; vehicles parked there can block later deliveries.
+Provide clearance for the largest vehicle and suitable water for boats. Purchase points also serve as sale search points: a parked car can block another delivery. Separate road and marine dealers simplify spawn placement.
 
-## Physical cash or account credits
+## Cash, savings, or account credits
 
-Physical currency creates looting and transport choices. Use denomination value 1 plus larger values, and decide whether full-inventory payouts may drop at players' feet. Put ATMs where players can reach them; ATMs are placed separately from trader locations.
+Stackable Euro notes create transport and looting choices. Keep `UseQuantity: true` and a value-1 denomination for exact change. Decide whether full-inventory payouts may drop at players' feet.
 
-Account currency avoids note inventory and change. Use one default account currency for trade, configure banking only for physical currencies or disable it, and plan how players first earn credits. Sell-only gathered goods can bootstrap an account economy without starting grants.
+ATMs bank configured physical currency. Place `RaG_ATM` separately from trader locations. Modest fees create a money sink, but round-up fees disproportionately affect small transactions: 2.5% of a deposit of 10 rounds up to 1.
 
-Do not make the first earning route require an item that can only be bought with credits the player cannot yet earn. Test from a new, empty account with no admin rewards.
+For cashless trade, use a default account currency and disable banking or keep it only for separate physical currencies. Account currencies start at zero without controlled administration or an integration. A physical currency's bank balance does not replace the notes needed to shop with that currency; players withdraw first.
 
-## Private acceptance session
+## Practical acceptance session
 
-Use ordinary player accounts as well as an admin. Test with the exact server/client mod set intended for the private build.
+Use an ordinary player and an admin with the intended server/client mod set in a separate profile.
 
-| Test | What to verify |
+| Test | Expected evidence |
 | --- | --- |
-| Fresh profile | Defaults generate, report has zero blocking errors, expected traders bind once. |
-| New player | Can understand the first earning route and obtain the intended starter supplies. |
-| Partial stacks | Bulk sale total uses quantity across the line; tiny separate trades do not undermine intended prices. |
-| Required materials | Missing, ruined, full-container, and duplicated-input cases fail without charging; successful inputs are consumed. |
-| Basket failure | One blocked item/vehicle line does not leave an unintended partial purchase, payment, or consumed material set. |
-| Two buyers | Stock and demand are shared as intended; individual limits remain separate. |
-| UTC boundary | Quotas, rotations, and demand follow calendar periods, not world time or reconnects. |
-| Reload | Supported edits apply; rejected candidate leaves active configuration usable. |
-| Full inventory | Delivery, change, bank withdrawal, and rollback behave under selected ground-fallback policy. |
-| Restart | Stock, balances, quotas, demand, receipts, and stored vehicle links survive normal shutdown. |
-| Key recovery | Admin key restrictions hold; vehicle reset invalidates old matching keys. |
-| Safe-zone border | Incoming/outgoing protection, exit timer, survival settings, and custom mod actions match intended policy. |
+| Fresh profile | Files generate; registry, stock, and journal initialize; traders bind once. |
+| Report and Diagnostics | No unexpected disabled listings, blocking errors, or unresolved recovery. |
+| New player | Reachable earnings fund the intended first supplies. |
+| Loose ammo | Prices and stock count rounds; partial sales retain unsold ammo. |
+| Magazines and boxes | Fill matches purchase contents; opening/unloading cannot create unintended resale profit. |
+| Liquids | Correct contents supplied; wrong-liquid and empty sales fail; matching partial fill prices correctly. |
+| Materials | Missing, ruined, nested-cargo, and insufficient distinct inputs fail without completing purchase. |
+| Basket failure | One blocked line does not leave an unintended partial purchase or charge. |
+| Two players | Shared stock affects the intended profiles and locations. |
+| Time controls | World hours, UTC rotations, and uptime restocking behave independently. |
+| Full inventory | Delivery, change, payout, withdrawal, and rollback follow the chosen ground policy. |
+| Restart | Listing identities, stock, accounts, receipts, and vehicle links remain consistent. |
+| Vehicle ownership | Spares, storage restrictions, sale ownership, and admin reset work. |
+| Safe-zone border | Protection, exit timer, survival settings, and custom actions match the intended policy. |
 
-Keep prices modest while checking correctness, then run longer economy sessions and inspect telemetry. Do not use an admin's successful unlimited checkout as evidence that player quotas work.
+For each price test, record starting balances, stock, health and contents, quote, receipt, and final balances. Keep initial tests small, then inspect longer sessions through telemetry. Valid JSON and a successful documentation build cannot replace in-game checks.

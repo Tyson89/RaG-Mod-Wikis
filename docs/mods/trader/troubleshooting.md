@@ -17,7 +17,7 @@ Successful trade audit:
 $profile:\RaG_Core\Logs\RaG_TraderLogger\Trades_TRADE_YYYY-MM-DD.log
 ```
 
-Default RaG Core enables Error logging and disables Debug, Info, and Warning. Enable Info and Warning while configuring; many useful diagnostics such as blocked vehicle spawn, skipped attachment, duplicate item, and registry summary are not errors.
+Default RaG Core enables Error logging and disables Debug, Info, and Warning. Enable Info and Warning while configuring; many useful diagnostics such as blocked vehicle spawn, disabled listing, duplicate item, and registry summary are not errors.
 
 ## Fast symptom table
 
@@ -32,21 +32,25 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | Trader visible but no **Trade** action | Client has not received location bindings, object not bound, client/server mismatch, or target is wrong entity. Reconnect after checking registry/entity logs. |
 | Menu opens then purchase says too far | Server uses configured trader position and `InteractionDistance`; stay close and align bound map object with JSON. |
 | Trader closed unexpectedly | Opening hours use accelerated DayZ world hour. Closing hour is exclusive. |
-| Search item missing | Category not referenced, wrong trader profile, active filter, or inactive/out-of-season offer pool. Invalid classes or prices block config validation. |
-| Player trade limit reached | Check daily and weekly quotas on every same-class listing at that profile; test with non-admin account. Reset uses UTC. |
-| Demand sales disabled | Preserve `Demand.json`; inspect data validation and save failures. Deleting it grants bonuses again. |
-| Sale review expired/changed | Reopen review; items, health, ammo, energy, quantities, prices, or catalog revision changed, or 60 seconds elapsed. |
+| Search item missing | Category not referenced, wrong profile, active filter, or inactive/out-of-season pool. Use Search all categories or clear filters. Invalid listings can remain visible with a Config error label. |
+| Config error on one item | Read its disabled-listing reason in admin Diagnostics or `ConfigValidationReport.txt`. Check class, prices, liquid compatibility, required items, attachments, and ammo resale values. Other valid listings can remain usable. |
+| Ammo purchase gives fewer objects than expected | Loose-ammo quantity counts rounds, delivered across normal stack capacity. It does not count full stacks. |
+| Cannot sell the last tiny fragment | Quantity-scaled sale lines round down without a minimum floor. Combine enough eligible contents in the same line for a positive payout. |
+| Liquid sale rejected | Check exact container class, positive contents, and exact `RequiredLiquidType`. A visually identical container may hold another liquid. |
+| Ammo box disabled despite valid class | Check the ammo resale-profit warning. Box contents can exceed the purchase price when sold as loose rounds. |
+| Sale review expired/changed | Reopen review; items, health, ammo, energy, quantities, liquid type, prices, or catalog revision no longer match, or 60 seconds elapsed. |
 | Review misses a held item, worn gear, key, or currency | Expected exclusions. Review accepts eligible cargo objects, not every inventory object. |
 | Reload rejected | Check candidate validation, pending recovery, active transactions, and restart-only location/currency changes. |
 | Trading suspended after interruption | Preserve `Transactions` and related persistence; bring affected players online and follow [journal recovery](administration-and-recovery.md#transaction-journals). |
 | “Catalog changed; refreshing” | Client revision stale, usually reconnect/reload race. Let UI refresh; persistent repeats suggest version mismatch. |
-| Buy price shown but checkout fails “Price unavailable” | Price is `0` or wrong currency. Use positive price or `-1` disable; ensure default currency valid. |
+| Buy price shown but checkout fails “Price unavailable” | Request a fresh quote. Check positive price, default currency, current stock, disabled-listing reason, and whether a sale total rounds to zero. Zero configured price disables that direction; use `-1` deliberately. |
 | No inventory capacity | Make room, use explicit ground delivery, or enable `AllowGroundFallback`. With fallback enabled, created items/currency land at player position. |
 | Item spawns on ground unexpectedly | Inventory delivery failed and global fallback enabled, or listing uses `DeliveryMode: "ground"`. |
 | Purchase vanished after attachment config | One listing attachment failed; whole delivered set rolled back. Verify compatibility and slots. |
 | Cannot sell bag/gun/clothing | Empty all cargo, including cargo nested under attachments; check ruin, lock, health threshold, exact class, and removability. Remove attachments anyway because sold parent deletes them without extra payout. |
 | Sell payout lower than displayed base | Condition and quantity sell pricing enabled. Empty/damaged item pays less. |
-| Cannot sell packed vehicle | Carry assigned key containing exact listed class. Seller must be recorded key owner; key must not be ruined, locked under parent, or non-removable. Storage-owner setting/admin bypass does not override sale ownership. |
+| Cannot sell packed vehicle | Carry an eligible owner key for the exact class. Saved vehicle health must be non-ruined and meet the listing threshold. Storage-owner setting/admin bypass does not grant sale ownership. |
+| Deploy and repack this vehicle before selling it | Stored data lacks sale-health information. Deploy, inspect, and repack to write that health record; do not edit the binary. |
 | Cannot sell parked vehicle | Use exact listed class within 6 metres of configured trader vehicle spawn point; empty crew; engine off; meet minimum health. Assigned car requires key owner. Unassigned car/boat requires last driver who started engine. |
 | Out of stock after restart | `Stock.json` persists finite values. Reset deliberately or configure restock. |
 | Restock never happens | Both restock fields required, stock must be finite positive, global restock enabled, and server uptime must reach interval. |
@@ -55,6 +59,8 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | ATM transaction says too far | `InteractionDistance` too small or ATM geometry/action point awkward. |
 | Deposit fails despite visible notes | Notes ruined, contain cargo/attachments, stack quantity floors to zero, fee makes credited amount zero, or max bank balance reached. |
 | Withdrawal fails | Bank lacks amount plus rounded-up fee, payout cannot be represented, or inventory is full while `AllowGroundFallback` is disabled. |
+| Wallet ignores most notes in a stack | Built-in Euro denominations need `UseQuantity: true`; false counts one object as one note. Currency definitions require restart. |
+| Bank has funds but trader says insufficient funds | An item-currency shop spends physical wallet items. Withdraw notes first. An account-currency shop spends its numeric balance directly. |
 | Initial balance not reapplied | Expected. Currency ID already listed in `InitializedCurrencies`. |
 | Vehicle purchase fails | No valid spawn points, collision box blocked, class not valid transport, or all points invalid. |
 | Purchased vehicle missing parts | No exact profile, or actual creation failed despite validation. Invalid configured profiles block registry startup/reload. Check report and Warning/Error logs. |
@@ -72,23 +78,15 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 
 ## Configuration validation
 
-Registry publication requires zero blocking errors. Read generated `ConfigValidationReport.txt` and Error/Warning logs; there is no switch for allowing a partially invalid registry.
+Validation distinguishes a broken listing from broken shared configuration.
 
-Registry errors include:
+**Listing-local faults** disable the affected entry and report a warning. Examples include unknown listing class, invalid prices, both directions disabled, sell price above enabled buy price, invalid stock/restock/health/delivery fields, invalid required-item classes, incompatible listing attachments, invalid liquid requirements, and detected ammo resale profit. The server disables its prices and restocking. The UI can show the listing with **Config error**; it cannot be traded.
 
-- unsupported versions;
-- missing/duplicate/invalid currency IDs and `CurrencyItems`;
-- missing value-1 denomination;
-- invalid classes;
-- invalid stock/restock/health/delivery fields;
-- both prices disabled;
-- missing categories;
-- invalid trader/category references;
-- invalid transforms or vehicle spawn points;
-- duplicate group/trader runtime IDs;
-- invalid safe-zone center.
+**Blocking faults** prevent registry publication or reject a reload candidate. Examples include unsupported main-file versions, invalid currencies or missing value-1 denomination, missing categories, broken trader references, malformed locations/transforms, duplicate runtime IDs, invalid safe-zone configuration, bad offer pools, invalid banking references, and invalid vehicle attachment profiles or survivor loadouts.
 
-Validation also checks quota ranges, demand rules, offer pools, enabled physical bank currencies, vehicle attachment compatibility, and survivor loadouts. Fix the referenced configuration and validate again. See [administration and recovery](administration-and-recovery.md).
+Zero `BuyPrice` or `SellPrice` produces a warning and disables that direction. Use `-1` for an intentionally disabled direction. At least one direction must remain positive for a usable listing.
+
+Read `ConfigValidationReport.txt` and admin **Diagnostics**. After a rejected reload, Diagnostics can show active listing state alongside the latest failed validation attempt; the candidate has not replaced active configuration. Fix the named cause, reload or restart as appropriate, and verify the affected item. See [administration and recovery](administration-and-recovery.md).
 
 ## Common exact errors
 
@@ -105,7 +103,7 @@ Keep `Version: 1`. Do not guess future schema.
 Catalog references file that is absent both profile and bundle.
 
 ```text
-[RaG_Trader] Unknown listing class: <class>
+Disabled listing <listing-id>: Unknown listing class: <class>
 ```
 
 Class missing from active server mod set or misspelled.
@@ -194,7 +192,10 @@ Unsafe actions:
 - every opening-hour edge tested;
 - representative buy/sell from every category;
 - empty, damaged, ruined, locked, and nested sale tested;
-- finite stock persists and restores;
+- finite stock and listing identity mappings persist and restore;
+- loose ammo buys/sells exact rounds and retains unsold partial stacks;
+- liquid purchase fill and matching/wrong-liquid sales tested;
+- no unintended disabled listings in Diagnostics;
 - restock fires during real uptime;
 - dynamic price range cannot create arbitrage;
 - basket failure rolls back;
