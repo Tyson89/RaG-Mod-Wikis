@@ -27,11 +27,11 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | No configs generate | Check active server profile, write permissions, RaG Core initialization, and `$profile:\RaG_Core\Configs\RaG_Trader\`. |
 | Registry never becomes ready | Read Error log from first initialization line onward. One blocking validation error prevents registry startup; read `ConfigValidationReport.txt` and logs. |
 | Missing category error | Catalog references unsafe/missing filename. Custom missing category is not bundled; restore file. |
-| Trader not visible | Entry disabled, group disabled, invalid class/transform, registry failed, or spawn failed. |
+| Trader not visible | Entry/group disabled, invalid class/transform, registry failed, or spawn failed. For a route, check current stop, travel, schedule, blocked spawn, and saved-state errors. |
 | Duplicate trader appears | Map object is farther than 1 metre or class differs from `EntityClassName`, so manager spawns another. Align exact class and position. |
 | Trader visible but no **Trade** action | Client has not received location bindings, object not bound, client/server mismatch, or target is wrong entity. Reconnect after checking registry/entity logs. |
 | Menu opens then purchase says too far | Server uses configured trader position and `InteractionDistance`; stay close and align bound map object with JSON. |
-| Trader closed unexpectedly | Opening hours use accelerated DayZ world hour. Closing hour is exclusive. |
+| Trader closed unexpectedly | Opening hours use accelerated DayZ world hour. Closing hour is exclusive. Route schedules, departure grace, and separate purchase/sale cutoffs can close trade too. |
 | Search item missing | Category not referenced, wrong profile, active filter, or inactive/out-of-season pool. Use Search all categories or clear filters. Invalid listings can remain visible with a Config error label. |
 | Config error on one item | Read its disabled-listing reason in admin Diagnostics or `ConfigValidationReport.txt`. Check class, prices, liquid compatibility, required items, attachments, and ammo resale values. Other valid listings can remain usable. |
 | Ammo purchase gives fewer objects than expected | Loose-ammo quantity counts rounds, delivered across normal stack capacity. It does not count full stacks. |
@@ -43,7 +43,7 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | Reload rejected | Check candidate validation, pending recovery, active transactions, and restart-only location/currency changes. |
 | Trading suspended after interruption | Preserve `Transactions` and related persistence; bring affected players online and follow [journal recovery](administration-and-recovery.md#transaction-journals). |
 | “Catalog changed; refreshing” | Client revision stale, usually reconnect/reload race. Let UI refresh; persistent repeats suggest version mismatch. |
-| Buy price shown but checkout fails “Price unavailable” | Request a fresh quote. Check positive price, default currency, current stock, disabled-listing reason, and whether a sale total rounds to zero. Zero configured price disables that direction; use `-1` deliberately. |
+| Buy price shown but checkout fails “Price unavailable” | Request a fresh quote. Check positive price, effective location/category/stop currency, current stock, disabled-listing reason, and whether a sale total rounds to zero. Zero configured price disables that direction; use `-1` deliberately. |
 | No inventory capacity | Make room, use explicit ground delivery, or enable `AllowGroundFallback`. With fallback enabled, created items/currency land at player position. |
 | Item spawns on ground unexpectedly | Inventory delivery failed and global fallback enabled, or listing uses `DeliveryMode: "ground"`. |
 | Purchase vanished after attachment config | One listing attachment failed; whole delivered set rolled back. Verify compatibility and slots. |
@@ -53,7 +53,9 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | Deploy and repack this vehicle before selling it | Stored data lacks sale-health information. Deploy, inspect, and repack to write that health record; do not edit the binary. |
 | Cannot sell parked vehicle | Use exact listed class within 6 metres of configured trader vehicle spawn point; empty crew; engine off; meet minimum health. Assigned car requires key owner. Unassigned car/boat requires last driver who started engine. |
 | Out of stock after restart | `Stock.json` persists finite values. Reset deliberately or configure restock. |
-| Restock never happens | Both restock fields required, stock must be finite positive, global restock enabled, and server uptime must reach interval. |
+| Restock never happens | Shared-stock timers need both restock fields, positive `MaxStock`, global restock enabled, and enough uptime. Separate route/stop stock needs arrival supply; check `RestockOnArrival`, delivery delay, allowed categories, and capacity. |
+| Empty shop cannot buy player loot | Check positive `SellPrice`, `InitialStock: 0`, positive `MaxStock`, and effective route capacity. `MaxStock: 0` leaves no buyback room. |
+| Currency differs from group setting | Individual trader, category, or route stop overrides it. Bundled trader entries explicitly use `euro`; clear those overrides when inheritance is intended. |
 | Dynamic price never changes | Listing uses unlimited stock or feature disabled. Only finite stock changes price. |
 | ATM has no currencies | Banking disabled, no enabled matching entry, catalog currency is account type, or registry not ready. |
 | ATM transaction says too far | `InteractionDistance` too small or ATM geometry/action point awkward. |
@@ -140,13 +142,36 @@ Main configs copy from bundled defaults only when missing.
 
 For category files, bundled recovery works only for category filenames bundled with the development build. Custom categories need own backup.
 
+## Traveling market problems
+
+Start with the `MOVING TRADERS` validation section, then open the route's Diagnostics entry. A valid route needs at least two different enabled location groups. Each group can belong to only one enabled route.
+
+| Symptom | Check |
+| --- | --- |
+| All stops appear as static markets | Route is disabled or failed validation and never claimed its groups. Read the route warning; visible NPCs alone do not prove route control. |
+| Route disabled after configuration edit | Saved configuration no longer matches. Restore matching configuration or follow the [stopped-server route recovery procedure](traveling-traders-and-routes.md#restart-and-configuration-mismatch). |
+| Waiting for clear spawn | Move players, NPCs, and vehicles clear of every trader point. Remove pre-placed copies of the route target. Check radius, heights, and `ValidateTerrain`. |
+| Route remains blocked after clearing area | It may have reached a blocked-pause threshold. Refresh diagnostics, then use **Resume route**. A closed schedule can still prevent spawning. |
+| Arrived, but shelves remain empty | Arrival supply disabled, delayed, already applied for this arrival, or listing has no valid restock amount/capacity. Player sales may be the intended supply. |
+| Route stopped advancing | Check manual/schedule/blocked pause, completed non-looping route, pending recovery, and failed state writes. |
+| Market vanishes when one NPC dies | Vulnerable routes close the whole visit after losing an active entity. Use `Invulnerable: true` for protected traders or design around the interruption. |
+| Schedule opens at the wrong time | Default clock is UTC. `ScheduleUsesServerTime: true` uses DayZ world date/time. Check weekday/month masks and absolute dates together. |
+| Friday overnight market closes at midnight | Include Saturday in the weekday mask for Saturday's early hours. Day filters use the current day. |
+| Several next-stop links always choose one destination | Supply matching positive `NextStopWeights`; without weights, the first explicit link wins. |
+| Non-looping route keeps cycling | Explicit next-stop links can override normal end-of-array completion. Remove the back-link from the intended final stop. |
+| Map marker stays at previous stop | Reopen the map for a fresh snapshot. Only present traveling traders receive markers. |
+| Admin command asks for refresh | Route generation changed. Refresh Diagnostics and inspect the current state before retrying. |
+| Route reload refused despite pause | Pause must be at a stop, not in transit. Route topology, stock mode, stop names, stock limits, and all location content must remain stable. |
+
+Keep `RouteState.json`, `Stock.json`, their backups, and relevant logs together when investigating. Clearing state can create fresh arrival deliveries; it is not a harmless way to refresh a marker or move one blocked NPC.
+
 ## Stock recovery
 
 Stock uses atomic main and backup.
 
 - If main invalid and backup valid, service restores backup.
 - Unknown listing IDs drop.
-- missing listing seeds from category `Stock`.
+- missing listing seeds from category `InitialStock`.
 - invalid count normalizes to configured cap.
 
 If deliberate reset needed, stop server and move both `Stock.json` and backup. Never delete live file while server runs.

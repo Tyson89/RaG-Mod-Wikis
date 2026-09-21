@@ -111,7 +111,7 @@ Trades debit/credit persistent account directly. No notes, payout capacity, chan
 
 For account-only operation, use `Banking.json` with `"Enabled": false` and `"Currencies": []`, or keep enabled banking exclusively for separate physical currencies. A default `euro` bank entry referencing a removed catalog currency fails validation.
 
-Current compact listing schema prices only default currency. Several currencies may exist, but listings do not define several independent price pairs.
+Account currency can be selected by the catalog default or a location, category, or route-stop override. A listing has one applicable currency at a given shop and stop, with one base price pair.
 
 ## `Banking.json`
 
@@ -230,23 +230,54 @@ Place `RaG_ATM` through map loader/editor or mission code. It is not created by 
 
 Server checks player-to-ATM distance against `Settings.json` `InteractionDistance`, even though client action target uses 3 metres. Keep global interaction distance at least practical default.
 
+## Currency selection and precedence
+
+Define each currency once in `Catalog.json`. The effective listing currency follows this order, with each non-empty override replacing the earlier choice:
+
+1. `Catalog.json` → `DefaultCurrencyId`.
+2. `Locations.json` → location group's `CurrencyId`.
+3. Individual trader entry's `CurrencyId`.
+4. Category file's `CurrencyId`.
+5. Active route stop's `CurrencyId`.
+
+Route `Prices[]` entries may include `CurrencyId`, but validation requires it to match the effective stop currency for that class. Omit it to inherit. It is not a way to introduce a different currency for one stop-price entry.
+
+Category fragment:
+
+```json
+{
+  "DisplayName": "Specialist Supplies",
+  "CurrencyId": "credits",
+  "Listings": [
+    {
+      "ClassName": "Hatchet",
+      "BuyPrice": 300,
+      "SellPrice": 80,
+      "InitialStock": 5,
+      "MaxStock": 20
+    }
+  ]
+}
+```
+
+Use the account currency `credits` defined above and attach this category to a trader profile. A Euro location can then have a credits-only specialist category. A route stop with `CurrencyId: "euro"` overrides that category while visiting the stop.
+
+!!! tip "Clear defaults where inheritance is intended"
+    Bundled location groups and their individual trader entries explicitly select `euro`. Setting only a group's currency will not override its entries. Clear an entry's `CurrencyId` to `""` when it should inherit the group. Inspect category overrides too.
+
+Currency selection leaves the numeric price unchanged. A base price of 300 becomes 300 units of the selected currency; no exchange rate is applied. Tune prices around the value and availability of each currency, or use distinct categories/route stop prices.
+
 ## Multi-currency possibilities and limits
 
-Possible:
+- Physical Euro shops with ATM savings, plus a separate account-credit specialist.
+- Regional currencies selected per location group; individual traders can be exceptions.
+- Category-based quest-token shops sharing the same market square.
+- Traveling merchants using the currency and price schedule of each destination.
+- Several enabled physical currencies stored independently at ATMs.
 
-- physical Euro trade plus bank;
-- physical quest token banked separately;
-- account-only credits for all trades;
-- several physical currencies shown in ATM;
-- one default trade currency plus other bank-only currencies.
+Each checkout uses one currency. Separate purchases into different baskets when categories use different currencies. Physical-currency shops spend carried items; account-currency shops debit the numeric account. Banking a physical currency does not make that balance directly spendable at its shops.
 
-Current limit:
-
-- every listing price is tied to one `DefaultCurrencyId`;
-- UI currency cycling has little value unless server payload includes prices for that currency;
-- no exchange-rate or currency-to-currency conversion feature exists;
-- bank does not transfer between players;
-- no interest or periodic grants exist.
+There is no built-in exchange-rate service, player-to-player bank transfer, interest, or recurring account grant. Currency definitions and the catalog default require a restart. Category currency can reload; location currency requires a restart; route stop currency follows the [paused-route reload rules](traveling-traders-and-routes.md#editing-and-recovering-routes).
 
 ## Economy tips
 

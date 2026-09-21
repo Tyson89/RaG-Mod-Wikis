@@ -50,7 +50,7 @@ Compact example:
 | Field | Rules and effect |
 | --- | --- |
 | `Version` | Must be `1`. |
-| `DefaultCurrencyId` | Currency used to create price for every listing. If blank and exactly one valid currency exists, that currency becomes default. |
+| `DefaultCurrencyId` | Fallback currency used when no location/category/stop override applies. If blank and exactly one valid currency exists, that currency becomes default. |
 | `Currencies` | Unique currency definitions. See [banking and currencies](banking-and-currencies.md). |
 | `Traders` | Unique trader profiles. Profile does not place entity; `Locations.json` does. |
 | `Traders[].Id` | Exact value referenced by `Locations.json`. References resolve after trimming whitespace and comparing case-insensitively; keep spelling consistent. |
@@ -58,7 +58,7 @@ Compact example:
 | `Traders[].Categories` | Category filenames without `.json`, in display/load order. |
 | `Traders[].OfferPools` | Optional rotations and seasonal availability. See [rotating and seasonal offers](rotating-and-seasonal-offers.md). |
 
-Current listing schema supports one price pair in default currency. Defining several currencies is useful for account systems or banking, but listing does not provide per-currency price array. Only default currency receives listing `BuyPrice` and `SellPrice`.
+Each listing defines one base price pair. Its currency comes from the catalog default, location group, individual trader entry, category, or active route stop. A route stop can also override prices by exact class. See [currency precedence](banking-and-currencies.md#currency-selection-and-precedence); these overrides do not convert price amounts by an exchange rate.
 
 ## Category files
 
@@ -73,6 +73,7 @@ Complete ordinary listing example:
 ```json
 {
   "DisplayName": "Tools",
+  "CurrencyId": "",
   "Listings": [
     {
       "ClassName": "Hatchet",
@@ -81,7 +82,8 @@ Complete ordinary listing example:
       "SellPrice": 120,
       "RequiredItems": [],
       "RequiredLiquidType": "",
-      "Stock": 20,
+      "InitialStock": 20,
+      "MaxStock": 20,
       "RestockAmount": 2,
       "RestockIntervalSeconds": 900,
       "MinimumHealthPercent": 35.0,
@@ -94,7 +96,7 @@ Complete ordinary listing example:
 }
 ```
 
-`DisplayName` appears in UI. Filename `Tools` becomes internal category ID. Category JSON has no explicit `Id` field.
+`CurrencyId` is optional: blank inherits the location/default currency; a non-empty value must name a catalog currency and applies to every listing in this category unless a route stop overrides it. `DisplayName` appears in UI. Filename `Tools` becomes internal category ID. Category JSON has no explicit `Id` field.
 
 ### Category filename rules
 
@@ -115,7 +117,8 @@ Complete ordinary listing example:
 | `SellPrice` | `-1` | Base trader payout. Positive enables selling. Use `-1` to disable. |
 | `RequiredItems` | `[]` | Exact item classes consumed per purchased object, or per round for loose ammo, in addition to money. Repeating a class requires separate objects. |
 | `RequiredLiquidType` | `""` | Optional `CfgLiquidDefinitions` class name. Purchases contain this liquid; sales require this exact liquid and positive contents. See [liquid listings](ammo-liquids-and-purchase-contents.md#liquid-specific-listings). |
-| `Stock` | `-1` | `-1` unlimited; `0` empty; positive value is initial stock and hard maximum. Counts rounds for loose ammo, objects otherwise. |
+| `InitialStock` | `-1` | Starting count when no stock record exists. Both stock fields must be `-1` for unlimited; otherwise `0 <= InitialStock <= MaxStock`. |
+| `MaxStock` | `-1` | Capacity for purchases, player sales, restocking, and dynamic pricing. Rounds for loose ammo, objects otherwise. |
 | `RestockAmount` | `0` | Units added each restock interval. Must pair with positive interval and finite positive stock. |
 | `RestockIntervalSeconds` | `0` | Restock interval, allowed `0` through `86400`. Must pair with positive amount. |
 | `MinimumHealthPercent` | `0.0` | Sale eligibility threshold, `0` through `100`. Separate from payout scaling. |
@@ -151,7 +154,8 @@ Buy-only:
   "ClassName": "LandMineTrap",
   "BuyPrice": 2500,
   "SellPrice": -1,
-  "Stock": 3
+  "InitialStock": 3,
+  "MaxStock": 3
 }
 ```
 
@@ -162,12 +166,13 @@ Sell-only:
   "ClassName": "BearPelt",
   "BuyPrice": -1,
   "SellPrice": 800,
-  "Stock": -1,
+  "InitialStock": -1,
+  "MaxStock": -1,
   "MinimumHealthPercent": 50.0
 }
 ```
 
-For finite stock, selling increases available stock up to `Stock` hard maximum. A sell-only finite listing at full stock rejects sales. Use `Stock: -1` for unlimited sink.
+For finite stock, selling increases available stock up to `MaxStock`. A sell-only finite listing at full stock rejects sales. Use `InitialStock: -1` and `MaxStock: -1` for an unlimited sink. For a counter that buys only twenty pelts, use `InitialStock: 0`, `MaxStock: 20`, and no restock. It will stop accepting pelts when full; restocking would fill its remaining buyback space rather than reopen it.
 
 ## Purchased quantities and attachments
 
@@ -201,7 +206,8 @@ Rifle with stock, handguard, optic, and suppressor:
   "ClassName": "M4A1",
   "BuyPrice": 4000,
   "SellPrice": 1400,
-  "Stock": 5,
+  "InitialStock": 5,
+  "MaxStock": 5,
   "SpawnFullQuantity": true,
   "Attachments": [
     "M4_OEBttstck",
@@ -223,7 +229,8 @@ Attachment must fit class and available slot. Duplicate attachment class can be 
   "ClassName": "SeaChest",
   "BuyPrice": 1000,
   "SellPrice": 300,
-  "Stock": 10,
+  "InitialStock": 10,
+  "MaxStock": 10,
   "DeliveryMode": "ground"
 }
 ```
@@ -253,12 +260,12 @@ Keeping third-party classes separate makes updates and removals much safer.
 
 ## Shared and independent stock possibilities
 
-- Same category referenced by several trader profiles: same listing ID, shared stock.
-- Same trader profile used at several physical locations: shared stock.
+- Same category referenced by several static trader profiles: same listing ID, shared stock.
+- Same trader profile used at several static physical locations: shared stock.
 - Same class copied to different category filename: different listing ID, independent stock.
 - Same class duplicated inside one trader: separate entries, warning unless every duplicate has `AllowDuplicate: true`.
 
-Use shared stock for global economy. Use separate category files for regional markets.
+Use shared stock for global economy. Use separate category files for static regional markets. Traveling traders can use `StockMode: "route"` or `"stop"` to isolate supply without duplicating category files; those scopes also include trader profile ID. See [route stock sharing](traveling-traders-and-routes.md#stock-sharing-and-arrival-deliveries).
 
 ## Recommended catalog cleanup
 
@@ -280,5 +287,12 @@ Bundled defaults contain 1,782 listings in 60 categories. They are a starting ca
 - `ModifyUnitPrice`: adjust the calculated unit price; return a usable positive price for an enabled trade.
 - `DeliverPurchase`: optionally handle purchase delivery and return the delivered entities plus a delivery result.
 - `OnTransactionCompleted`: react to completed transaction processing, checking the result before awarding external rewards.
+- `ValidateSaleItem`: apply additional checks to an individual candidate sale item.
+- `IsListingAvailable`: customize profile/listing availability.
+- `CustomizePurchaseContents`: adjust the contents information sent to the client; keep it consistent with actual delivery.
+- `OnTraderBound` and `OnTraderUnbound`: attach or clean up behavior as static or route entities enter/leave service.
+- `OnConfigurationReady`: initialize integration state after successful configuration publication.
+- `CanSpawnRouteStop`: add a route spawn-clearance decision.
+- `OnRouteStateChanged`: react to persisted route-state transitions.
 
 These are scripting hooks, not JSON configuration fields. Reputation gates, quest-linked access, bespoke delivery, and external rewards need an actual integration. A custom delivery handler must cooperate with rollback and persistence; test failures as carefully as successful purchases. Declare the companion addon's dependency on `RaG_Trader` in `CfgPatches.requiredAddons[]` and distribute any client-required scripts to clients.

@@ -20,7 +20,8 @@ Example:
   "AllowDuplicate": false,
   "BuyPrice": 5000,
   "SellPrice": 2000,
-  "Stock": 2
+  "InitialStock": 2,
+  "MaxStock": 2
 }
 ```
 

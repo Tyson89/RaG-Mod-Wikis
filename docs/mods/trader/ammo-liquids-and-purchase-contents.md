@@ -25,7 +25,8 @@ Add this illustrative listing to a category's `Listings` array:
   "ClassName": "Ammo_308Win",
   "BuyPrice": 20,
   "SellPrice": 5,
-  "Stock": 600,
+  "InitialStock": 600,
+  "MaxStock": 600,
   "RestockAmount": 60,
   "RestockIntervalSeconds": 1800,
   "MinimumHealthPercent": 25.0,
@@ -37,7 +38,7 @@ With dynamic pricing disabled:
 
 - Buy quantity 30: receive 30 rounds, pay 600, remove 30 from stock.
 - Sell quantity 12 of pristine ammo: receive 60, add 12 to stock.
-- `Stock: 600` means 600 rounds, not 600 full stacks.
+- `InitialStock: 600` means 600 starting rounds; `MaxStock: 600` caps storage at 600 rounds, not 600 full stacks.
 - Restock adds up to 60 rounds every 30 minutes of uptime, capped at 600.
 - A fresh finite listing starts full, so buyback initially has no free capacity. Purchases free capacity; restock fills it again.
 
@@ -95,7 +96,8 @@ This is not a complete simulation of crafting, attachments, third-party unpackin
   "ClassName": "Mag_STANAG_30Rnd",
   "BuyPrice": 500,
   "SellPrice": 150,
-  "Stock": 20,
+  "InitialStock": 20,
+  "MaxStock": 20,
   "SpawnQuantity": 15,
   "SpawnFullQuantity": false
 }
@@ -117,7 +119,8 @@ Example fuel listing:
   "BuyPrice": 600,
   "SellPrice": 120,
   "RequiredLiquidType": "Gasoline",
-  "Stock": -1,
+  "InitialStock": -1,
+  "MaxStock": -1,
   "SpawnQuantity": 0,
   "SpawnFullQuantity": true,
   "MinimumHealthPercent": 30.0

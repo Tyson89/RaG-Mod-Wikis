@@ -10,6 +10,7 @@
   "Locations": [
     {
       "Id": "North Market",
+      "CurrencyId": "euro",
       "Enabled": true,
       "Safezone": {
         "Enabled": true,
@@ -36,7 +37,8 @@
       "Traders": [
         {
           "TraderId": "tools",
-          "EntityClassName": "RaG_TraderTerminal",
+          "CurrencyId": "",
+          "EntityClassName": "RaG_TrafficCone",
           "Attachments": [],
           "Enabled": true,
           "OpeningHoursEnabled": false,
@@ -57,6 +59,7 @@
 | Field | Meaning |
 | --- | --- |
 | `Id` | Unique group name. Runtime trader ID becomes `<group Id>/<TraderId>`. |
+| `CurrencyId` | Optional currency for this group; blank inherits catalog default. Individual entries, categories, and route stops can override it. |
 | `Enabled` | `false` skips entire group, all traders, and safe zone. |
 | `Safezone` | One optional cylindrical safe zone for group. |
 | `Traders` | Physical trader entries. |
@@ -68,7 +71,8 @@ Group ID may contain spaces. Keep stable: it appears in runtime location IDs and
 | Field | Rules and effect |
 | --- | --- |
 | `TraderId` | Must match unique profile `Id` in `Catalog.json`. Only one entry with given trader ID is allowed per group because runtime ID would collide. |
-| `EntityClassName` | Exact valid `EntityAI` class. Common choices: survivor class or `RaG_TraderTerminal`. |
+| `CurrencyId` | Optional currency for this entry; blank inherits group/default. Category and route-stop currency take priority. |
+| `EntityClassName` | Exact valid `EntityAI` class. Common choices: survivor class or `RaG_TrafficCone`. |
 | `Attachments` | Survivor clothing, gear, held items, or inventory. Invalid class is validation error. |
 | `Enabled` | `false` skips entry. |
 | `OpeningHoursEnabled` | Uses world-time hour checks when `true`. |
@@ -78,7 +82,13 @@ Group ID may contain spaces. Keep stable: it appears in runtime location IDs and
 | `Orientation` | `[yaw, pitch, roll]`, exactly three values. |
 | `VehicleSpawnPoints` | Ordered list used by vehicle listings. Each needs valid position and orientation. |
 
-Entity manager first binds exact matching map object within 1 metre. Otherwise it spawns entity. This allows map designers to place terminal/NPC themselves while keeping trade binding in JSON.
+For static locations, entity manager first binds an exact matching map object within 1 metre. Otherwise it spawns entity. This allows map designers to place terminal/NPC themselves while keeping trade binding in JSON.
+
+## Traveling groups
+
+An enabled route references group `Id` values through its stop `LocationId` fields. The whole group becomes route-controlled: its entries appear together only while that stop is active. Leave referenced groups enabled. A group cannot belong to multiple enabled routes. Entries retain their own transforms, loadouts, profiles, currencies, and opening hours.
+
+Static safe zones for those groups are suppressed. The active stop uses its explicit `Safezone` override, or the active group zone if no override is supplied; it is removed on departure. An explicit stop `Safezone` with `Enabled: false` disables protection at that stop. Details and complete examples: [traveling traders and routes](traveling-traders-and-routes.md).
 
 ## Opening hours
 
@@ -228,10 +238,10 @@ Avoid accidental overlap with conflicting configs. Same behavior becomes hard to
 - disease/bleeding preservation only if server wants true recovery pause;
 - lower speed limit and visible notifications.
 
-### Terminal without safe zone
+### Object trader without safe zone
 
 - `Safezone.Enabled: false`;
-- terminal still trades normally;
+- configured object still trades normally;
 - ideal for risky black-market location.
 
 ## Border test checklist

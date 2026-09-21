@@ -2,9 +2,19 @@
 
 ## Open a trader
 
-Approach a configured NPC or terminal and use **Trade**. Server checks configured `InteractionDistance` when opening catalog and again during checkout. Staying beside visible NPC is safest; walking away with menu open causes transaction failure.
+Approach a configured NPC or object trader and use **Trade**. Server checks configured `InteractionDistance` when opening catalog and again during checkout. Staying beside the trader is safest; walking away with menu open causes transaction failure.
 
 Trader can also be closed by configured in-game opening hours. Hours use DayZ world time, not real server clock.
+
+## Visiting a traveling trader
+
+A traveling market appears at one configured stop at a time. Between stops its NPCs or objects are absent. Read the route status and countdown before shopping; purchases and sales can close at different times before departure. Opening a basket does not reserve the trader, its stock, or its price.
+
+Some stops restrict categories, disable one trade direction, use another currency, or charge local prices. Check the actual offer at the destination. Separate baskets by currency. Arrival does not necessarily mean full shelves: supply can persist across visits, depend on player sales, or arrive after a configured delay.
+
+If the server enables map markers, present traveling traders appear in the map menu. Reopen the map for a fresh snapshot; markers do not follow a caravan in transit. Arrival/departure announcements and next-stop visibility are server options.
+
+Keep vehicles and players clear of trader spawn positions. A blocked position can delay the whole group. Park on the dealer’s vehicle area only when buying or selling a vehicle, then move clear.
 
 ## Find items quickly
 
@@ -16,10 +26,10 @@ Trader UI supports:
 - **Sellable only**, which checks current player inventory;
 - compatible-item filtering for attachments, magazines, and ammunition;
 - paged item cards;
-- rotatable and zoomable 3D preview;
+- item picture and middle-click inspection through the DayZ inspect screen;
 - current currency balance, stock, inventory load, prices, and item description.
 
-**In stock** hides only listings at `0`. Unlimited stock displays as **Unlimited**. The restock countdown appears for eligible finite listings below capacity; it estimates replenishment and does not reserve the next delivery.
+**In stock** hides only listings at `0`. Unlimited stock displays as **Unlimited**. The ordinary restock countdown appears for eligible shared-stock listings below capacity; it estimates replenishment and does not reserve supply. Separate route/stop stocks do not use that ordinary restock timer.
 
 **Search all categories** expands a non-empty search across this trader's categories. With no search text, the selected category still applies. It never searches another trader's catalog.
 
@@ -32,7 +42,7 @@ Trader UI supports:
 
 ## Favorites, recent purchases, and compatibility
 
-Right-click an item card to toggle its favorite status. Favorites track class names, so the same class can match at another trader. Up to 200 favorites and 50 recent purchase classes are retained in the local client profile. These filters only show items available in the current trader's catalog; they do not summon another trader's goods or bypass rotations.
+Left-click an item card's favorite button to toggle its favorite status. Middle-click the card to inspect the item. Favorites track class names, so the same class can match at another trader. Up to 200 favorites and 50 recent purchase classes are retained in the local client profile. These filters only show items available in the current trader's catalog; they do not summon another trader's goods or bypass rotations.
 
 Select an item, then enable **Compatible only** to find related catalog entries. Compatibility checks attachments in both directions, weapon magazines, loose ammunition, and ammunition boxes with recognized contents. Search/category filters still narrow results. Clear those filters when an expected compatible item seems missing.
 
@@ -186,6 +196,6 @@ Read [vehicle, key, and storage details](vehicles-keys-and-storage.md) before pa
 
 ## Receipts and failed transactions
 
-Open **History** for the latest 50 successful trade receipts. Select one to inspect UTC time, location, currency, quantities, and line totals. A basket has one receipt. History does not undo trades or refund money.
+Open **History** for the latest 50 successful trade receipts. Select one to inspect UTC time, location, currency, quantities, and line totals. **Copy** places the selected receipt text on the clipboard for a support report. A basket has one receipt. History does not undo trades or refund money.
 
 If the server reports pending recovery, preserve the error and contact its admin with your player ID, approximate UTC time, trader, and intended purchase/sale. Check inventory and the ground before reporting missing delivery. Do not repeat a purchase blindly while its previous outcome is uncertain.

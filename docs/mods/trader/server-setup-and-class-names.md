@@ -26,6 +26,7 @@ Bundled defaults copy only when destination file is missing.
 $profile:\RaG_Core\Configs\RaG_Trader\Settings.json
 $profile:\RaG_Core\Configs\RaG_Trader\Catalog.json
 $profile:\RaG_Core\Configs\RaG_Trader\Locations.json
+$profile:\RaG_Core\Configs\RaG_Trader\Routes.json
 $profile:\RaG_Core\Configs\RaG_Trader\VehicleAttachments.json
 $profile:\RaG_Core\Configs\RaG_Trader\Banking.json
 $profile:\RaG_Core\Configs\RaG_Trader\Categories\<Category>.json
@@ -36,6 +37,7 @@ Runtime state appears after initialization/use:
 ```text
 $profile:\RaG_Core\Configs\RaG_Trader\ConfigValidationReport.txt
 $profile:\RaG_Core\Configs\RaG_Trader\Stock.json
+$profile:\RaG_Core\Configs\RaG_Trader\RouteState.json
 $profile:\RaG_Core\Configs\RaG_Trader\Transactions\<transaction-id>.json
 $profile:\RaG_Core\Configs\RaG_Trader\Accounts\<Steam64>.json
 $profile:\RaG_Core\Storage\RaG_Trader\Vehicles\<key-id>.bin
@@ -55,9 +57,9 @@ Use the generated defaults as a working foundation. This exercise adds a small k
 1. Stop the server and back up both Trader configuration and storage roots.
 2. Save the complete category below as `Categories\Starter_Supplies.json`.
 3. Append the profile object below to the existing `Catalog.json` `Traders` array. Keep existing currencies, default currency, and other profiles.
-4. Duplicate a known working physical trader entry in an enabled location group. Set its `TraderId` to `starter`, its `EntityClassName` to `RaG_TraderTerminal`, and its `Attachments` to `[]`.
+4. Duplicate a known working physical trader entry in an enabled location group. Set its `TraderId` to `starter`, its `EntityClassName` to `RaG_TrafficCone`, and its `Attachments` to `[]`.
 5. Choose a separate clear position measured on your actual map. Copy all three position and orientation components accurately. Keep `VehicleSpawnPoints: []` for this non-vehicle shop.
-6. Restart, read the validation report, and open the terminal. Check both purchases and the earning route with an ordinary player.
+6. Restart, read the validation report, and open the trader. Check both purchases and the earning route with an ordinary player.
 
 Complete category:
 
@@ -69,19 +71,22 @@ Complete category:
       "ClassName": "Rope",
       "BuyPrice": 100,
       "SellPrice": 20,
-      "Stock": -1
+      "InitialStock": -1,
+      "MaxStock": -1
     },
     {
       "ClassName": "RaG_CarKey",
       "BuyPrice": 250,
       "SellPrice": -1,
-      "Stock": -1
+      "InitialStock": -1,
+      "MaxStock": -1
     },
     {
       "ClassName": "BearPelt",
       "BuyPrice": -1,
       "SellPrice": 800,
-      "Stock": -1,
+      "InitialStock": -1,
+      "MaxStock": -1,
       "MinimumHealthPercent": 50.0
     }
   ]
@@ -106,21 +111,23 @@ These prices illustrate the wiring. Adjust the earning route for your map and st
 
 ## Trader entity placement
 
-Each enabled `Locations.json` entry does one of two things:
+Each enabled static `Locations.json` entry does one of two things:
 
 1. Finds existing map-placed entity with exact `EntityClassName` within 1 metre of configured position and binds it.
 2. If none found, spawns configured entity itself.
 
-Supported trader target is any valid `EntityAI`. Survivor classes receive configured clothing/equipment. Spawned trader is damage-disabled; survivor trader also cannot be destroyed. Spawned entities are deleted during mission shutdown and recreated next start.
+Supported trader target is any valid `EntityAI`. Survivor classes receive configured clothing/equipment. Static trader is damage-disabled; survivor trader also cannot be destroyed. Spawned entities are deleted during mission shutdown and recreated next start.
 
-### Terminal option
+Route-controlled groups spawn only at their active stop and do not bind existing map objects. `Routes.json` controls timing, stop policy, and route invulnerability. See [traveling traders](traveling-traders-and-routes.md).
 
-Use `RaG_TraderTerminal` as simple object trader:
+### Object trader option
+
+Use `RaG_TrafficCone` as a simple object trader target:
 
 ```json
 {
   "TraderId": "tools",
-  "EntityClassName": "RaG_TraderTerminal",
+  "EntityClassName": "RaG_TrafficCone",
   "Attachments": [],
   "Enabled": true,
   "OpeningHoursEnabled": false,
@@ -132,7 +139,7 @@ Use `RaG_TraderTerminal` as simple object trader:
 }
 ```
 
-Terminal cannot enter hands, cargo, or receive cargo. It is suitable for unmanned kiosks and custom mapped shops.
+`RaG_TrafficCone` is a scope-1 `HouseNoDestruct` target supplied by Trader. Configure its placement directly; editor visibility depends on support for scope-1 classes. Choose a survivor with a deliberate loadout when the shop should appear staffed. The coordinates here are illustrative: measure a clear position on your map.
 
 ### Survivor option
 
@@ -167,12 +174,12 @@ Survivor loadout tries attachment slot, then hands, then inventory. Validator cr
 
 ATM registers as network static object shortly after initialization. Keep it reachable within `InteractionDistance` and avoid placing overlapping geometry in front of interaction point.
 
-## Public class names
+## Class names
 
 | Class | Scope | Purpose |
 | --- | ---: | --- |
-| `RaG_ATM` | `2` | Placeable banking terminal. |
-| `RaG_TraderTerminal` | `2` | Generic configured trader target. |
+| `RaG_ATM` | `1` | Banking terminal for scripted/editor placement; editor must support scope-1 classes. |
+| `RaG_TrafficCone` | `1` | Object target usable in a configured trader entry. |
 | `RaG_CarKey_Admin` | `2` | Admin lock/unlock/reset tool; server requires holder in `AdminSteamIds`. Keep out of player shops and loot. |
 | `RaG_CarKey` | `2` | Assign, lock/unlock, pack/deploy, spare-key crafting, and packed-car sale token. |
 | `RaG_Euro_1` | `2` | Physical value-1 Euro note. |

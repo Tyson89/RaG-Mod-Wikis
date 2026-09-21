@@ -6,24 +6,23 @@ Current default:
 
 ```json
 {
-  "Version": 1,
-  "InteractionDistance": 3.0,
-  "MaxBasketEntries": 50,
-  "RequestCooldownMilliseconds": 250,
-  "StockSaveIntervalMilliseconds": 5000,
-  "EnableTradeLogging": true,
-  "EnableEconomyTelemetry": true,
-  "EnableAutomaticRestock": true,
-  "EnableDynamicPricing": false,
-  "DynamicPriceRangePercent": 25.0,
-  "EnableConditionSellPricing": true,
-  "EnableQuantitySellPricing": true,
-  "MinimumSellPricePercent": 10.0,
-  "AllowGroundFallback": true,
-  "LockVehicleWheelsOnSpawn": false,
-  "EnableVehiclePacking": true,
-  "RestrictVehicleStorageToOwner": true,
-  "AdminSteamIds": []
+    "Version": 1,
+    "InteractionDistance": 3.0,
+    "MaxBasketEntries": 50,
+    "StockSaveIntervalSeconds": 5,
+    "EnableTradeLogging": true,
+    "EnableEconomyTelemetry": true,
+    "EnableAutomaticRestock": true,
+    "EnableDynamicPricing": false,
+    "DynamicPriceRangePercent": 25.0,
+    "EnableConditionSellPricing": true,
+    "EnableQuantitySellPricing": true,
+    "MinimumSellPricePercent": 10.0,
+    "AllowGroundFallback": true,
+    "LockVehicleWheelsOnSpawn": false,
+    "EnableVehiclePacking": true,
+    "RestrictVehicleStorageToOwner": true,
+    "AdminSteamIds": []
 }
 ```
 
@@ -36,8 +35,7 @@ Bundled default enables `AllowGroundFallback`. If omitted from a hand-written se
 | `Version` | `1` | Must match current schema. |
 | `InteractionDistance` | `3.0` | Server distance in metres for trader catalog/transactions and ATM transfers. Values below `1.0` become `1.0`. |
 | `MaxBasketEntries` | `50` | Maximum distinct basket lines accepted by server, clamped `1`–`100`. Client UI itself caps at 50. |
-| `RequestCooldownMilliseconds` | `250` | Per-player delay between accepted transaction/bank requests. Negative becomes `0`. |
-| `StockSaveIntervalMilliseconds` | `5000` | Delay used to coalesce dirty stock writes. Minimum `250`. Final dirty state saves at shutdown. |
+| `StockSaveIntervalSeconds` | `5` | Coalesces dirty stock writes; minimum 1 second. Final dirty state saves at shutdown. |
 | `EnableTradeLogging` | `true` | Writes successful trades to dedicated `Trades` log. Failed trades are not audit entries. |
 | `EnableAutomaticRestock` | `true` | Enables configured finite-listing restock timers. |
 | `EnableDynamicPricing` | `false` | Changes both buy and base sell price from finite-stock ratio. |
@@ -69,17 +67,28 @@ Raising `MaxBasketEntries` above 50 does not expand current UI basket. It only r
 
 ## Stock model
 
-Each listing has one stock ceiling in category file:
+Each listing separates its starting supply from its storage capacity:
 
 ```json
 {
-  "Stock": -1
+  "InitialStock": 0,
+  "MaxStock": 20
 }
 ```
 
-- `-1`: unlimited. Buying and selling do not change it.
-- `0`: finite empty listing. Cannot buy; cannot sell because hard ceiling also zero.
-- positive: startup maximum and persistent cap.
+This shop starts empty and can accept twenty objects from players. Its first customer must sell before anyone can buy.
+
+| InitialStock | MaxStock | Use |
+| ---: | ---: | --- |
+| `-1` | `-1` | Unlimited supply and buyback. |
+| `0` | `20` | Empty player-supplied market or limited buyback counter. |
+| `5` | `20` | Five objects available initially, with room for fifteen more. |
+| `20` | `20` | Fully stocked shop; no buyback room until goods leave. |
+| `0` | `0` | No supply or buyback capacity. |
+
+Both fields must be `-1` for unlimited stock. Otherwise both must be nonnegative and `InitialStock <= MaxStock`. Counts mean rounds for loose ammo, objects for other listings. Set both fields explicitly in finite listings.
+
+`InitialStock` seeds a missing listing; it does not refill an existing stock record on restart or reload. `MaxStock` is the capacity used by buyback checks, replenishment, and dynamic pricing.
 
 Finite stock transaction:
 
@@ -89,7 +98,7 @@ Finite stock transaction:
 - transaction reserves stock before delivery/payment;
 - failure attempts exact rollback.
 
-Stock shared by derived listing ID. It is not per player, trader object, or location.
+Static shops and routes using `StockMode: "shared"` share stock by derived listing ID. Routes can instead keep separate stock per route/profile or per stop/profile; see [route stock](traveling-traders-and-routes.md#stock-sharing-and-arrival-deliveries). No mode gives each player a personal allowance.
 
 ## `Stock.json`
 
@@ -111,7 +120,9 @@ Illustrative file with finite stock and its persisted identity map:
   "ListingIds": {
     "tools_hatchet||1": "tools_hatchet",
     "vehicles_civiliansedan||1": "vehicles_civiliansedan"
-  }
+  },
+  "RouteArrivals": {},
+  "ScopedEntries": {}
 }
 ```
 
@@ -120,9 +131,11 @@ Runtime loader:
 - restores valid main file;
 - falls back to atomic backup when main invalid;
 - rejects malformed or duplicate persisted entries during file validation; valid orphan listing IDs are dropped;
-- normalizes accepted counts outside the current listing range to configured stock; values below `-1` make the persisted file invalid;
-- adds new listings at configured stock;
+- normalizes accepted counts outside the current listing range to configured capacity; values below `-1` make the persisted file invalid;
+- adds new listings at `InitialStock`;
 - keeps unlimited listings as `-1` in memory; saved entries cover finite listings.
+
+`ScopedEntries` stores route/stop counts and capacities; `RouteArrivals` prevents repeated arrival deliveries. Preserve these maps together with `RouteState.json` when restoring a traveling economy.
 
 Do not hand-edit while server runs. In-memory state can overwrite changes. Preserve `ListingIds` with counts: the identity map reserves assigned IDs for category/class/liquid occurrences, including unlimited listings. It is not a list of stock capacities.
 
@@ -132,7 +145,7 @@ Do not hand-edit while server runs. In-memory state can overwrite changes. Prese
 2. Back up `Stock.json` and `.bak`.
 3. Move both outside active directory.
 4. Start server.
-5. New state seeds from each listing's `Stock`.
+5. New state seeds from each listing's `InitialStock`.
 
 ## Automatic restocking
 
@@ -143,7 +156,8 @@ Example:
   "ClassName": "TetracyclineAntibiotics",
   "BuyPrice": 250,
   "SellPrice": 80,
-  "Stock": 20,
+  "InitialStock": 20,
+  "MaxStock": 20,
   "RestockAmount": 2,
   "RestockIntervalSeconds": 1800
 }
@@ -152,10 +166,12 @@ Example:
 Required rules:
 
 - global `EnableAutomaticRestock: true`;
-- `Stock > 0`;
+- `MaxStock > 0`;
 - `RestockAmount > 0`;
 - `RestockIntervalSeconds > 0` and at most `86400`;
 - amount and interval either both enabled or both zero.
+
+Ordinary automatic restock affects the shared listing stock. Separate `route` and `stop` stock uses arrival deliveries instead; its supply does not gain the ordinary uptime-based increments. `RestockOnArrival` is a separate route switch and can operate with `EnableAutomaticRestock: false`.
 
 Restock adds amount toward configured cap. Timers begin at server initialization. Delayed in-session ticks catch up missed intervals. Restart creates fresh timer; no offline elapsed-time catch-up is stored.
 
@@ -164,10 +180,10 @@ Restock adds amount toward configured cap. Timers begin at server initialization
 
 ## Dynamic pricing
 
-Only listings with finite positive `Stock` use dynamic pricing. Unlimited stock keeps its base price. `DynamicPriceRangePercent` controls the swing around half stock.
+Only listings with finite positive capacity use dynamic pricing. For route stock, the effective scoped capacity applies, including a stop override. Unlimited stock keeps its base price. `DynamicPriceRangePercent` controls the swing around half stock.
 
 ```text
-ratio = clamp(stock used for this unit / configured Stock, 0, 1)
+ratio = clamp(stock used for this unit / effective stock capacity, 0, 1)
 multiplier = 1 + ((0.5 - ratio) × 2 × rangePercent / 100)
 buy unit price = max(1, ceil(BuyPrice × multiplier))
 sell base price = max(1, floor(SellPrice × multiplier))
@@ -179,7 +195,7 @@ At a 25% range, a full-stock purchase costs 75% of base, a half-stock purchase c
 
 ### Worked multi-item purchase
 
-For `Stock: 10`, `BuyPrice: 100`, range 25%, and current stock 10:
+For `InitialStock: 10`, `MaxStock: 10`, `BuyPrice: 100`, range 25%, and current stock 10:
 
 ```text
 first object:  stock 10 → ceil(100 × 0.75) = 75
@@ -259,7 +275,7 @@ Server keeps one lock per player identity:
 - stuck lock auto-expires after 30 seconds;
 - disconnect clears cached request state.
 
-Do not set cooldown too high. UI gives generic “Please wait” message for busy/cooldown.
+Accepted transaction and bank requests use a fixed 250-millisecond per-player cooldown. It is not a settings field. UI gives a generic “Please wait” message for busy/cooldown; wait for the current result before retrying.
 
 ## Trade logging
 

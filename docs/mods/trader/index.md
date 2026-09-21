@@ -1,6 +1,6 @@
 # RaG Trader
 
-RaG Trader is a server-authoritative trading, banking, safe-zone, and vehicle-key system. It includes a searchable trader UI, stackable physical Euro notes, persistent stocks and bank accounts, optional dynamic pricing, configurable NPC or terminal traders, vehicle delivery, and portable keyed vehicle storage.
+RaG Trader is a server-authoritative trading, banking, safe-zone, and vehicle-key system. It includes a searchable trader UI, stackable physical Euro notes, persistent stocks and bank accounts, optional dynamic pricing, configurable NPC or object traders, traveling markets with scheduled stops and local currencies, vehicle delivery, and portable keyed vehicle storage.
 
 [RaG Core](../core/index.md) is a hard dependency. Install both mods on server and every client. DayZ resolves addon/PBO ordering from declared dependencies; server `-mod` list order does not control it.
 
@@ -11,6 +11,7 @@ RaG Trader is a server-authoritative trading, banking, safe-zone, and vehicle-ke
 - [Catalog, categories, and listings](catalog-and-listings.md) documents trader profiles, category files, every listing field, delivery, and custom mod items.
 - [Settings, stock, and pricing](settings-stock-and-pricing.md) explains global settings, finite stock, restocking, dynamic pricing, item-condition pricing, and trade logs.
 - [Locations and safe zones](locations-and-safezones.md) covers trader groups, NPC loadouts, opening hours, safe-zone protections, exclusions, and admin bypasses.
+- [Traveling traders and routes](traveling-traders-and-routes.md) covers group movement, schedules, branching stops, local prices, supply deliveries, map markers, and admin controls.
 - [Banking and currencies](banking-and-currencies.md) covers physical and account currencies, denomination design, fees, limits, persistence, and ATM placement.
 - [Vehicles, keys, and storage](vehicles-keys-and-storage.md) explains vehicle purchase spawns, attachments, keys, locking, spare keys, packing, deployment, and recovery files.
 - [Ammunition, liquids, and purchase contents](ammo-liquids-and-purchase-contents.md) explains per-round trading, partial stacks, liquid-specific containers, supplied contents, and safe pricing.
@@ -27,10 +28,11 @@ Bundled defaults contain:
 - 60 category files;
 - 1,782 listings across the bundled category files;
 - one physical Euro currency using 1, 2, 5, 10, 20, 50, 100, and 200-value notes;
-- one enabled Sosnovy Pass trader group with 6 survivor traders;
+- three enabled groups—Sosnovy Pass, Mogilevka, and Prison—with 6 survivor traders each;
+- one disabled example route connecting those groups; with the route disabled, the groups operate as static locations;
 - 20 vanilla vehicle attachment profiles;
 - banking enabled, with zero fees and zero starting balance;
-- safe-zone configuration supplied but disabled at the default group;
+- optional safe-zone configuration for the location groups;
 - `RaG_CarKey`, vehicle locking, spare-key crafting, and binary vehicle storage.
 
 !!! warning "Defaults are a starting point, not a balanced economy"
@@ -40,15 +42,15 @@ Bundled defaults contain:
 
 - Server validates identity, distance, location, trader, listing, price, stock, quantity, and catalog revision. Client UI is not authority.
 - Category filename becomes category ID. Listing identities include category, class, liquid variant, and duplicate occurrence; their assigned IDs persist in `Stock.json`.
-- Stock belongs to listing ID and is shared by every trader/location exposing that listing.
+- `InitialStock` seeds supply; `MaxStock` limits storage. Static shops share stock by listing ID; routes can share it or isolate it per route/profile or stop/profile.
 - Basket checkout targets all-or-nothing completion. Failures trigger rollback; unresolved recovery is retained in journals rather than silently discarded.
 - Physical currency can be found in hands, clothing, containers, attachments, and nested inventory.
 - Purchased vehicles use configured spawn points, not player inventory or ordinary ground fallback.
 - Vehicles can be sold packed through owner key or physically from trader vehicle spawn point, subject to ownership checks.
 - Vehicle purchases do not automatically assign or include a key.
 - Safe zones are optional and independent per location group.
-- Admins can reload supported economy settings and categories through trader UI. Locations, opening hours, safe zones, and currency definitions require restart.
-- Rotating offers and seasonal months use real UTC; opening hours use DayZ world time. Restocking uses server uptime.
+- Admins can reload supported economy settings and categories through trader UI. Location-file positions, opening hours, zones, and currencies require restart, as do catalog currency definitions. Permitted route edits require the affected route paused at a stop.
+- Rotating offers and seasonal months use real UTC; opening hours use DayZ world time. Ordinary restocking uses server uptime. Route schedules choose real UTC or DayZ world time; route wait/travel timers use real seconds.
 - Purchases can require consumed items in addition to money. Loose-ammo requirements apply per round.
 - Loose ammo prices, quantities, and stock count rounds; magazines and ammo boxes count objects.
 - Liquid-specific listings supply the configured liquid and accept only matching non-empty containers.

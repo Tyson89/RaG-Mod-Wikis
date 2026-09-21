@@ -12,7 +12,7 @@ Registry validation checks configuration versions, currency definitions, prices,
 
 Report status is `PASSED`, `WARNINGS`, or `FAILED`. Blocking errors prevent registry publication. Warnings deserve review but do not necessarily block startup. Listing-local faults disable the affected listing while valid listings can remain usable. Structural errors in shared configuration block registry publication.
 
-Report groups include missing classes, invalid prices, broken attachments, duplicate entries, unsupported currencies, and general configuration. Read Error/Warning logs too: category-loading failures can occur before report generation, and live-reload restriction details are logged even when the report lacks a dedicated section. Check report timestamp before trusting a previous result.
+Report groups include missing classes, invalid prices, broken attachments, duplicate entries, unsupported currencies, moving traders, and general configuration. Read Error/Warning logs too: category-loading failures can occur before report generation, and live-reload restriction details are logged even when the report lacks a dedicated section. Check report timestamp before trusting a previous result.
 
 !!! tip "Fix cause, then validate again"
     An unknown part in `VehicleAttachments.json` can block the whole registry. Check mod availability and exact class first; then attachment slot compatibility. Changing the trader's position cannot fix a catalog or attachment error.
@@ -33,11 +33,11 @@ Trader UI exposes **Diagnostics**, **Reload configs**, and **Retry recovery** to
 
 ## Admin Diagnostics
 
-Open **Diagnostics** from the trader menu as a listed admin. This is a read-only inspection panel; opening it does not reload configuration, retry recovery, or alter balances.
+Open **Diagnostics** from the trader menu as a listed admin. Opening the panel only inspects state. Route controls inside it can pause, resume, depart, arrive, or jump to a stop; those actions alter persistent route state and can trigger arrival deliveries.
 
 The panel shows registry readiness, recovery-journal readiness, disabled-listing count, pending-transaction count, and paged entries. Select an entry to inspect its details; use **Refresh** after a configuration or recovery operation. Pages contain up to 40 entries, and long detail text is truncated, so retain the full logs and report for investigation.
 
-Entries cover pending journal information, active disabled listings and their first error, and issues from the latest validation attempt. A rejected reload can therefore appear alongside the still-active registry. Check readiness and the actual active listing before assuming a candidate was published.
+Route entries show current/next stop, timers, blocked-spawn state, stock mode, trading cutoffs, and recovery holds. See [route admin controls](traveling-traders-and-routes.md#admin-controls). Other entries cover pending journal information, active disabled listings and their first error, and issues from the latest validation attempt. A rejected reload can therefore appear alongside the still-active registry. Check readiness and the actual active listing before assuming a candidate was published.
 
 ### Resolve a disabled listing
 
@@ -53,11 +53,11 @@ If startup fails before the trader UI is usable, diagnose from server files and 
 
 ## Live configuration reload
 
-Reload reads all five main files plus every referenced category, validates them as one candidate, prepares and saves stock, then publishes the candidate. A rejected candidate leaves active configuration in place.
+Reload reads all six main files (`Settings`, `Catalog`, `Locations`, `Routes`, `VehicleAttachments`, and `Banking`) plus every referenced category, validates them as one candidate, prepares stock and route state, saves them, then publishes the candidate. Failure to restore stock after a failed route-state write can suspend trading until restart; check the error log before retrying. A rejected candidate leaves active configuration in place.
 
 | Config area | Live reload |
 | --- | --- |
-| Listing prices, stock ceilings, restock fields, materials, liquid requirements | Supported. |
+| Listing prices, starting stock/capacity, restock fields, materials, liquid requirements | Supported. Starting stock does not overwrite an existing finite count. |
 | Category content and trader category references | Supported, with valid existing location references. |
 | Trader display names and offer pools | Supported. |
 | Global settings and admin list | Supported. |
@@ -65,6 +65,8 @@ Reload reads all five main files plus every referenced category, validates them 
 | Purchased vehicle attachment profiles | Supported for future purchases; existing vehicles are not refitted. |
 | `Locations.json`, including loadouts, opening hours, and safe zones | Restart required. |
 | Catalog currency definitions or `DefaultCurrencyId` | Restart required. |
+| Route schedules, prices, cutoffs, and other permitted route fields | Only while affected route is paused at a stop; see [route restrictions](traveling-traders-and-routes.md#editing-and-recovering-routes). |
+| Route topology, stock mode, stop names, or stop stock limits | Restart and deliberate saved-state handling required. |
 
 ### Reload procedure
 
@@ -84,7 +86,7 @@ Reload is blocked while a transaction is active, journal is unavailable, or reco
 - Existing finite listing: keep current stock, capped at the candidate maximum.
 - Raised maximum: does not instantly refill existing finite stock.
 - Lowered maximum: clamps excess stock down.
-- New listing or unlimited-to-finite transition: seed from configured stock.
+- New listing or unlimited-to-finite transition: seed from `InitialStock`.
 - Finite-to-unlimited transition: becomes `-1`.
 - Removed listing: omitted from prepared state.
 
@@ -164,7 +166,8 @@ Also retain matching DayZ player/world persistence, mod builds, and server confi
 
 | State | Consequence of discarding it |
 | --- | --- |
-| `Stock.json` | Stock reseeds from configured capacities; listing identity mappings are lost. |
+| `Stock.json` | Shared stock reseeds from `InitialStock`; listing identities, scoped route counts, and arrival delivery markers are lost. |
+| `RouteState.json` | Route progress, chosen destination, pauses, and arrival identity are lost; fresh route state can trigger another arrival delivery. |
 | `Accounts` | Bank/account balances and initialization records are lost. |
 | `Transactions` | Interrupted-trade evidence and recovery links are lost. |
 | `Vehicles` | Keys cannot restore missing stored vehicles. |

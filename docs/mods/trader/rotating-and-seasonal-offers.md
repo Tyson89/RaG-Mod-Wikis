@@ -6,12 +6,14 @@ Offer pools control which classes a trader exposes. Stock controls how much can 
 
 | Goal | Configuration | Scope |
 | --- | --- | --- |
-| Ten rifles across a network | `Stock: 10` on a shared listing | Everyone using the listing ID. |
+| Ten rifles across a network | `InitialStock: 10`, `MaxStock: 10` on a shared listing | Everyone using the listing ID. |
 | Return two rifles every half hour | Positive restock amount and interval | Shared listing, during server uptime. |
 | Show two of five rifles | `OfferPools` on the trader profile | Every location using that profile. |
 | October event goods | Pool `Months: [10]` | Real UTC month. |
 | Night-only dealer | Location opening hours | DayZ world hour. |
 | Independent northern and southern supply | Separate category files | Separate listing identities. |
+
+Traveling markets add another availability layer: the group must be present, its schedule open, and its stop/category/direction rules satisfied. See [routes](traveling-traders-and-routes.md).
 
 Stock is communal supply. It does not impose a personal daily or weekly allowance. Individual progression or player-specific purchase restrictions require a companion script using the [transaction hooks](catalog-and-listings.md#custom-scripted-possibilities).
 

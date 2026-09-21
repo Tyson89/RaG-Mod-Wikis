@@ -31,7 +31,8 @@ Save as `Categories\Clinic.json`:
       "ClassName": "TetracyclineAntibiotics",
       "BuyPrice": 300,
       "SellPrice": -1,
-      "Stock": -1,
+      "InitialStock": -1,
+      "MaxStock": -1,
       "SpawnFullQuantity": true
     }
   ]
@@ -51,7 +52,8 @@ Goal: replenish a small communal supply during uptime.
   "ClassName": "Morphine",
   "BuyPrice": 250,
   "SellPrice": 60,
-  "Stock": 12,
+  "InitialStock": 12,
+  "MaxStock": 12,
   "RestockAmount": 2,
   "RestockIntervalSeconds": 1800
 }
@@ -72,7 +74,8 @@ Goal: make found loot a dependable currency source.
   "ClassName": "BearPelt",
   "BuyPrice": -1,
   "SellPrice": 800,
-  "Stock": -1,
+  "InitialStock": -1,
+  "MaxStock": -1,
   "MinimumHealthPercent": 50.0
 }
 ```
@@ -92,7 +95,8 @@ Goal: require scavenged materials as well as cash for a tent.
   "ClassName": "MediumTent",
   "BuyPrice": 1500,
   "SellPrice": -1,
-  "Stock": 5,
+  "InitialStock": 5,
+  "MaxStock": 5,
   "RequiredItems": ["BurlapSack", "BurlapSack", "Rope"],
   "DeliveryMode": "inventory"
 }
@@ -116,7 +120,8 @@ Goal: sell exactly the rounds a player needs.
   "ClassName": "Ammo_308Win",
   "BuyPrice": 20,
   "SellPrice": 5,
-  "Stock": 600,
+  "InitialStock": 600,
+  "MaxStock": 600,
   "RestockAmount": 60,
   "RestockIntervalSeconds": 1800
 }
@@ -137,7 +142,8 @@ Goal: sell full gasoline canisters and buy matching partial canisters.
   "SellPrice": 120,
   "RequiredLiquidType": "Gasoline",
   "SpawnFullQuantity": true,
-  "Stock": -1
+  "InitialStock": -1,
+  "MaxStock": -1
 }
 ```
 
@@ -156,7 +162,8 @@ Goal: sell an equipped weapon with predictable contents.
   "ClassName": "M4A1",
   "BuyPrice": 4000,
   "SellPrice": 1400,
-  "Stock": 5,
+  "InitialStock": 5,
+  "MaxStock": 5,
   "Attachments": [
     "M4_OEBttstck",
     "M4_PlasticHndgrd",
@@ -181,6 +188,42 @@ For independent supply, create `North_Tools.json` and `South_Tools.json`. A Hatc
 At 25% dynamic range, north base buy 300 can fall to 225 while south base sell 220 can approach 275. Independently stocked routes can therefore pay roughly 50 per object before discrete stock steps and rounding. Returns fall as purchases drain one stock and resale fills the other.
 
 For intentional travel income, choose supply, restock, resale capacity, and travel risk accordingly. Otherwise widen the price gap or remove the duplicate route. Test round trips using actual player transport capacity.
+
+## Player-supplied market
+
+Goal: goods enter the market through player sales, with room for a finite supply.
+
+```json
+{
+  "ClassName": "Hatchet",
+  "BuyPrice": 300,
+  "SellPrice": 80,
+  "InitialStock": 0,
+  "MaxStock": 20,
+  "RestockAmount": 0,
+  "RestockIntervalSeconds": 0,
+  "MinimumHealthPercent": 40.0
+}
+```
+
+The shop starts empty. One eligible sale adds one stock unit; another player can then buy it. No restock fills the shop automatically. `InitialStock` only seeds a missing stock record, so restarting does not erase the accumulated player supply.
+
+For a permanent buyback counter that accepts at most twenty objects, set `BuyPrice: -1`. It stops buying from players when full. Adding restock would consume its remaining buyback room, not clear it; decide how that capacity should reopen before using this design as a long-term earning route.
+
+Stock stores counts, not the sold physical item. Purchases use the listing's configured spawn contents and normal delivery logic. Do not describe this as a consignment market preserving a seller's exact item, condition, or attachments.
+
+## Traveling economy designs
+
+Use [traveling traders and routes](traveling-traders-and-routes.md) for complete route fields and copyable configurations.
+
+- **Carried supply:** same trader profile across groups, `StockMode: "route"`, finite starting stock. A purchase at one town reduces the same merchant's supply at the next.
+- **Regional supply:** `StockMode: "stop"`, distinct stop capacities and prices. Leave resale headroom with `InitialStock` below capacity.
+- **Supply drops:** positive listing restock amount/interval, route `RestockOnArrival: true`, optional delivery delay. Disable global automatic restock if arrival should be the only automated supply source.
+- **Relief market:** Medical-only stop, `AllowSelling: false`, modest batches, enough wait time for players to reach it after the announcement.
+- **Cashless specialist:** account currency on its category; keep an accessible earning route. A stop-wide currency override can replace that choice, so inspect the complete precedence chain.
+- **Weekend event:** UTC schedule with weekday mask 96. Use a separate static group if the area needs permanent protection or services between visits.
+
+Balance the full circuit: time waiting and traveling, ordinary restock, arrival deliveries, shared listings across profiles, buyback capacity, denomination value, and dynamic prices. Test with realistic carrying capacity. Repeated admin jumps create fresh arrivals and can distort supply measurements.
 
 ## Night dealer and seasonal stock
 
