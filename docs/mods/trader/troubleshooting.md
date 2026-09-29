@@ -68,6 +68,9 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | Player market action missing | Enable `P2P.json`, restart, and place `StaticObj_Misc_AdvertColumn`. Use board within five metres; ordinary trader/ATM does not open market. |
 | Player market item cannot be listed | Check ruin, lock, removability, car-key/currency exclusion, attachment/cargo policy, price bounds, per-player/global limits, and mod hook. |
 | Purchased market item not in inventory | Buying reserves item. Open **Purchased** at market board and claim with inventory space. Check History before retrying a timed-out purchase. |
+| Market item claim says inventory full | Free enough space for actual stored item and contents; claim has no ground fallback. Retry at board. |
+| Seller proceeds remain pending | Check `MaxBankBalance` room, then use **Claim proceeds** in **My listings**. Preserve listing ID if recovery message remains. |
+| Market disabled after restart | Check `P2P.json` currency/banking setup, listing journals, matching `.bin` item payloads, and server Error logs. Preserve files for [recovery](player-market-server.md#persistence-and-recovery). |
 | Initial balance not reapplied | Expected. Currency ID already listed in `InitializedCurrencies`. |
 | Vehicle purchase fails | No valid spawn points, collision box blocked, class not valid transport, or all points invalid. For keyed cars, also check key creation, inventory room, and `AllowGroundFallback`. |
 | Purchased vehicle missing parts | No exact profile, or actual creation failed despite validation. Invalid configured profiles block registry startup/reload. Check report and Warning/Error logs. |

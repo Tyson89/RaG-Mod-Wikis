@@ -183,7 +183,7 @@ nav:
       - Overview: mods/trader/index.md
       - Player guide: mods/trader/getting-started.md
       - Clothing try-on and weapon builder: mods/trader/shopping-tools.md
-      - Player market: mods/trader/player-market.md
+      - P2P Trader player market: mods/trader/player-market.md
       - Server guides:
           - Setup and class names: mods/trader/server-setup-and-class-names.md
           - Catalog, categories, and listings: mods/trader/catalog-and-listings.md
@@ -191,6 +191,7 @@ nav:
           - Locations and safe zones: mods/trader/locations-and-safezones.md
           - Traveling traders and routes: mods/trader/traveling-traders-and-routes.md
           - Banking and currencies: mods/trader/banking-and-currencies.md
+          - P2P Trader server guide: mods/trader/player-market-server.md
           - Vehicles, keys, and storage: mods/trader/vehicles-keys-and-storage.md
           - Ammunition, liquids, and purchase contents: mods/trader/ammo-liquids-and-purchase-contents.md
           - Rotating and seasonal offers: mods/trader/rotating-and-seasonal-offers.md

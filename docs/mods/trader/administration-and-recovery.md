@@ -171,7 +171,7 @@ Also retain matching DayZ player/world persistence, mod builds, and server confi
 | `Accounts` | Bank/account balances and initialization records are lost. |
 | `BankDirectory.json`, `BankTransfers.json` | Recipient lookup and pending player-transfer recovery can fail. Keep transfer journals with matching accounts. |
 | `Transactions` | Interrupted-trade evidence and recovery links are lost. |
-| `P2P` | Player-market offers, purchase claims, returns, and stored items can be lost. Keep each listing journal with its matching item payload. |
+| `P2P` | Player-market offers, purchase claims, returns, and stored items can be lost. Keep each listing journal with matching item payload and accounts. See [P2P Trader recovery](player-market-server.md#persistence-and-recovery). |
 | `Vehicles` | Keys cannot restore missing stored vehicles. |
 | `History` | Player receipts disappear. |
 | `EconomyTelemetry.json` | Aggregate balancing data disappears. |

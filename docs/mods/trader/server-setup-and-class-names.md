@@ -179,7 +179,7 @@ Survivor loadout tries attachment slot, then hands, then inventory. Validator cr
 
 ATM registers as network static object shortly after initialization. Keep it reachable within `InteractionDistance` and avoid placing overlapping geometry in front of interaction point.
 
-For [player market](player-market.md), enable `P2P.json` and place `StaticObj_Misc_AdvertColumn` through map/editor data. Market checks a five-metre board radius on every operation. `Locations.json` does not create market boards.
+For [P2P Trader](player-market-server.md), enable `P2P.json` and place `StaticObj_Misc_AdvertColumn` through map/editor data. Market checks a five-metre board radius on every operation. `Locations.json` does not create market boards.
 
 ## Class names
 

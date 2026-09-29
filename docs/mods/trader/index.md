@@ -8,7 +8,8 @@ RaG Trader is a server-authoritative trading, banking, safe-zone, and vehicle-ke
 
 - [Player guide](getting-started.md) covers trader UI, filters, baskets, buying, selling, banks, and practical player tips.
 - [Clothing try-on and weapon builder](shopping-tools.md) covers outfit preview, compatible weapon parts, build totals, and checkout tips.
-- [Player market](player-market.md) covers player listings, bank-backed purchases, claims, market boards, and server limits.
+- [P2P Trader player market](player-market.md) covers browsing, listings, payment, claims, and player tips.
+- [P2P Trader server guide](player-market-server.md) covers currency setup, market boards, listing policy, persistence, recovery, and test cases.
 - [Server setup and class names](server-setup-and-class-names.md) covers installation, generated files, trader placement, ATMs, dependencies, and public classes.
 - [Catalog, categories, and listings](catalog-and-listings.md) documents trader profiles, category files, every listing field, delivery, and custom mod items.
 - [Settings, stock, and pricing](settings-stock-and-pricing.md) explains global settings, finite stock, restocking, dynamic pricing, item-condition pricing, and trade logs.
