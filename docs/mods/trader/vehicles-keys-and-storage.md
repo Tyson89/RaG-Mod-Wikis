@@ -6,7 +6,7 @@ RaG Trader has three related systems:
 2. selling packed cars or physical cars/boats under ownership rules;
 3. assigning `RaG_CarKey` to `CarScript` vehicles for locking and portable storage.
 
-Vehicle purchase does not assign a key automatically. Key system supports cars derived from `CarScript`, not boats.
+With default `CreateVehicleKeyOnPurchase: true`, purchased `CarScript` cars receive an assigned `RaG_CarKey`. It goes into player inventory, or onto the ground at player position when `AllowGroundFallback` permits. Secure the key before leaving. If key creation or assignment fails, purchase fails rather than leaving a paid car without its expected key. Set the switch to `false` only when players must obtain a blank key and assign it themselves. Key system supports cars derived from `CarScript`, not boats.
 
 ## Vehicle listings
 
@@ -187,7 +187,7 @@ Requirements:
 
 An ordinary key cannot clear or move its assignment. Authorized admins can reset the deployed vehicle through the separate admin key described below. Vehicle/key display name changes to include recorded owner and vehicle name.
 
-Purchased vehicle needs separately obtained blank key. Add `RaG_CarKey` to vehicle/tools trader or loot economy.
+For found cars, or car purchases when `CreateVehicleKeyOnPurchase` is disabled, obtain a blank key separately. Add `RaG_CarKey` to vehicle/tools trader or loot economy if players need that path. Purchased boats do not use car keys.
 
 ## Locking
 

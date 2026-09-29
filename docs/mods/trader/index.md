@@ -7,6 +7,8 @@ RaG Trader is a server-authoritative trading, banking, safe-zone, and vehicle-ke
 ## Start here
 
 - [Player guide](getting-started.md) covers trader UI, filters, baskets, buying, selling, banks, and practical player tips.
+- [Clothing try-on and weapon builder](shopping-tools.md) covers outfit preview, compatible weapon parts, build totals, and checkout tips.
+- [Player market](player-market.md) covers player listings, bank-backed purchases, claims, market boards, and server limits.
 - [Server setup and class names](server-setup-and-class-names.md) covers installation, generated files, trader placement, ATMs, dependencies, and public classes.
 - [Catalog, categories, and listings](catalog-and-listings.md) documents trader profiles, category files, every listing field, delivery, and custom mod items.
 - [Settings, stock, and pricing](settings-stock-and-pricing.md) explains global settings, finite stock, restocking, dynamic pricing, item-condition pricing, and trade logs.
@@ -47,7 +49,7 @@ Bundled defaults contain:
 - Physical currency can be found in hands, clothing, containers, attachments, and nested inventory.
 - Purchased vehicles use configured spawn points, not player inventory or ordinary ground fallback.
 - Vehicles can be sold packed through owner key or physically from trader vehicle spawn point, subject to ownership checks.
-- Vehicle purchases do not automatically assign or include a key.
+- With `CreateVehicleKeyOnPurchase` enabled, purchased cars receive an assigned key in inventory or at the player's feet when ground fallback is enabled. Boats do not use this key system.
 - Safe zones are optional and independent per location group.
 - Admins can reload supported economy settings and categories through trader UI. Location-file positions, opening hours, zones, and currencies require restart, as do catalog currency definitions. Permitted route edits require the affected route paused at a stop.
 - Rotating offers and seasonal months use real UTC; opening hours use DayZ world time. Ordinary restocking uses server uptime. Route schedules choose real UTC or DayZ world time; route wait/travel timers use real seconds.

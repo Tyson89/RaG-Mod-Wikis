@@ -29,6 +29,7 @@ $profile:\RaG_Core\Configs\RaG_Trader\Locations.json
 $profile:\RaG_Core\Configs\RaG_Trader\Routes.json
 $profile:\RaG_Core\Configs\RaG_Trader\VehicleAttachments.json
 $profile:\RaG_Core\Configs\RaG_Trader\Banking.json
+$profile:\RaG_Core\Configs\RaG_Trader\P2P.json
 $profile:\RaG_Core\Configs\RaG_Trader\Categories\<Category>.json
 ```
 
@@ -40,6 +41,10 @@ $profile:\RaG_Core\Configs\RaG_Trader\Stock.json
 $profile:\RaG_Core\Configs\RaG_Trader\RouteState.json
 $profile:\RaG_Core\Configs\RaG_Trader\Transactions\<transaction-id>.json
 $profile:\RaG_Core\Configs\RaG_Trader\Accounts\<Steam64>.json
+$profile:\RaG_Core\Configs\RaG_Trader\BankDirectory.json
+$profile:\RaG_Core\Configs\RaG_Trader\BankTransfers.json
+$profile:\RaG_Core\Storage\RaG_Trader\P2P\<listing-id>.json
+$profile:\RaG_Core\Storage\RaG_Trader\P2P\<listing-id>.bin
 $profile:\RaG_Core\Storage\RaG_Trader\Vehicles\<key-id>.bin
 $profile:\RaG_Core\Storage\RaG_Trader\History\<Steam64>.json
 $profile:\RaG_Core\Storage\RaG_Trader\EconomyTelemetry.json
@@ -174,11 +179,14 @@ Survivor loadout tries attachment slot, then hands, then inventory. Validator cr
 
 ATM registers as network static object shortly after initialization. Keep it reachable within `InteractionDistance` and avoid placing overlapping geometry in front of interaction point.
 
+For [player market](player-market.md), enable `P2P.json` and place `StaticObj_Misc_AdvertColumn` through map/editor data. Market checks a five-metre board radius on every operation. `Locations.json` does not create market boards.
+
 ## Class names
 
 | Class | Scope | Purpose |
 | --- | ---: | --- |
 | `RaG_ATM` | `1` | Banking terminal for scripted/editor placement; editor must support scope-1 classes. |
+| `StaticObj_Misc_AdvertColumn` | map object | Player-market board target; place through map/editor data when market is enabled. |
 | `RaG_TrafficCone` | `1` | Object target usable in a configured trader entry. |
 | `RaG_CarKey_Admin` | `2` | Admin lock/unlock/reset tool; server requires holder in `AdminSteamIds`. Keep out of player shops and loot. |
 | `RaG_CarKey` | `2` | Assign, lock/unlock, pack/deploy, spare-key crafting, and packed-car sale token. |

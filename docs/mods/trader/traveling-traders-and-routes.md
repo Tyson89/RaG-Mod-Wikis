@@ -19,6 +19,7 @@ Complete `Routes.json` using the bundled groups:
 ```json
 {
   "Version": 1,
+  "DefaultsVersion": 2,
   "Routes": [
     {
       "Id": "Traveling Traders",
@@ -37,37 +38,37 @@ Complete `Routes.json` using the bundled groups:
       "RestockOnArrival": false,
       "StockMode": "shared",
       "Stops": [
-        { "LocationId": "Sosnovy Pass", "WaitSeconds": 900, "TravelSeconds": 300 },
-        { "LocationId": "Mogilevka", "WaitSeconds": 900, "TravelSeconds": 300 },
-        { "LocationId": "Prison", "WaitSeconds": 900, "TravelSeconds": 300 }
+        { "LocationId": "Sosnovy Pass", "WaitMinutes": 15.0, "TravelMinutes": 5.0 },
+        { "LocationId": "Mogilevka", "WaitMinutes": 15.0, "TravelMinutes": 5.0 },
+        { "LocationId": "Prison", "WaitMinutes": 15.0, "TravelMinutes": 5.0 }
       ]
     }
   ]
 }
 ```
 
-Each market stays for 15 real minutes. Trade closes for the final 15 seconds, then a 5-minute travel interval starts. The three-stop circuit takes 60 minutes when schedules, blocking, pauses, and recovery do not interrupt it. `TravelSeconds` belongs to the stop being departed.
+Each market stays for 15 real minutes. Trade closes for the final 15 seconds, then a 5-minute travel interval starts. The three-stop circuit takes 60 minutes when schedules, blocking, pauses, and recovery do not interrupt it. `TravelMinutes` belongs to the stop being departed. Wait and travel minutes may be fractional; runtime rounds each interval to whole seconds.
 
 !!! tip "Keep a separate permanent market"
     Use another location group for an always-available earning route, ATM area, or basic supplies shop. Do not include that group in the traveling route. A group cannot belong to two enabled routes, and a route-controlled group does not also operate as a static shop.
 
 ## Route fields
 
-Omitted fields use these defaults. `Version` on the enclosing file is `1`.
+Omitted fields use these defaults. The enclosing file uses `Version: 1` and `DefaultsVersion: 2`.
 
 | Field | Default | Rules and purpose |
 | --- | --- | --- |
 | `Id` | required | Stable route identity. Enabled route IDs must be unique after trimming and case-insensitive lookup. |
 | `Enabled` | `true` | Enables route validation and control of its groups. At most 32 enabled routes. |
 | `Stops` | `[]` | 2–64 stops; each references a unique enabled location group within this route. |
-| `RandomStops` | `false` | Chooses a random first stop and random next stops where explicit links do not override selection. |
+| `RandomStops` | `false` | Chooses a random first stop; later chooses uniformly among explicit `NextStopIndexes`, or from eligible stops when no links exist. |
 | `RandomStartStop` | `false` | Randomizes initial stop even when subsequent movement is sequential. Applies when creating fresh state. |
 | `Loop` | `true` | Sequential route wraps to its first stop. Explicit links can define their own cycle. |
 | `DepartureGraceSeconds` | `15` | Final closure interval; 1–300 seconds and shorter than every stop's wait. |
 | `Invulnerable` | `true` | Disables damage to route entities. With `false`, loss of an active entity closes that visit for the whole group. |
 | `StockMode` | `"shared"` | `shared`, `route`, or `stop`; see stock scopes below. |
 | `RestockOnArrival` | `false` | Adds eligible listings' `RestockAmount` once per arrival, up to capacity. |
-| `DeliveryDelaySeconds` | `0` | Wait after arrival before supply is added. 0–604800, and strictly less than every `WaitSeconds - DepartureGraceSeconds`. |
+| `DeliveryDelaySeconds` | `0` | Wait after arrival before supply is added. 0–604800, and strictly less than every rounded stop wait in seconds minus `DepartureGraceSeconds`. |
 | `ShowNextStop` | `true` | Exposes the next destination in player route status. |
 | `ShowMapMarker` | `false` | Adds present route traders to the DayZ map menu. |
 | `AnnounceArrival` | `false` | Sends arrival notifications. |
@@ -75,10 +76,7 @@ Omitted fields use these defaults. `Version` on the enclosing file is `1`.
 | `AnnounceInChat` | `false` | Also sends enabled arrival/departure announcements as chat/status messages. |
 | `AnnouncementRadius` | `0.0` | 0 means all players; positive radius limits recipients around the first active trader, in metres. Maximum 100000. |
 | `SpawnRetrySeconds` | `10` | Retry blocked spawning every 1–3600 seconds. |
-| `MaxBlockedSpawnAttempts` | `0` | Optional threshold, 0–10000; 0 disables this threshold. |
-| `BlockedStopTimeoutSeconds` | `0` | Optional blocked duration threshold, 0–604800; 0 disables this threshold. |
-| `PauseOnBlockedStop` | `true` | Pauses after an enabled blocked-attempt or timeout threshold is reached. With both thresholds zero, no threshold-based pause occurs. |
-| `AlertAdminsOnBlockedStop` | `true` | Enables admin alerts for blocked-stop problems. |
+| `MaxBlockedSpawnAttempts` | `0` | Number of blocked spawn attempts before skipping that stop, 0–10000. Zero keeps retrying while the stop remains scheduled. |
 
 Schedule fields are documented [below](#schedules-and-clock-selection). Keep explicit IDs and stop ordering stable because persisted route progress refers to them.
 
@@ -88,8 +86,8 @@ Schedule fields are documented [below](#schedules-and-clock-selection). Keep exp
 | --- | --- | --- |
 | `LocationId` | required | Existing enabled `Locations.json` group ID, resolved with trimmed, case-insensitive lookup. Maximum 80 characters. |
 | `Name` | location ID | Display label, maximum 80 characters. |
-| `WaitSeconds` | `900` | Real seconds at this stop; greater than departure grace and at most 604800. |
-| `TravelSeconds` | `300` | Real seconds from this stop to the selected next stop; 1–604800. |
+| `WaitMinutes` | `15.0` | Real minutes at this stop, rounded to seconds. Must exceed departure grace after rounding; at most 10080 minutes. |
+| `TravelMinutes` | `5.0` | Real minutes from this stop to the selected next stop, rounded to at least one second; at most 10080 minutes. |
 | `AllowBuying` | `true` | Allows player purchases, subject to listing price and all other checks. |
 | `AllowSelling` | `true` | Allows player sales, subject to listing price and all other checks. |
 | `PurchaseCutoffSeconds` | `0` | Closes purchases this many seconds before departure; nonnegative and shorter than wait. Departure grace still applies. |
@@ -99,9 +97,7 @@ Schedule fields are documented [below](#schedules-and-clock-selection). Keep exp
 | `StockLimits` | `{}` | Exact-class capacity overrides; only valid with route `StockMode: "stop"`. Up to 2048 entries, each capacity -1–1000000000. |
 | `AllowedCategories` | `[]` | Empty permits all profile categories. Otherwise only listed category IDs are available. Each must be offered by this group. Use exact category IDs. |
 | `NextStopIndexes` | `[]` | Optional next-stop links, using zero-based indexes into `Stops`. No self-link; every index must exist. |
-| `NextStopWeights` | `[]` | Optional selection weights paired with links. Same length as links; each weight 1–1000000. |
 | `SpawnClearanceRadius` | `1.5` | Radius around each trader spawn position; 1–50 metres. |
-| `ValidateTerrain` | `false` | Requires configured trader height to be within 5 metres of terrain surface. |
 | `VehicleSpawnPoints` | `[]` | Optional stop-wide vehicle points, maximum 32. Non-empty array takes priority over individual trader-entry points. |
 | `Safezone` | omitted | Optional complete stop-zone override. Omit to inherit the current group's zone; explicitly disable to remove protection at this stop. |
 
@@ -127,8 +123,8 @@ Stop object for the bundled `Mogilevka` group:
 {
   "LocationId": "Mogilevka",
   "Name": "Mogilevka Supply Market",
-  "WaitSeconds": 1200,
-  "TravelSeconds": 240,
+  "WaitMinutes": 20.0,
+  "TravelMinutes": 4.0,
   "AllowBuying": true,
   "AllowSelling": true,
   "PurchaseCutoffSeconds": 120,
@@ -233,12 +229,11 @@ Explicit links take priority. For stop 0 of a route with three stops:
 
 ```json
 {
-  "NextStopIndexes": [1, 2],
-  "NextStopWeights": [3, 1]
+  "NextStopIndexes": [1, 2]
 }
 ```
 
-This chooses stop 1 with relative weight 3 and stop 2 with relative weight 1: 75% and 25% per selection. Weights need not sum to 100. Without weights, the first explicit link is selected; multiple links alone do not make selection random. Configure links at other stops too if a complete branching circuit is intended.
+With `RandomStops: false`, the first explicit link wins: stop 1 in this example. With `RandomStops: true`, the route chooses uniformly among listed links: each destination has a 50% chance here. Configure links at other stops too if a complete branching circuit is intended.
 
 Explicit links can create a cycle even with `Loop: false`. To design a route that terminates, ensure its final stop has no links leading back into the circuit. Persisted `NextStopIndex` preserves the chosen destination across restart.
 
@@ -322,21 +317,18 @@ The annual range can cross New Year. Keep the month mask compatible with both ha
 
 Every enabled trader position at the current group must pass clearance. The check looks for players/NPCs (`Man`), vehicles (`Transport`), or objects of the trader's exact class within the configured radius. It is not a complete building or geometry collision test. Test walls, furniture, slopes, and vehicle delivery points yourself.
 
-`ValidateTerrain: true` rejects trader positions more than five metres above or below terrain height. Indoor upper floors and raised platforms may deliberately require it to remain false. Correct ground-level coordinates rather than using the switch to hide a bad placement.
+The radius checks nearby entities, not terrain or building geometry. Verify placement on the actual map, including upper floors, slopes, walls, and nearby props.
 
-Example route fragment for a stop that pauses after prolonged obstruction:
+Example route fragment that skips a stop after 12 blocked attempts:
 
 ```json
 {
   "SpawnRetrySeconds": 10,
-  "MaxBlockedSpawnAttempts": 12,
-  "BlockedStopTimeoutSeconds": 120,
-  "PauseOnBlockedStop": true,
-  "AlertAdminsOnBlockedStop": true
+  "MaxBlockedSpawnAttempts": 12
 }
 ```
 
-Either configured threshold can trigger the pause. After clearing players and vehicles, inspect diagnostics and resume the route. If no threshold is enabled, or pause-on-blocking is false, retries continue while the stop clock runs; the route can depart before it ever becomes visible.
+At ten seconds between attempts, 12 blocked checks can skip the visit and start its normal next phase. This is an attempt count, not a guaranteed 120-second timeout. With `MaxBlockedSpawnAttempts: 0`, retries continue while the stop clock runs; the route can depart before it ever becomes visible. Clear obstructions and inspect diagnostics before using admin **Jump to stop** for another arrival attempt.
 
 Route entities are spawned and removed by the route service. Pre-placing the same trader class at the configured point can block arrival instead of being adopted. Keep decorative scenery separate from the route target.
 
@@ -361,7 +353,7 @@ Open **Diagnostics**, select a route entry, and refresh its state before acting.
 | Control | Effect |
 | --- | --- |
 | **Pause route** | Saves remaining time. A present stopped trader can remain available while paused if its opening hours and remaining-time cutoffs allow trade. A paused traveling route remains absent. |
-| **Resume route** | Rebuilds the deadline from saved remaining seconds and clears manual/blocked pause. A closed schedule still prevents presence and can pause it again. |
+| **Resume route** | Rebuilds deadline from saved remaining seconds and clears pause. A closed schedule still prevents presence and can pause it again. |
 | **Skip stop** | Starts normal travel when stopped. During travel, retains the existing arrival delay. |
 | **Depart now** | Ends the current stop and begins travel; requires an open schedule. |
 | **Arrive now** | Ends transit and attempts destination arrival; requires an open schedule. Clearance still applies. |
@@ -419,7 +411,7 @@ Pending transaction recovery defers route processing. Resolve the underlying jou
 | Weekend fair | UTC schedule, weekend mask 96, arrival announcements. | Schedule closure pauses progress and removes the zone. |
 | Night smuggler | World-time schedule or trader opening hours; no safe zone; optional hidden next stop. | Accelerated world time and route timers use different clocks. |
 | Medical relief visit | Medical-only stop, buy-only policy, limited arrival batches, delivery delay. | Empty shelves before supply arrives and purchase cutoff before departure. |
-| Branching market | Explicit links with weights. | Every index, reachable stop, and intended termination/cycle. |
+| Branching market | Explicit `NextStopIndexes` and `RandomStops: true` for uniform choice. | Every index, reachable stop, and intended termination/cycle. |
 | Vulnerable merchant | `Invulnerable: false`, clear no-protection zone policy. | Losing one entity ends the group's visit; scripted quests need an integration. |
 
 Test a full circuit, a restart while stopped, a restart during travel, a blocked spawn, schedule close/reopen, and a purchase near each cutoff before opening the route to players.

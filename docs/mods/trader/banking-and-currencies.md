@@ -188,7 +188,7 @@ Each account records initialized currency IDs. First balance access for enabled 
 
 Changing `InitialBalance` later does not re-grant players already marked initialized. This prevents restart farming.
 
-Enabled `Banking.json` accepts only known catalog currencies of type `item`. Do not add account currency as a bank entry to grant starting credits: validation rejects it. Direct account currency starts at zero unless balance is provided through controlled account administration or a custom integration. `MaxBankBalance` is an ATM deposit limit, not a generic account-trade credit cap.
+Enabled `Banking.json` accepts only known catalog currencies of type `item`. Do not add account currency as a bank entry to grant starting credits: validation rejects it. Direct account currency starts at zero unless balance is provided through controlled account administration or a custom integration. `MaxBankBalance` limits deposits, incoming player transfers, and player-market proceeds; allow headroom for incoming funds.
 
 ## Account persistence
 
@@ -229,6 +229,27 @@ Initialization grants only when no balance entry exists. Removing its marker alo
 Place `RaG_ATM` through map loader/editor or mission code. It is not created by `Locations.json`.
 
 Server checks player-to-ATM distance against `Settings.json` `InteractionDistance`, even though client action target uses 3 metres. Keep global interaction distance at least practical default.
+
+## Player-to-player bank transfers
+
+At an ATM, select an enabled banked physical currency and open **Transfer**. Search recipient by at least two name characters (maximum 32). Search is case-insensitive and shows up to 20 matching players; refine query when names collide. Players appear after they have connected to server at least once. Select intended player, inspect displayed name and recipient code suffix, enter a positive amount, then confirm. Sending to yourself is rejected. Recipient can be offline.
+
+Transfer moves stored balance directly between player accounts. Carried notes do not pay for it, and account-only currencies cannot use this ATM transfer flow. Sender needs full bank balance; recipient needs enough room under `MaxBankBalance` if capped. The transfer service does not add an ATM deposit/withdrawal fee to the amount. Sender and recipient get history receipts; online recipient receives a notification. If response says transfer is pending recovery, do not create another transfer. Check balance and History, then ask admin to inspect transfer journal.
+
+Player directory and pending transfer journals live at:
+
+```text
+$profile:\RaG_Core\Configs\RaG_Trader\BankDirectory.json
+$profile:\RaG_Core\Configs\RaG_Trader\BankTransfers.json
+```
+
+Back up both with `Accounts` and player history. Do not edit an in-progress transfer by hand while server runs. For server events or team payouts, transfers can move existing funds; they do not create money. Verify recipient identity with code suffix, especially when names are reused.
+
+## Paying a trader from bank
+
+For a physical currency with enabled Banking entry, trader purchase UI offers **Pay: Cash** and **Pay: Bank**. Cash spends eligible carried notes; Bank debits stored balance in that currency. Switch before buying or checking out basket and review displayed balance. Bank payment works for purchases, not sales. A sale still pays physical currency. Account-type currencies already use their account balance. Bank-backed checkout still follows normal stock, distance, delivery, and transaction recovery rules.
+
+This gives several ways to run a shop: cash-only players can keep notes on hand, regular customers can deposit at ATM and pay from bank, and a player market can use stored funds. Keep an ATM accessible if players need to deposit or withdraw physical currency.
 
 ## Currency selection and precedence
 
@@ -275,9 +296,9 @@ Currency selection leaves the numeric price unchanged. A base price of 300 becom
 - Traveling merchants using the currency and price schedule of each destination.
 - Several enabled physical currencies stored independently at ATMs.
 
-Each checkout uses one currency. Separate purchases into different baskets when categories use different currencies. Physical-currency shops spend carried items; account-currency shops debit the numeric account. Banking a physical currency does not make that balance directly spendable at its shops.
+Each checkout uses one currency. Separate purchases into different baskets when categories use different currencies. Physical-currency shops can spend carried items or use **Pay: Bank** when that currency has enabled Banking; account-currency shops debit the numeric account. Sales of physical-currency listings pay carried notes.
 
-There is no built-in exchange-rate service, player-to-player bank transfer, interest, or recurring account grant. Currency definitions and the catalog default require a restart. Category currency can reload; location currency requires a restart; route stop currency follows the [paused-route reload rules](traveling-traders-and-routes.md#editing-and-recovering-routes).
+There is no built-in exchange-rate service, interest, or recurring account grant. Currency definitions and the catalog default require a restart. Category currency can reload; location currency requires a restart; route stop currency follows the [paused-route reload rules](traveling-traders-and-routes.md#editing-and-recovering-routes).
 
 ## Economy tips
 

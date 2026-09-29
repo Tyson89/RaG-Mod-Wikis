@@ -97,13 +97,13 @@ Existing restock deadlines are retained for matching listings where available; a
 
 ## Player receipts
 
-**History** displays the player's most recent 50 successful trade receipts, newest first. Select a receipt for details: UTC time, location, currency, buy/sell direction, classes, quantities, prices, and purchase requirements. One basket is one receipt with several lines. Ammo receipt quantities count rounds. Use recorded line totals for dynamic-price purchases and condition-adjusted sales; a single displayed unit figure may not describe every unit in the line.
+**History** retains each player's most recent 50 receipts, newest first, covering trader trades, ATM deposits/withdrawals, player transfers, and player-market trades. ATM opens same receipt history in compact layout. Select a trader receipt for UTC time, location, currency, buy/sell direction, classes, quantities, prices, and purchase requirements. One trader basket is one receipt with several lines. Ammo receipt quantities count rounds. Use recorded line totals for dynamic-price purchases and condition-adjusted sales; a single displayed unit figure may not describe every unit in the line.
 
 ```text
 $profile:\RaG_Core\Storage\RaG_Trader\History\<Steam64>.json
 ```
 
-Dirty history saves on a five-second interval and during normal cleanup. A crash can lose recent receipt history. History is evidence for players, not an undo button, refund system, full bank statement, or substitute for transaction journals. Turning off trade logging does not turn off receipt history.
+Dirty history saves on a five-second interval and during normal cleanup. A crash can lose recent receipt history. Fifty-entry retention makes History a recent record, not an undo button, refund system, full bank statement, or substitute for transaction journals. Turning off trade logging does not turn off receipt history.
 
 ## Economy telemetry
 
@@ -169,7 +169,9 @@ Also retain matching DayZ player/world persistence, mod builds, and server confi
 | `Stock.json` | Shared stock reseeds from `InitialStock`; listing identities, scoped route counts, and arrival delivery markers are lost. |
 | `RouteState.json` | Route progress, chosen destination, pauses, and arrival identity are lost; fresh route state can trigger another arrival delivery. |
 | `Accounts` | Bank/account balances and initialization records are lost. |
+| `BankDirectory.json`, `BankTransfers.json` | Recipient lookup and pending player-transfer recovery can fail. Keep transfer journals with matching accounts. |
 | `Transactions` | Interrupted-trade evidence and recovery links are lost. |
+| `P2P` | Player-market offers, purchase claims, returns, and stored items can be lost. Keep each listing journal with its matching item payload. |
 | `Vehicles` | Keys cannot restore missing stored vehicles. |
 | `History` | Player receipts disappear. |
 | `EconomyTelemetry.json` | Aggregate balancing data disappears. |

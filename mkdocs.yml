@@ -182,6 +182,8 @@ nav:
   - RaG Trader:
       - Overview: mods/trader/index.md
       - Player guide: mods/trader/getting-started.md
+      - Clothing try-on and weapon builder: mods/trader/shopping-tools.md
+      - Player market: mods/trader/player-market.md
       - Server guides:
           - Setup and class names: mods/trader/server-setup-and-class-names.md
           - Catalog, categories, and listings: mods/trader/catalog-and-listings.md

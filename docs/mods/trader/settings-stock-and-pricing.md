@@ -20,6 +20,7 @@ Current default:
     "MinimumSellPricePercent": 10.0,
     "AllowGroundFallback": true,
     "LockVehicleWheelsOnSpawn": false,
+    "CreateVehicleKeyOnPurchase": true,
     "EnableVehiclePacking": true,
     "RestrictVehicleStorageToOwner": true,
     "AdminSteamIds": []
@@ -45,6 +46,7 @@ Bundled default enables `AllowGroundFallback`. If omitted from a hand-written se
 | `MinimumSellPricePercent` | `10.0` | Condition floor clamped `0`–`100` for items without quantity scaling, loose-ammo rounds, and stored vehicle condition pricing. No floor on quantity-scaled sale lines. |
 | `AllowGroundFallback` | `true` | Failed inventory purchase and physical-currency creation may spawn on surface at player position. Covers change, sale payout, deposit rollback, and ATM withdrawal. |
 | `LockVehicleWheelsOnSpawn` | `false` | Calls slot lock on purchased vehicle wheel attachments. |
+| `CreateVehicleKeyOnPurchase` | `true` | Creates and assigns `RaG_CarKey` to purchased cars. Tries player inventory, then player-position ground if `AllowGroundFallback` permits. Key delivery/assignment failure fails vehicle purchase. Boats do not receive keys. |
 | `RestrictVehicleStorageToOwner` | `true` | Only recorded key owner or admin may pack/deploy. Does not restrict lock/unlock. |
 | `AdminSteamIds` | `[]` | Steam64 IDs bypass storage ownership plus safe-zone weapon/build/explosive/speed rules. |
 | `EnableEconomyTelemetry` | `true` | Saves aggregate trade statistics, currency flow, and failures. See [administration](administration-and-recovery.md#economy-telemetry). |

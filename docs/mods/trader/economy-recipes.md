@@ -237,7 +237,7 @@ Keep an unrestricted buyback profile if players should resell yesterday's offer.
 
 ## Vehicle dealer and garage policy
 
-Pair exact-class listings with `VehicleAttachments.json` and clear `VehicleSpawnPoints`. Sell blank `RaG_CarKey` separately. A purchased car does not automatically include or receive a key.
+Pair exact-class listings with `VehicleAttachments.json` and clear `VehicleSpawnPoints`. With `CreateVehicleKeyOnPurchase: true`, purchased cars receive assigned keys; provide blank `RaG_CarKey` separately for found cars and spare-key crafting. Keep player inventory space or ground fallback available for key delivery.
 
 - **Buy-only dealer:** `SellPrice: -1` prevents resale.
 - **Buyback dealer:** positive sell price; explain ownership and the six-metre parking requirement.
@@ -255,7 +255,7 @@ Stackable Euro notes create transport and looting choices. Keep `UseQuantity: tr
 
 ATMs bank configured physical currency. Place `RaG_ATM` separately from trader locations. Modest fees create a money sink, but round-up fees disproportionately affect small transactions: 2.5% of a deposit of 10 rounds up to 1.
 
-For cashless trade, use a default account currency and disable banking or keep it only for separate physical currencies. Account currencies start at zero without controlled administration or an integration. A physical currency's bank balance does not replace the notes needed to shop with that currency; players withdraw first.
+For cashless trade, use a default account currency and disable banking or keep it only for separate physical currencies. Account currencies start at zero without controlled administration or an integration. For bank-enabled physical currencies, players may select **Pay: Bank** for trader purchases; cash remains the default choice. Sales still pay physical notes. [Player market](player-market.md) purchases use bank/account balance.
 
 ## Practical acceptance session
 

@@ -62,9 +62,14 @@ Default RaG Core enables Error logging and disables Debug, Info, and Warning. En
 | Deposit fails despite visible notes | Notes ruined, contain cargo/attachments, stack quantity floors to zero, fee makes credited amount zero, or max bank balance reached. |
 | Withdrawal fails | Bank lacks amount plus rounded-up fee, payout cannot be represented, or inventory is full while `AllowGroundFallback` is disabled. |
 | Wallet ignores most notes in a stack | Built-in Euro denominations need `UseQuantity: true`; false counts one object as one note. Currency definitions require restart. |
-| Bank has funds but trader says insufficient funds | An item-currency shop spends physical wallet items. Withdraw notes first. An account-currency shop spends its numeric balance directly. |
+| Bank has funds but trader says insufficient funds | For enabled banked physical currency, select **Pay: Bank** before purchase and check selected basket currency. **Pay: Cash** checks carried notes. Account currency uses its balance directly. |
+| Transfer recipient missing | Recipient must have joined server at least once. Search 2–32 characters of name, refine if 20 matches fill results, and check selected code suffix. |
+| Transfer fails despite sender balance | Check selected banked item currency, recipient `MaxBankBalance` headroom, ATM distance, and pending transaction/recovery. Do not resend a transfer marked pending. |
+| Player market action missing | Enable `P2P.json`, restart, and place `StaticObj_Misc_AdvertColumn`. Use board within five metres; ordinary trader/ATM does not open market. |
+| Player market item cannot be listed | Check ruin, lock, removability, car-key/currency exclusion, attachment/cargo policy, price bounds, per-player/global limits, and mod hook. |
+| Purchased market item not in inventory | Buying reserves item. Open **Purchased** at market board and claim with inventory space. Check History before retrying a timed-out purchase. |
 | Initial balance not reapplied | Expected. Currency ID already listed in `InitializedCurrencies`. |
-| Vehicle purchase fails | No valid spawn points, collision box blocked, class not valid transport, or all points invalid. |
+| Vehicle purchase fails | No valid spawn points, collision box blocked, class not valid transport, or all points invalid. For keyed cars, also check key creation, inventory room, and `AllowGroundFallback`. |
 | Purchased vehicle missing parts | No exact profile, or actual creation failed despite validation. Invalid configured profiles block registry startup/reload. Check report and Warning/Error logs. |
 | Car key will not assign | Key already assigned, car already keyed, key/car ruined, target not `CarScript`, or identity missing. |
 | Lock action missing | Engine running, crew present, car already locked, or key mismatch. |
@@ -150,14 +155,14 @@ Start with the `MOVING TRADERS` validation section, then open the route's Diagno
 | --- | --- |
 | All stops appear as static markets | Route is disabled or failed validation and never claimed its groups. Read the route warning; visible NPCs alone do not prove route control. |
 | Route disabled after configuration edit | Saved configuration no longer matches. Restore matching configuration or follow the [stopped-server route recovery procedure](traveling-traders-and-routes.md#restart-and-configuration-mismatch). |
-| Waiting for clear spawn | Move players, NPCs, and vehicles clear of every trader point. Remove pre-placed copies of the route target. Check radius, heights, and `ValidateTerrain`. |
-| Route remains blocked after clearing area | It may have reached a blocked-pause threshold. Refresh diagnostics, then use **Resume route**. A closed schedule can still prevent spawning. |
+| Waiting for clear spawn | Move players, NPCs, and vehicles clear of every trader point. Remove pre-placed copies of route target. Check radius and actual geometry at each configured position. |
+| Route remains blocked after clearing area | Refresh diagnostics. `MaxBlockedSpawnAttempts` may have skipped stop; next normal phase may be underway. Use **Jump to stop** deliberately for another visit if needed. Closed schedule can still prevent spawning. |
 | Arrived, but shelves remain empty | Arrival supply disabled, delayed, already applied for this arrival, or listing has no valid restock amount/capacity. Player sales may be the intended supply. |
-| Route stopped advancing | Check manual/schedule/blocked pause, completed non-looping route, pending recovery, and failed state writes. |
+| Route stopped advancing | Check manual/schedule pause, completed non-looping route, pending recovery, and failed state writes. |
 | Market vanishes when one NPC dies | Vulnerable routes close the whole visit after losing an active entity. Use `Invulnerable: true` for protected traders or design around the interruption. |
 | Schedule opens at the wrong time | Default clock is UTC. `ScheduleUsesServerTime: true` uses DayZ world date/time. Check weekday/month masks and absolute dates together. |
 | Friday overnight market closes at midnight | Include Saturday in the weekday mask for Saturday's early hours. Day filters use the current day. |
-| Several next-stop links always choose one destination | Supply matching positive `NextStopWeights`; without weights, the first explicit link wins. |
+| Several next-stop links always choose one destination | Set `RandomStops: true` to choose uniformly among `NextStopIndexes`; otherwise first link wins. |
 | Non-looping route keeps cycling | Explicit next-stop links can override normal end-of-array completion. Remove the back-link from the intended final stop. |
 | Map marker stays at previous stop | Reopen the map for a fresh snapshot. Only present traveling traders receive markers. |
 | Admin command asks for refresh | Route generation changed. Refresh Diagnostics and inspect the current state before retrying. |

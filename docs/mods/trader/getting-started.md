@@ -48,6 +48,8 @@ Select an item, then enable **Compatible only** to find related catalog entries.
 
 Compatibility uses temporary preview objects. It helps find matching classes; it does not guarantee room in your actual weapon's occupied slots or account for every custom scripted mod restriction. Buy one and test before buying a large set.
 
+For a buyable clothing item, **Try On** previews one chosen piece per clothing slot against your visible outfit. For a buyable weapon, **Build Weapon** previews compatible parts and buys selected weapon plus parts together. Read [shopping tools](shopping-tools.md) for slot, stock, and checkout limits.
+
 ## Read the selected offer
 
 Purchase contents show requested objects or rounds, fill per item, required liquid, and included attachments. Do not assume the 3D preview includes a magazine, battery, or accessory in the price.
@@ -74,6 +76,8 @@ Purchase succeeds only when:
 Normal purchases go to player inventory. If inventory delivery fails, server may place item on surface at player position when `AllowGroundFallback` is enabled. Listing with `DeliveryMode: "ground"` always uses ground. Ordinary objects must be purchased one at a time; loose ammo can arrive in several stacks.
 
 Vehicle purchase uses trader's first clear vehicle spawn point. It never goes into inventory. Read [vehicle guide](vehicles-keys-and-storage.md) before buying one.
+
+For bank-enabled physical currency, use **Pay: Cash** or **Pay: Bank** before buying. Cash spends carried notes; Bank spends stored balance. Default is cash. Sales still pay physical notes. A basket uses one currency and one selected payment source.
 
 !!! tip "Make space before expensive purchase"
     Inventory is tried first. With ground fallback enabled, item delivery, change, physical sale payout, and ATM withdrawal can appear at your feet when inventory is full. Secure spawned items immediately.
@@ -173,6 +177,8 @@ Approach mapped `RaG_ATM` and use **Use ATM**. Choose enabled physical currency,
 - Withdrawal gives entered amount in notes and debits entered amount plus withdrawal fee.
 - Fees round up to next whole currency unit.
 - **Deposit all** appears only when server allows it.
+- **Transfer** sends stored physical-currency balance to another player in directory. Search name, verify recipient code, confirm amount. Recipient can be offline; [transfer guide](banking-and-currencies.md#player-to-player-bank-transfers) explains limits and recovery.
+- **History** opens compact receipt view with trader, bank, transfer, and player-market entries.
 - ATM shows carried wallet and stored bank balance for selected currency.
 - Withdrawal first tries inventory; with ground fallback enabled, notes that do not fit spawn at player position.
 - Account balance persists across reconnects and restarts.
@@ -180,6 +186,8 @@ Approach mapped `RaG_ATM` and use **Use ATM**. Choose enabled physical currency,
 ## Car keys
 
 Hold unassigned `RaG_CarKey`, target unkeyed non-ruined car, and use **Assign car key**. Ordinary keys cannot clear their own assignment. Admins have a separate vehicle reset tool.
+
+Purchased cars receive an assigned key when server enables `CreateVehicleKeyOnPurchase` (enabled in bundled settings). Check inventory and nearby ground after buying. Found cars still need blank key assignment. Boats do not use car keys.
 
 Matching key can:
 
@@ -196,6 +204,8 @@ Read [vehicle, key, and storage details](vehicles-keys-and-storage.md) before pa
 
 ## Receipts and failed transactions
 
-Open **History** for the latest 50 successful trade receipts. Select one to inspect UTC time, location, currency, quantities, and line totals. **Copy** places the selected receipt text on the clipboard for a support report. A basket has one receipt. History does not undo trades or refund money.
+Open **History** for recent receipts across trader purchases/sales, bank operations, transfers, and player-market trades. It retains up to 50 per player. Select one to inspect UTC time, location, currency, quantities, and totals. **Copy** places selected receipt text on clipboard for support. A trader basket has one receipt. ATM shows same history in compact layout. History does not undo trades or refund money.
+
+At an enabled [player market](player-market.md), use board to browse offers, list an eligible inventory item, buy using bank balance, and claim purchased item. Seller can cancel active listing and claim returned item. Claim requires inventory space; check market tabs before repeating an uncertain transaction.
 
 If the server reports pending recovery, preserve the error and contact its admin with your player ID, approximate UTC time, trader, and intended purchase/sale. Check inventory and the ground before reporting missing delivery. Do not repeat a purchase blindly while its previous outcome is uncertain.
