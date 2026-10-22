@@ -77,8 +77,8 @@ Install and enable RaG Core and the consuming addon on the server and clients. D
 
 | Script layer | Main integration points |
 | --- | --- |
-| `3_Game` | `RaGConfigVersioned`, `RaGConfigAPI`, `RaGCoreFS`, `RaG_CoreLogger`, `RaG_RPCDirection`, `RaG_RPCRanges`, constants, liquid type helpers, notification paths |
-| `4_World` | `RaG_RPCService`, `LiquidFrameworkRegistry`, `RaGKitBase`, container bases, placement hooks, actions, particle use |
+| `3_Game` | `RaGConfigVersioned`, `RaGConfigAPI`, `RaGCoreFS`, atomic file helpers, identity/paging/request helpers, `RaG_CoreLogger`, `RaG_RPCDirection`, `RaG_RPCRanges`, constants, liquid type helpers, notification paths |
+| `4_World` | `RaG_RPCService`, inventory helpers, `LiquidFrameworkRegistry`, `RaGKitBase`, container bases, placement hooks, DigitalCodeLock integration, actions, particle use |
 | `5_Mission` | `ConnectionManager`, Core manager startup, the `MissionServer.SendModData` extension point |
 
 ## First integration test

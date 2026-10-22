@@ -8,6 +8,8 @@ $profile:\RaG_Core\Configs\<module>\<file>.json
 
 Use `RaGConfigAPI<T>` for normal registration and lookup. Use `RaGConfigIO<T>` inside your config class when it needs to save itself during migration.
 
+Core writes configs through `RaGAtomicJsonIO<T>`. Replacing an existing file creates a `.bak` copy and commits a temporary path instead of writing directly over the live file.
+
 ## Define a versioned config
 
 ```c
@@ -99,9 +101,12 @@ Do not make the client read the server profile path.
 ```c
 string configDir = RaGCoreFS.ConfigDir("MyMod");
 string logDir = RaGCoreFS.LogDir("MyMod");
+string storageDir = RaGCoreFS.StorageDir("MyMod");
 ```
 
-Both helpers create the module directory on the server when needed. Use simple stable module names; do not pass slashes, parent traversal, or user-controlled text.
+All helpers create the module directory on the server when needed. `StorageDir()` resolves under `$profile:\RaG_Core\Storage\` and is intended for runtime state, not operator-edited configuration. See [Shared utilities](shared-utilities.md) for atomic storage helpers.
+
+Use simple stable module names; do not pass slashes, parent traversal, or user-controlled text.
 
 ## Migration rules
 

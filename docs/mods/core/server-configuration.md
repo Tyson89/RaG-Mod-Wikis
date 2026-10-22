@@ -1,11 +1,11 @@
 # Server Configuration
 
-This page is for server operators. Mod authors should use the [Configuration API](configuration-api.md) and [Logging API](logging-api.md) instead of adding fields to `RaG_Core.json`.
+This page covers Core logging and activity settings. Vanilla DigitalCodeLock settings use a separate file documented in [Vanilla DigitalCodeLock](vanilla-digital-codelock.md). Mod authors should use the [Configuration API](configuration-api.md) and [Logging API](logging-api.md) instead of adding fields to `RaG_Core.json`.
 
 The RaG Core configuration controls Core diagnostic and activity logging. It is generated under the server profile at:
 
 ```text
-RaG_Core/Configs/RaG_Core/RaG_Core.json
+$profile:\RaG_Core\Configs\RaG_Core\RaG_Core.json
 ```
 
 Boolean settings use `0` for disabled and `1` for enabled.
@@ -17,8 +17,8 @@ Boolean settings use `0` for disabled and `1` for enabled.
 
 ```json
 {
-    "Version": 3,
-    "EnableDebugLog": 1,
+    "Version": 8,
+    "EnableDebugLog": 0,
     "EnableInfoLog": 0,
     "EnableWarningLog": 0,
     "EnableErrorLog": 1,
@@ -26,19 +26,19 @@ Boolean settings use `0` for disabled and `1` for enabled.
     "EnableCFToolsOpenCloseLog": 1,
     "EnableGeneralActivityLog": 1,
     "EnableVehicleActivityLog": 1,
-    "EnableExtendedActivityLog": 1,
+    "EnableExtendedActivityLog": 0,
     "EnableHeavyExtendedActivityLog": 0
 }
 ```
 
-The values below match the supplied production configuration. They are not hard-coded defaults for every installation.
+These values are current source defaults.
 
 ## Setting reference
 
 | Setting | Example | Explanation |
 | --- | ---: | --- |
-| `Version` | `3` | Configuration schema version. Do not edit it. |
-| `EnableDebugLog` | `1` | Writes diagnostic debug messages used to investigate behavior and configuration problems. |
+| `Version` | `8` | Configuration schema version. Do not edit it. |
+| `EnableDebugLog` | `0` | Writes diagnostic debug messages used to investigate behavior and configuration problems. |
 | `EnableInfoLog` | `0` | Writes general informational messages. |
 | `EnableWarningLog` | `0` | Writes warnings for non-fatal problems or unexpected conditions. |
 | `EnableErrorLog` | `1` | Writes errors for failed operations and serious problems. |
@@ -46,7 +46,7 @@ The values below match the supplied production configuration. They are not hard-
 | `EnableCFToolsOpenCloseLog` | `1` | Records supported open and close activity for the CFTools logging integration. |
 | `EnableGeneralActivityLog` | `1` | Records general player and object activity handled by RaG Core. |
 | `EnableVehicleActivityLog` | `1` | Records supported vehicle-related activity. |
-| `EnableExtendedActivityLog` | `1` | Adds more detailed activity records than the general activity log. |
+| `EnableExtendedActivityLog` | `0` | Adds more detailed activity records than the general activity log. |
 | `EnableHeavyExtendedActivityLog` | `0` | Enables the highest-volume extended activity logging. Use it only for focused troubleshooting because it can produce substantial output. |
 
 ## Recommended use

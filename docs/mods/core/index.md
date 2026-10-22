@@ -1,19 +1,21 @@
 # RaG Core Developer Wiki
 
-RaG Core is the shared foundation for RaG mods and third-party integrations. This wiki documents the systems addon authors can build on: versioned configuration files, structured logging, custom liquids, reusable item classes, connection helpers, notifications, and shared effects.
+RaG Core is the shared foundation for RaG mods and third-party integrations. It also extends DayZ's vanilla `DigitalCodeLock` with persistent access control, optional vanilla fence and tent support, and configurable raiding.
 
-If you only operate a server, see [Server configuration](server-configuration.md). The rest of this wiki is written for DayZ mod developers.
+Server operators should start with [Server configuration](server-configuration.md) and [Vanilla DigitalCodeLock](vanilla-digital-codelock.md). Remaining API pages target DayZ mod developers.
 
 ## Integration features
 
 | Feature | Use it when you need | Documentation |
 | --- | --- | --- |
 | Dependency and script setup | Reliable addon ordering through `requiredAddons[]` | [Getting started](getting-started.md) |
+| Vanilla `DigitalCodeLock` | Ownership, remembered access, admin recovery, fences, tents, batteries, and raiding | [Vanilla DigitalCodeLock](vanilla-digital-codelock.md) |
 | Versioned JSON configuration | Per-mod files under the shared `RaG_Core/Configs` tree | [Configuration API](configuration-api.md) |
 | Buffered per-mod logs | Separate channels, levels, rotation, and retention | [Logging API](logging-api.md) |
 | Custom liquids | Drinkable liquids, fuels, coolants, groups, colors, and container rules | [Custom liquids](custom-liquids.md) |
 | Reusable item classes | Deployable kits, openable containers, static objects, and placement hooks | [Item and placement API](item-and-placement-api.md) |
 | RPC validation and one-time client data | Register RPC metadata, validate receives, and avoid duplicate initial sends | [Connection and RPC helpers](connection-and-rpc-helpers.md) |
+| Shared utilities | Atomic persistence, identities, inventory snapshots, pagination, and request replay protection | [Shared utilities](shared-utilities.md) |
 | Shared UI and visual assets | Notification icons and registered particle effects | [Notifications and effects](notifications-and-effects.md) |
 
 ## Compatibility contract

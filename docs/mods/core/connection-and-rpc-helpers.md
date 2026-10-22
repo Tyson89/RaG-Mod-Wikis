@@ -250,6 +250,7 @@ These ranges belong to RaG modules:
 | `RaG_Dragon` | `18069600`–`18069699` |
 | `RaG_Thunderstruck` | `18069700`–`18069799` |
 | `RaG_Viking_Pack` | `18069800`–`18069899` |
+| `RaG_Trader` | `18069900`–`18069999` |
 
 Existing `RaG_RPC` values outside those ranges are registered internally as legacy IDs. They remain reserved. Do not append to `RaG_RPC`, reuse any RaG ID, or claim a RaG range for a third-party addon.
 

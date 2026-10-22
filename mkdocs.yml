@@ -67,12 +67,14 @@ nav:
   - RaG Core:
       - Overview: mods/core/index.md
       - Getting started: mods/core/getting-started.md
+      - Vanilla DigitalCodeLock: mods/core/vanilla-digital-codelock.md
       - Developer APIs:
           - Configuration API: mods/core/configuration-api.md
           - Logging API: mods/core/logging-api.md
           - Custom liquids: mods/core/custom-liquids.md
           - Item and placement API: mods/core/item-and-placement-api.md
           - Connection and RPC helpers: mods/core/connection-and-rpc-helpers.md
+          - Shared utilities: mods/core/shared-utilities.md
           - Notifications and effects: mods/core/notifications-and-effects.md
       - Server configuration: mods/core/server-configuration.md
   - RaG BaseBuilding:

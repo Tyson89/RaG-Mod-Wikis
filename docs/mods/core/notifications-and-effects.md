@@ -25,6 +25,12 @@ Available constants:
 | `RaG_Notifications.WATER_ICON` | Dehydration |
 | `RaG_Notifications.FOOD_ICON` | Starvation |
 | `RaG_Notifications.DRAGON_ICON` | Dragon |
+| `RaG_Notifications.TRADER_ICON` | Trader |
+| `RaG_Notifications.BUY_ICON` | Purchase |
+| `RaG_Notifications.SELL_ICON` | Sale |
+| `RaG_Notifications.BANK_ICON` | Banking |
+| `RaG_Notifications.VEHICLE_KEY_ICON` | Vehicle key |
+| `RaG_Notifications.SAFEZONE_ICON` | Safe zone |
 
 These constants resolve to paths under `RaG_Core\data\Notifications\`.
 
