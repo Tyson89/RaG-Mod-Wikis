@@ -45,9 +45,9 @@ If players cannot place kits where your server rules allow:
 
 This changes placement rules server-wide. Do not disable every collision check blindly.
 
-## Codelock
+## Vanilla DigitalCodeLock
 
-Codelock support is conditional: its actions and separate raid configuration load only when the Codelock mod is present. See [Codelock Integration](codelock-integration.md).
+Supported Baseitems containers accept DayZ's vanilla `DigitalCodeLock` through RaG Core's dedicated slot. Core provides persistent ownership, remembered access, auto-lock, admin recovery, optional battery-free operation, and configurable raiding. No third-party CodeLock mod or Baseitems-specific raid file is used. See [Vanilla DigitalCodeLock](vanilla-digital-codelock.md).
 
 ## Common failures
 
@@ -58,7 +58,7 @@ Codelock support is conditional: its actions and separate raid configuration loa
 | Workbench action is missing | Blueprint not attached, hammer missing, recipe disabled, or materials below the exact threshold. |
 | Powered machine will not start | No compatible power connection, required attachment missing, or machine/item ruined. |
 | Solar Panel does not supply power | It is under a roof, it is night without a usable truck battery, or the downstream device is off. |
-| Codelock action is missing | Codelock is not loaded, attachment is disabled, or the target must be open first. |
+| Vanilla DigitalCodeLock action is missing | `EnableRaGDigitalCodeLock` is disabled, object lacks `Att_CodeLock_RaG`, or RaG Core builds do not match. |
 | Car lift scan fails on one modded vehicle | That vehicle's damage zones or attachments are configured incompatibly. |
 
 For detailed diagnostics, enable RaG Core debug logging temporarily and reproduce the problem. Disable verbose logging again after collecting the relevant entries.

@@ -21,17 +21,17 @@
 
 Generated file is schema for installed build. Back it up during updates and merge custom values into a freshly generated schema when fields change.
 
-## Optional lock compatibility
+## Lock support
 
-### CodeLock Mod
+### Vanilla DigitalCodeLock
 
-Enable CodeLock Mod on the server and clients. With the integration active, this file is also generated:
+Hunting Cabin supports DayZ's vanilla `DigitalCodeLock` through required RaG Core. No third-party CodeLock mod is required or supported for this path. Cabin uses Core's global lock configuration:
 
 ```text
-$profile:\CodeLock\RaG_Hunting_Cabin_CodeLockConfig.json
+$profile:\RaG_Core\Configs\RaG_Core\DigitalCodeLock.json
 ```
 
-See [Server and CodeLock configuration](server-configuration.md).
+Core adds persistent ownership, remembered access, auto-lock, owner-only controls, admin recovery, optional battery-free operation, and configurable raiding. See [RaG Core: Vanilla DigitalCodeLock](../core/vanilla-digital-codelock.md).
 
 ### Expansion Code Lock
 
@@ -117,7 +117,7 @@ Cabin kit source already bypasses its normal collision result. If players cannot
 | Door or windows closed after restart | Expected. Persistence restore explicitly closes open door and every window. |
 | Lights are off after restart | Expected. On/off booleans are not saved. |
 | Combination lock blocks door | Enter correct combination or destroy lock with hand saw/hacksaw. Five six-second cycles are required. |
-| CodeLock JSON missing | CodeLock conditional integration did not compile. Confirm current CodeLock and Hunting Cabin builds are enabled on server and clients. |
+| Vanilla DigitalCodeLock action is missing | Enable `EnableRaGDigitalCodeLock`, confirm cabin is built and closed, remove conflicting combination lock, and verify matching RaG Core builds on server and clients. |
 | Expansion Code Lock does not work | Install and enable current RaG Expansion Compat plus its Expansion and Hunting Cabin dependencies. Embedded support was removed from Hunting Cabin. |
 | **Force Synchronize** appears | Cabin is empty. Action recreates cabin to repair sync; it also resets states and admin flag. Do not use casually. |
 | Expected storage, hide/show inventory, or fireplace is absent | Current source does not implement those Workshop claims. |
@@ -129,5 +129,5 @@ Cabin kit source already bypasses its normal collision result. If players cannot
 - Keep valid JSON and exact key spelling.
 - Use whole, non-negative material quantities.
 - Test normal and admin dismantling separately.
-- Test every enabled lock mod after updates.
+- Test every enabled lock system after updates.
 - Never distribute admin kit to normal players.

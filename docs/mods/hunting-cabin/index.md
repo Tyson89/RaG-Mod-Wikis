@@ -8,7 +8,7 @@ The completed cabin provides:
 - an interior light with its own switch;
 - an attachment slot and switch for party lights;
 - native vanilla combination-lock support;
-- optional CodeLock Mod support;
+- vanilla `DigitalCodeLock` support through RaG Core, including ownership, remembered access, auto-lock, admin recovery, optional battery-free use, and configurable raiding;
 - optional Expansion Code Lock support through the separate RaG Expansion Compat mod;
 - configurable crafting, construction costs, dismantling refunds, kit returns, and snowy roof textures.
 
@@ -17,8 +17,8 @@ The completed cabin provides:
 ## Start here
 
 - [Building, features, and dismantling](building-features-and-dismantling.md) covers kit crafting, construction, doors, windows, lights, damage, and refunds.
-- [Setup, class names, compatibility, and troubleshooting](server-setup-and-class-names.md) covers installation, dependencies, economy entries, optional lock mods, and common failures.
-- [Server and CodeLock configuration](server-configuration.md) documents both generated JSON files and current source behavior.
+- [Setup, class names, compatibility, and troubleshooting](server-setup-and-class-names.md) covers installation, dependencies, economy entries, lock support, and common failures.
+- [Server configuration](server-configuration.md) documents generated Hunting Cabin JSON and current source behavior.
 
 ## Behavior at a glance
 

@@ -25,7 +25,7 @@ Opening the doors or losing power stops both cooling and the fridge's decay redu
 
 Each model has a large **10 x 50 inventory grid**. It accepts non-ruined soda cans, bottles, and edible items that support temperature. Other items cannot be stored inside.
 
-All three models work the same and accept a Codelock. See [Codelock Integration](codelock-integration.md).
+All three models work the same and accept vanilla `DigitalCodeLock` through RaG Core. Core adds persistent ownership, remembered access, automatic locking, admin recovery, optional battery-free use, and configurable raiding. See [Vanilla DigitalCodeLock](vanilla-digital-codelock.md).
 
 ## Key classnames
 

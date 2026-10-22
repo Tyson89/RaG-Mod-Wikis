@@ -32,7 +32,7 @@ Current documentation tracks source revision `176cc2a` from 18 August 2026.
 ## What the source currently supports
 
 - Vanilla Combination Locks on completed doors, gates, and the floor hatch.
-- Conditional Codelock Mod integration when that mod is loaded.
+- Vanilla `DigitalCodeLock` on completed doors, gates, and the floor hatch through RaG Core, with ownership, remembered access, auto-lock, admin recovery, optional battery-free use, and configurable raiding.
 - Conditional BreachingCharge compatibility.
 - Openable doors, gates, windows, and floor hatches; open structures are restored closed after restart.
 - Optional Christmas lights on supported parts and a portable gas lamp on the ceiling / flat roof.

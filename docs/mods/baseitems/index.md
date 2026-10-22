@@ -7,7 +7,7 @@ RaG Baseitems adds placeable furniture, storage, workstations, decorations, powe
 - [Server setup and troubleshooting](server-setup-and-troubleshooting.md)
 - [Server configuration](json-file-explanation.md)
 - [Key classnames](key-classnames.md)
-- [Codelock integration](codelock-integration.md)
+- [Vanilla DigitalCodeLock](vanilla-digital-codelock.md)
 - [Workbench recipes](workbench.md)
 
 ## Workstations and utilities

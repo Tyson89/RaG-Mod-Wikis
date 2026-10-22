@@ -113,11 +113,11 @@ Hand saw and hacksaw can destroy it:
 
 Total uninterrupted action time is about `30` seconds. No Hunting Cabin JSON setting disables or changes this action.
 
-### CodeLock Mod
+### Vanilla DigitalCodeLock
 
-When CodeLock Mod's `CodeLock` compile symbol exists, cabin adds attach, passcode, owner, guest, admin, and raid actions. Server owners get a second JSON file for attachment and raid behavior.
+Cabin exposes RaG Core's `Att_CodeLock_RaG` slot for DayZ's vanilla `DigitalCodeLock`. Cabin must be built and closed, and vanilla combination lock cannot already be attached. Closing door triggers Core auto-lock when enabled.
 
-See [Server and CodeLock configuration](server-configuration.md).
+RaG Core adds persistent ownership, remembered player access, owner-only PIN reset and removal, admin recovery, optional battery-free operation, and configurable raiding. It stores settings in Core's global `DigitalCodeLock.json`; Hunting Cabin does not create separate lock configuration. See [RaG Core: Vanilla DigitalCodeLock](../core/vanilla-digital-codelock.md).
 
 ### Expansion Code Lock
 

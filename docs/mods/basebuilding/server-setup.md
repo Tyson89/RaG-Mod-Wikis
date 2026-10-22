@@ -25,13 +25,13 @@ Do not add these implementation classes to `types.xml` or trader files:
 - deployed structure classes when you intend players to place kits;
 - the internal `RaG_BB_Ladder` used by the floor hatch.
 
-## Optional compatibility
+## Locks and optional compatibility
 
-- Codelock Mod: conditional compatibility is included when its `CodeLock` symbol is available.
+- DayZ's vanilla `DigitalCodeLock` is supported through required RaG Core. No third-party CodeLock mod is required or supported for this path. Core adds persistent ownership, remembered access, auto-lock, admin recovery, optional battery-free use, and configurable raiding. See [RaG Core: Vanilla DigitalCodeLock](../core/vanilla-digital-codelock.md).
 - BreachingCharge: conditional destruction-type mapping is included when `BREACHINGCHARGE` is available.
 - Basic Territories: a guarded build-tool damage hook is present for its SledgeHammer build bonus.
 
-Expansion Code Lock is not referenced in the current source.
+Expansion Code Lock support requires separate RaG Expansion Compat plus its declared RaG and Expansion dependencies.
 
 ## Admin tools
 

@@ -1,13 +1,14 @@
-# Server and CodeLock configuration
+# Server configuration
 
-RaG Hunting Cabin can create two independent JSON files:
+RaG Hunting Cabin creates one JSON file:
 
 | File | Created when | Purpose |
 | --- | --- | --- |
 | `$profile:\RaG_Core\Configs\RaG_Hunting_Cabin\RaG_Hunting_Cabin.json` | Hunting Cabin and RaG Core load correctly | Crafting, build materials, refunds, and roof texture. |
-| `$profile:\CodeLock\RaG_Hunting_Cabin_CodeLockConfig.json` | CodeLock conditional integration is active | CodeLock attachment and raiding. |
 
 Stop server before editing. Restart after every change.
+
+Vanilla `DigitalCodeLock` behavior is configured globally by RaG Core, not this file. Core adds persistent ownership, remembered access, auto-lock, owner-only controls, admin recovery, optional battery-free operation, and configurable raiding. See [RaG Core: Vanilla DigitalCodeLock](../core/vanilla-digital-codelock.md).
 
 ## Main cabin configuration
 
@@ -71,91 +72,9 @@ Recipe cost is hard-coded:
 
 Material settings control only hologram build requirement and dismantling refund. They do not alter kit recipe.
 
-## CodeLock configuration
-
-This section applies only when CodeLock Mod integration is active.
-
-### Default configuration
-
-```json
-{
-  "RaidTimeInSeconds": 60.0,
-  "CanAttach": "true",
-  "CanRaid": "false",
-  "DeleteLockOnRaid": "false",
-  "ToolDamageOnRaid": 100,
-  "RaidTools": [
-    "Hacksaw"
-  ]
-}
-```
-
-Unlike main file, this schema has no `Version` field or upgrade hook.
-
-### Settings
-
-| Setting | Default | Actual effect |
-| --- | --- | --- |
-| `RaidTimeInSeconds` | `60.0` | Intended total raid duration. Code divides this by CodeLock's global increment amount for each repeated progress cycle. |
-| `CanAttach` | `"true"` | Allows CodeLock attachment to cabin door. |
-| `CanRaid` | `"false"` | Enables cabin CodeLock raid action. |
-| `DeleteLockOnRaid` | `"false"` | Deletes lock after successful raid when enabled. When disabled, raid unlocks it without explicit deletion. |
-| `ToolDamageOnRaid` | `100` | Health damage applied to raid tool when lock reaches zero health. It is not applied on every progress repeat. |
-| `RaidTools` | `Hacksaw` | Exact item class names allowed for raid action. |
-
-### String booleans
-
-Three CodeLock toggles are strings, not JSON booleans:
-
-```json
-"CanAttach": "true"
-```
-
-Do not write:
-
-```json
-"CanAttach": true
-```
-
-Getter lowercases string and enables only exact text `true`. Use quoted `"true"` or `"false"`.
-
-### Raid timing
-
-Cabin code relies on CodeLock global `IncrementAmount`.
-
-```text
-repeat duration = RaidTimeInSeconds / CodeLock IncrementAmount
-damage per repeat = lock maximum health / CodeLock IncrementAmount
-```
-
-With uninterrupted action, configured total trends toward `RaidTimeInSeconds`. Changing CodeLock increment count changes number and size of damage steps.
-
-Keep `RaidTimeInSeconds` positive and CodeLock increment amount above zero. Hunting Cabin source does not guard division by zero.
-
-### Raid tools
-
-Tool matching uses exact runtime type:
-
-```text
-RaidTools.Find(itemInHands.GetType())
-```
-
-Class spelling and case must match. Derived tools are not automatically accepted unless their runtime class name is listed.
-
-Example:
-
-```json
-"RaidTools": [
-  "Hacksaw",
-  "HandSaw"
-]
-```
-
-Adding another mod's tool creates operational dependency for configured server. Ensure class exists wherever required.
-
 ## Configuration recovery
 
-If main file is invalid or missing, RaG Core loads default object and may rewrite defaults. If CodeLock file is invalid, its older direct `JsonFileLoader` path has no versioning or explicit repair logic.
+If main file is invalid or missing, RaG Core loads default object and may rewrite defaults.
 
 Recovery:
 

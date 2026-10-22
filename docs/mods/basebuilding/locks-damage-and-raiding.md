@@ -5,10 +5,12 @@
 | System | Current source status |
 | --- | --- |
 | Vanilla Combination Lock | Supported on completed door/gate structures and the floor hatch. |
-| Codelock Mod | Conditional integration exists under the `CodeLock` compile flag. Windows are excluded. |
-| Expansion Code Lock | No support. |
+| Vanilla `DigitalCodeLock` | Supported through RaG Core on completed door/gate structures and the floor hatch. Windows are excluded. |
+| Expansion Code Lock | Supported only through separate RaG Expansion Compat. |
 
-Removing a constructed gate or door stage unlocks its attached vanilla Combination Lock. The Codelock compatibility path also unlocks a Codelock when the protected door stage is dismantled.
+Only one vanilla combination or digital lock can be attached at a time. Removing constructed gate or door stage unlocks attached lock.
+
+RaG Core adds persistent ownership, remembered player access, automatic locking when structure closes, owner-only controls, admin recovery, optional battery-free operation, and configurable digital-lock raiding. These settings live in Core's `DigitalCodeLock.json` and apply globally to RaG-managed locks. See [RaG Core: Vanilla DigitalCodeLock](../core/vanilla-digital-codelock.md).
 
 ## Damage modes
 
@@ -35,5 +37,7 @@ The separate floor-hatch ladder is an exception: it has a custom dismantle actio
 The mod retains DayZ construction damage/destruction behavior and includes conditional BreachingCharge type mapping for double doors, double gates, left/right gates, and floor hatches.
 
 `ToolDamageOnVanillaLockDestroy` is active and controls tool damage when destroying a vanilla Combination Lock.
+
+Vanilla digital-lock raiding is controlled by RaG Core, not `RaG_BaseBuilding.json`. Core config sets whether raiding is enabled, total time, increments, accepted tool base classes, tool damage per increment, and whether ruined lock is deleted.
 
 The configuration also defines `BaseDestroyTools` and `BaseDestroyToolDamage`, but the analyzed RaG BaseBuilding scripts do not read either value outside config initialization. Treat both as currently inactive schema fields unless another server-side mod deliberately consumes them.

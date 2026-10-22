@@ -96,7 +96,7 @@ nav:
           - Setup and troubleshooting: mods/baseitems/server-setup-and-troubleshooting.md
           - Server configuration: mods/baseitems/json-file-explanation.md
           - Key classnames: mods/baseitems/key-classnames.md
-          - Codelock integration: mods/baseitems/codelock-integration.md
+          - Vanilla DigitalCodeLock: mods/baseitems/vanilla-digital-codelock.md
       - Workstations:
           - Workbench: mods/baseitems/workbench.md
           - Car lift: mods/baseitems/carlift.md
@@ -174,7 +174,7 @@ nav:
       - Building, features, and dismantling: mods/hunting-cabin/building-features-and-dismantling.md
       - Server guides:
           - Setup, class names, compatibility, and troubleshooting: mods/hunting-cabin/server-setup-and-class-names.md
-          - Server and CodeLock configuration: mods/hunting-cabin/server-configuration.md
+          - Server configuration: mods/hunting-cabin/server-configuration.md
   - RaG Viking Pack:
       - Overview: mods/viking-pack/index.md
       - Gameplay, equipment, and placeables: mods/viking-pack/gameplay-and-items.md

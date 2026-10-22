@@ -4,9 +4,9 @@ Attachment slots vary by structure and construction stage. If a slot is absent, 
 
 ## Locks
 
-Completed doors, gates, and the floor hatch expose the vanilla Combination Lock slot only when the gate stage is fully built. The structure must be closed before the lock can be attached.
+Completed doors, gates, and the floor hatch expose vanilla Combination Lock and RaG-managed vanilla `DigitalCodeLock` slots only when gate stage is fully built. Structure must be closed before either lock can be attached, and only one lock can protect it at a time.
 
-Codelock Mod integration is compiled conditionally when `CodeLock` is present. Codelocks are rejected on window structures, and dismantling a protected door stage unlocks the attached Codelock.
+RaG Core adds persistent ownership, remembered access, auto-lock, admin recovery, optional battery-free operation, and configurable raiding to vanilla digital lock. Dismantling protected door or gate stage unlocks attached lock. Windows expose neither lock slot. See [RaG Core: Vanilla DigitalCodeLock](../core/vanilla-digital-codelock.md).
 
 ## Camouflage nets and barbed wire
 
