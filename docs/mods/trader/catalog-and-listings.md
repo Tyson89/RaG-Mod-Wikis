@@ -1,298 +1,64 @@
 # Catalog, categories, and listings
 
-RaG Trader separates structure from item data:
+`Trading/Catalog.json` defines currencies and trader profiles. Each profile references category filenames under `Trading/Categories/`. A static location or route references the profile's `Id` to give it a place in the world.
 
-```text
-Catalog.json
-  currencies
-  trader profiles
-  category filename references
+## Trader profiles
 
-Categories\<name>.json
-  category display name
-  listings
-```
-
-This keeps large catalogs manageable and lets several traders reuse same category.
-
-## `Catalog.json`
-
-Compact example:
-
-```json
-{
-  "Version": 1,
-  "DefaultCurrencyId": "euro",
-  "Currencies": [
-    {
-      "Id": "euro",
-      "DisplayName": "Euro",
-      "Type": "item",
-      "CurrencyItems": [
-        { "ClassName": "RaG_Euro_1", "Value": 1, "UseQuantity": true },
-        { "ClassName": "RaG_Euro_10", "Value": 10, "UseQuantity": true },
-        { "ClassName": "RaG_Euro_100", "Value": 100, "UseQuantity": true }
-      ]
-    }
-  ],
-  "Traders": [
-    {
-      "Id": "survival",
-      "DisplayName": "Survival Trader",
-      "Categories": ["Food", "Tools", "Medical"]
-    }
-  ]
-}
-```
-
-### Catalog fields
-
-| Field | Rules and effect |
+| Catalog field | Purpose |
 | --- | --- |
-| `Version` | Must be `1`. |
-| `DefaultCurrencyId` | Fallback currency used when no location/category/stop override applies. If blank and exactly one valid currency exists, that currency becomes default. |
-| `Currencies` | Unique currency definitions. See [banking and currencies](banking-and-currencies.md). |
-| `Traders` | Unique trader profiles. Profile does not place entity; `Locations.json` does. |
-| `Traders[].Id` | Exact value referenced by `Locations.json`. References resolve after trimming whitespace and comparing case-insensitively; keep spelling consistent. |
-| `Traders[].DisplayName` | Title sent to trader UI. |
-| `Traders[].Categories` | Category filenames without `.json`, in display/load order. |
-| `Traders[].OfferPools` | Optional rotations and seasonal availability. See [rotating and seasonal offers](rotating-and-seasonal-offers.md). |
-
-Each listing defines one base price pair. Its currency comes from the catalog default, location group, individual trader entry, category, or active route stop. A route stop can also override prices by exact class. See [currency precedence](banking-and-currencies.md#currency-selection-and-precedence); these overrides do not convert price amounts by an exchange rate.
+| `Version` | Use `1`. |
+| `DefaultCurrencyId` | Base currency. If blank and exactly one valid currency exists, that currency becomes the default. |
+| `Currencies` | See [currency definitions](banking-and-currencies.md). |
+| `Traders` | Profiles with unique `Id`, menu `DisplayName`, category filename list `Categories`, and optional [`OfferPools`](rotating-and-seasonal-offers.md). |
 
 ## Category files
 
-Path:
-
-```text
-$profile:\RaG_Core\Configs\RaG_Trader\Categories\Tools.json
-```
-
-Complete ordinary listing example:
+Save this example as `Trading/Categories/Trail_Supplies.json`. Add `"Trail_Supplies"` to the desired profile's `Categories` array.
 
 ```json
 {
-  "DisplayName": "Tools",
-  "CurrencyId": "",
+  "DisplayName": "Trail Supplies",
   "Listings": [
     {
       "ClassName": "Hatchet",
-      "AllowDuplicate": false,
       "BuyPrice": 300,
-      "SellPrice": 120,
-      "RequiredItems": [],
-      "RequiredLiquidType": "",
-      "InitialStock": 20,
-      "MaxStock": 20,
-      "RestockAmount": 2,
-      "RestockIntervalSeconds": 900,
-      "MinimumHealthPercent": 35.0,
-      "DeliveryMode": "inventory",
-      "SpawnQuantity": 0,
-      "SpawnFullQuantity": true,
-      "Attachments": []
+      "SellPrice": 80,
+      "InitialStock": 5,
+      "MaxStock": 20
     }
   ]
 }
 ```
 
-`CurrencyId` is optional: blank inherits the location/default currency; a non-empty value must name a catalog currency and applies to every listing in this category unless a route stop overrides it. `DisplayName` appears in UI. Filename `Tools` becomes internal category ID. Category JSON has no explicit `Id` field.
-
-### Category filename rules
-
-- Maximum 64 characters.
-- Allowed: `a-z`, `A-Z`, `0-9`, `_`, `-`.
-- No spaces, dots, path separators, or `.json` in catalog reference.
-- At most 500 unique category files may be referenced.
-- Missing referenced file installs from bundled defaults only when bundled file with same name exists.
-- Custom missing file stops category loading; restore from backup.
+Use 1–64 letters, digits, underscores, or hyphens in the filename stem. A category may set `CurrencyId` to override the default for its listings. Traders that share a category share its listing IDs and ordinary stock. Use different category files when regional shops need distinct stock or prices.
 
 ## Listing fields
 
-| Field | Default | Meaning |
-| --- | ---: | --- |
-| `ClassName` | required | Exact class in `CfgVehicles`, `CfgWeapons`, or `CfgMagazines`. |
-| `AllowDuplicate` | `false` | Suppresses duplicate-class warning only when `true` on every copy visible at same trader. Does not merge entries. |
-| `BuyPrice` | `-1` | Base player purchase price. Positive enables buying. Use `-1` to disable. |
-| `SellPrice` | `-1` | Base trader payout. Positive enables selling. Use `-1` to disable. |
-| `RequiredItems` | `[]` | Exact item classes consumed per purchased object, or per round for loose ammo, in addition to money. Repeating a class requires separate objects. |
-| `RequiredLiquidType` | `""` | Optional `CfgLiquidDefinitions` class name. Purchases contain this liquid; sales require this exact liquid and positive contents. See [liquid listings](ammo-liquids-and-purchase-contents.md#liquid-specific-listings). |
-| `InitialStock` | `-1` | Starting count when no stock record exists. Both stock fields must be `-1` for unlimited; otherwise `0 <= InitialStock <= MaxStock`. |
-| `MaxStock` | `-1` | Capacity for purchases, player sales, restocking, and dynamic pricing. Rounds for loose ammo, objects otherwise. |
-| `RestockAmount` | `0` | Units added each restock interval. Must pair with positive interval and finite positive stock. |
-| `RestockIntervalSeconds` | `0` | Restock interval, allowed `0` through `86400`. Must pair with positive amount. |
-| `MinimumHealthPercent` | `0.0` | Sale eligibility threshold, `0` through `100`. Separate from payout scaling. |
-| `DeliveryMode` | `"inventory"` | `"inventory"` or `"ground"`; blank resolves to inventory. Ground requires one ordinary object; loose ammo can deliver multiple stacks. Vehicles use configured spawn points. |
-| `SpawnQuantity` | `0` | Positive explicit energy, ammo, or quantity for purchased item. |
-| `SpawnFullQuantity` | `true` | When explicit quantity is `0`, fill energy, magazine ammo, or quantity to maximum. |
-| `Attachments` | `[]` | Classes attached to ordinary purchased items; failure aborts item delivery. Vehicle parts use `VehicleAttachments.json` instead. |
+| Field | Default | Effect |
+| --- | --- | --- |
+| `ClassName` | Required | Exact game or mod item class. |
+| `PersistenceId` | Empty | Optional stable listing ID. |
+| `AllowDuplicate` | `false` | Set on every intentional copy of a class at the same trader to suppress duplicate warnings. |
+| `BuyPrice`, `SellPrice` | `-1`, `-1` | Positive price enables the direction. Use `-1` to disable it. |
+| `RequiredItems` | `[]` | Exact class names consumed per item bought or per loose round. Repeat a class to require multiple objects. |
+| `RequiredLiquidType` | Empty | Named [liquid](ammo-liquids-and-purchase-contents.md#liquid-specific-listings) supplied on purchase and required on sale. |
+| `InitialStock`, `MaxStock` | `-1`, `-1` | Starting count and capacity. Use `-1` for both to make stock unlimited. |
+| `RestockAmount`, `RestockIntervalSeconds` | `0`, `0` | Replenishment amount and interval for finite stock. Set both together. |
+| `MinimumHealthPercent` | `0.0` | Minimum global health percentage for resale. Ruined items are ineligible. |
+| `DeliveryMode` | `"inventory"` | `"inventory"` or `"ground"`. Ground delivery takes one ordinary object or the requested loose rounds. Vehicles use their spawn points. |
+| `SpawnQuantity`, `SpawnFullQuantity` | `0`, `true` | Control the initial fill of each purchased item. |
+| `Attachments` | `[]` | Classes attached to each purchased object. Vehicle parts come from `Vehicles/Attachments.json`. |
 
-Use positive prices to enable trading and `-1` to disable a direction. Zero is treated as disabled and generates a warning. Both directions disabled, values below `-1`, or `SellPrice > BuyPrice` when buying is enabled disable the listing with a configuration error. Pure zero-money barter is not supported.
+Set at least one positive price. When both prices are enabled, keep `SellPrice` at or below `BuyPrice`. Loose ammo prices are per round. Other prices are per object. Check [ammo price relationships](ammo-liquids-and-purchase-contents.md#price-boxes-magazines-and-rounds-together) when a purchase supplies ammunition that players can resell.
 
-For loose ammunition, each price is **per round**. For magazines, boxes, containers, and other ordinary items, each price is per object; sale condition and contents can reduce its payout. The validator also checks certain ammo resale loops. See [ammo price design](ammo-liquids-and-purchase-contents.md#price-boxes-magazines-and-rounds-together).
+## Listing IDs
 
-### Listing IDs
+The default ID combines category and class in lowercase. For example, `Trail_Supplies.json` and `Hatchet` produce `trail_supplies_hatchet`. The stock identity map distinguishes liquid variants and gives duplicates distinct suffixes. Identical duplicates depend on their occurrence order.
 
-Server derives ID:
+Use `PersistenceId` to pin a listing when several entries share the same category, class, and liquid. Use a unique ID of 1–128 lowercase letters, digits, underscores, or hyphens. To keep existing stock, use the listing's existing ID and pin all affected duplicate entries before reordering. An ID already associated with a different category or class is rejected.
 
-```text
-lowercase(<category filename>_<ClassName>)
-```
+## Custom items
 
-Example: `Tools.json` + `Hatchet` becomes `tools_hatchet`.
+Make the supplying mod available to server and players. Add the exact class to one category, reference the category from the right profile, and check `ConfigValidationReport.txt`. Test purchase, contents, and resale. A preview model alone does not verify attachment fit, item delivery, or liquid compatibility.
 
-The server allocates suffixes such as `_2` and `_3` when an ID is already used or reserved. `Stock.json` also stores `ListingIds`, mapping `<base ID>|<trimmed lowercase liquid name>|<occurrence>` to the assigned ID. This preserves distinct liquid variants when their order changes. Duplicate entries with the same category, class, and liquid still depend on their occurrence order.
-
-Do not put `Id`, `DisplayName`, `LiquidType`, `Price`, or `ConfigError` into listing JSON: these are runtime fields. Keep filenames, class names, liquid requirements, and the order of otherwise identical duplicates stable. Renaming an identity creates a new association. Back up the entire stock file, including its identity map; editing only counts is not a full restoration.
-
-## Buy-only and sell-only listings
-
-Buy-only:
-
-```json
-{
-  "ClassName": "LandMineTrap",
-  "BuyPrice": 2500,
-  "SellPrice": -1,
-  "InitialStock": 3,
-  "MaxStock": 3
-}
-```
-
-Sell-only:
-
-```json
-{
-  "ClassName": "BearPelt",
-  "BuyPrice": -1,
-  "SellPrice": 800,
-  "InitialStock": -1,
-  "MaxStock": -1,
-  "MinimumHealthPercent": 50.0
-}
-```
-
-For finite stock, selling increases available stock up to `MaxStock`. A sell-only finite listing at full stock rejects sales. Use `InitialStock: -1` and `MaxStock: -1` for an unlimited sink. For a counter that buys only twenty pelts, use `InitialStock: 0`, `MaxStock: 20`, and no restock. It will stop accepting pelts when full; restocking would fill its remaining buyback space rather than reopen it.
-
-## Purchased quantities and attachments
-
-### Required items are purchase costs
-
-`RequiredItems` consumes one matching inventory object for every class occurrence, per purchased object (per round for loose ammo). Money is still required. For `RequiredItems: ["BurlapSack", "BurlapSack", "Rope"]`, quantity two costs four sack objects and two rope objects plus twice `BuyPrice`.
-
-Items must match exact class, be removable and non-ruined, contain no nested cargo, and pass relevant inventory locks. Input quantity is not measured: requiring a stack class consumes an entire matching stack object. There is no requirement-specific minimum health or fullness field. Attachments can be lost with a consumed parent; remove valuables before exchange.
-
-Basket selection reserves distinct existing ingredient objects across lines. One object cannot pay for two requirements, and another purchase in the same basket does not supply an ingredient. Materials are held in escrow and consumed on successful completion; ordinary failures attempt to restore them.
-
-Use dedicated consumable tokens for vouchers, or non-stack resources for material costs. Reusable access passes and pure zero-money barter require custom behavior. See [worked material example](economy-recipes.md#money-plus-consumed-materials).
-
-### Spawned contents
-
-Spawn setup checks item type in this order:
-
-1. Liquid-specific listing: set container quantity and fill with the required liquid.
-2. Energy Manager item: set energy.
-3. Magazine: set ammo count.
-4. Quantity item: set quantity.
-
-Loose-ammo delivery then sets the exact requested round count across stacks. `SpawnQuantity` does not multiply rounds.
-
-`SpawnQuantity > 0` wins. Otherwise `SpawnFullQuantity: true` fills maximum. With `SpawnQuantity: 0` and `SpawnFullQuantity: false`, the mod leaves the class's initial contents; this does not promise an empty object. For ordinary non-quantity items, both settings do nothing. Attached items use their own creation defaults; parent fill settings are not recursively applied. See [purchase contents](ammo-liquids-and-purchase-contents.md#read-purchase-contents-before-checkout).
-
-Rifle with stock, handguard, optic, and suppressor:
-
-```json
-{
-  "ClassName": "M4A1",
-  "BuyPrice": 4000,
-  "SellPrice": 1400,
-  "InitialStock": 5,
-  "MaxStock": 5,
-  "SpawnFullQuantity": true,
-  "Attachments": [
-    "M4_OEBttstck",
-    "M4_PlasticHndgrd",
-    "M68Optic",
-    "M4_Suppressor"
-  ]
-}
-```
-
-This example does not include a magazine or ammunition. `SpawnFullQuantity` does not load a weapon magazine that was never attached.
-
-Attachment must fit class and available slot. Duplicate attachment class can be repeated when entity has several compatible slots. If one attachment cannot be created, whole item delivery rolls back.
-
-## Ground delivery
-
-```json
-{
-  "ClassName": "SeaChest",
-  "BuyPrice": 1000,
-  "SellPrice": 300,
-  "InitialStock": 10,
-  "MaxStock": 10,
-  "DeliveryMode": "ground"
-}
-```
-
-Ground item spawns on surface at player position. Ordinary purchase quantity must be `1`; loose ammo is an exception and can create several stacks for the requested rounds. Leave clear, level space around trader; avoid roofs, cliffs, water, clutter, and other places where spawned object can overlap or become hard to recover.
-
-Global `AllowGroundFallback` affects failed inventory delivery, physical-currency change and payouts, deposit rollback, and ATM withdrawal. It does not change explicit ground listing.
-
-## Custom mod items
-
-1. Confirm mod is required on server and clients.
-2. Use exact public class name.
-3. Put listing in dedicated custom category file.
-4. Reference category from wanted trader profile.
-5. Choose conservative price and stock.
-6. Test preview, inventory delivery, ground fallback, attachments, sale eligibility, and restart stock.
-
-Recommended layout:
-
-```text
-Categories\MyMod_Weapons.json
-Categories\MyMod_Items.json
-Categories\MyMod_Vehicles.json
-```
-
-Keeping third-party classes separate makes updates and removals much safer.
-
-## Shared and independent stock possibilities
-
-- Same category referenced by several static trader profiles: same listing ID, shared stock.
-- Same trader profile used at several static physical locations: shared stock.
-- Same class copied to different category filename: different listing ID, independent stock.
-- Same class duplicated inside one trader: separate entries, warning unless every duplicate has `AllowDuplicate: true`.
-
-Use shared stock for global economy. Use separate category files for static regional markets. Traveling traders can use `StockMode: "route"` or `"stop"` to isolate supply without duplicating category files; those scopes also include trader profile ID. See [route stock sharing](traveling-traders-and-routes.md#stock-sharing-and-arrival-deliveries).
-
-## Recommended catalog cleanup
-
-Bundled defaults contain 1,782 listings in 60 categories. They are a starting catalog, not a guarantee that every class suits your server. Before production:
-
-- remove any unwanted class, opened-food entry, or seasonal item;
-- set deliberate car and boat sell prices; vehicle sales are enabled and ownership rules matter;
-- separate rare weapons/ammo into finite-stock categories;
-- prevent easy buy-low/sell-high loops across duplicated classes;
-- verify all third-party classes after mod updates;
-- keep category files small enough for human review;
-- version-control production config outside live profile.
-
-## Custom scripted possibilities
-
-`RaG_TraderModdingHooks` provides server-side extension points for a companion mod:
-
-- `ValidateTransaction`: reject a trade using a transaction result code, for example when an external progression system denies access.
-- `ModifyUnitPrice`: adjust the calculated unit price; return a usable positive price for an enabled trade.
-- `DeliverPurchase`: optionally handle purchase delivery and return the delivered entities plus a delivery result.
-- `OnTransactionCompleted`: react to completed transaction processing, checking the result before awarding external rewards.
-- `ValidateSaleItem`: apply additional checks to an individual candidate sale item.
-- `IsListingAvailable`: customize profile/listing availability.
-- `CustomizePurchaseContents`: adjust the contents information sent to the client; keep it consistent with actual delivery.
-- `OnTraderBound` and `OnTraderUnbound`: attach or clean up behavior as static or route entities enter/leave service.
-- `OnConfigurationReady`: initialize integration state after successful configuration publication.
-- `CanSpawnRouteStop`: add a route spawn-clearance decision.
-- `OnRouteStateChanged`: react to persisted route-state transitions.
-
-These are scripting hooks, not JSON configuration fields. Reputation gates, quest-linked access, bespoke delivery, and external rewards need an actual integration. A custom delivery handler must cooperate with rollback and persistence; test failures as carefully as successful purchases. Declare the companion addon's dependency on `RaG_Trader` in `CfgPatches.requiredAddons[]` and distribute any client-required scripts to clients.
+See [economy recipes](economy-recipes.md) for finite stock, material costs, and custom shop examples.

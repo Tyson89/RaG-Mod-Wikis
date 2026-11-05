@@ -108,11 +108,11 @@ One home for installation guides, server configuration, gameplay systems, class 
 
     [:octicons-arrow-right-24: Open Viking Pack documentation](mods/viking-pack/index.md)
 
--   :material-store:{ .lg .middle } **RaG Trader — not publicly released**
+-   :material-store:{ .lg .middle } **RaG Trader**
 
     ---
 
-    Server-authoritative traders, physical and account currencies, banking, stock, dynamic pricing, safe zones, vehicle sales, keys, and portable car storage.
+    Static and traveling traders, banking, a player market, vehicle dealers, and virtual garages.
 
     [:octicons-arrow-right-24: Open RaG Trader documentation](mods/trader/index.md)
 

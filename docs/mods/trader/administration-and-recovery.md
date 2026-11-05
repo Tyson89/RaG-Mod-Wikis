@@ -1,179 +1,54 @@
 # Administration, receipts, and recovery
 
-Trader economies depend on consistent persistence. Back up the entire trader state together with DayZ player/world persistence; isolated file restores can duplicate money or disconnect keys from vehicles.
-
 ## Validation report
 
-```text
-$profile:\RaG_Core\Configs\RaG_Trader\ConfigValidationReport.txt
-```
+Read `$profile:\RaG_Core\Configs\RaG_Trader\ConfigValidationReport.txt` after startup or reload. It shows validation results and static trader spawn status. A structural error can block startup. Some faults disable only the affected entry. Read the first error for the specific file, class, or listing, then check the server logs if more detail is needed.
 
-Registry validation checks configuration versions, currency definitions, prices, listing classes, liquid requirements, ammo resale values, offer pools, references, transforms, banking entries, vehicle attachments, and survivor loadouts. Attachment checks create temporary objects to test actual fit.
+## Admin access and diagnostics
 
-Report status is `PASSED`, `WARNINGS`, or `FAILED`. Blocking errors prevent registry publication. Warnings deserve review but do not necessarily block startup. Listing-local faults disable the affected listing while valid listings can remain usable. Structural errors in shared configuration block registry publication.
-
-Report groups include missing classes, invalid prices, broken attachments, duplicate entries, unsupported currencies, moving traders, and general configuration. Read Error/Warning logs too: category-loading failures can occur before report generation, and live-reload restriction details are logged even when the report lacks a dedicated section. Check report timestamp before trusting a previous result.
-
-!!! tip "Fix cause, then validate again"
-    An unknown part in `VehicleAttachments.json` can block the whole registry. Check mod availability and exact class first; then attachment slot compatibility. Changing the trader's position cannot fix a catalog or attachment error.
-
-## Admin access
-
-Add quoted Steam64 IDs to `Settings.json`:
-
-```json
-{
-  "AdminSteamIds": ["76561198000000000"]
-}
-```
-
-This is a settings fragment. Keep all other settings. Establish the first admin through a server restart; reload authorization uses the currently active admin list, not the candidate file being loaded.
-
-Trader UI exposes **Diagnostics**, **Reload configs**, and **Retry recovery** to listed admins. Reload and recovery requests share a server-wide ten-second cooldown. Wait for the result notification before trying another operation.
-
-## Admin Diagnostics
-
-Open **Diagnostics** from the trader menu as a listed admin. Opening the panel only inspects state. Route controls inside it can pause, resume, depart, arrive, or jump to a stop; those actions alter persistent route state and can trigger arrival deliveries.
-
-The panel shows registry readiness, recovery-journal readiness, disabled-listing count, pending-transaction count, and paged entries. Select an entry to inspect its details; use **Refresh** after a configuration or recovery operation. Pages contain up to 40 entries, and long detail text is truncated, so retain the full logs and report for investigation.
-
-Route entries show current/next stop, timers, blocked-spawn state, stock mode, trading cutoffs, and recovery holds. See [route admin controls](traveling-traders-and-routes.md#admin-controls). Other entries cover pending journal information, active disabled listings and their first error, and issues from the latest validation attempt. A rejected reload can therefore appear alongside the still-active registry. Check readiness and the actual active listing before assuming a candidate was published.
-
-### Resolve a disabled listing
-
-1. Read its class, listing ID, and first configuration error.
-2. Open the corresponding category file. Check exact class, prices, liquid requirement, ingredients, and attachments.
-3. For an ammo resale warning, inspect the relevant box resource and loose-ammo prices across the catalog.
-4. Correct the entry and use **Reload configs** if only reloadable fields were edited.
-5. Refresh Diagnostics, reopen the trader, and test both intended trade directions. Resolving the first error can reveal another problem in the same entry.
-
-Unknown item classes, incompatible listing attachments, and invalid liquid combinations can disable individual listings. Shared currency, location, vehicle-profile, and other structural errors can block the registry. A `WARNINGS` report can therefore describe a working market with unusable items; check disabled counts before accepting it.
-
-If startup fails before the trader UI is usable, diagnose from server files and logs. An in-game panel cannot replace offline repair of a server that never initialized its services.
+Add quoted Steam64 IDs to `AdminSteamIds` in root `Settings.json`. Restart to authorize the first admin. At a trader, use **Diagnostics** to inspect validation errors, disabled listings, route status, and pending Trader or P2P records. Refresh after an edit or recovery attempt. Route controls can change saved state. See [route admin controls](traveling-traders-and-routes.md#admin-controls).
 
 ## Live configuration reload
 
-Reload reads all six main files (`Settings`, `Catalog`, `Locations`, `Routes`, `VehicleAttachments`, and `Banking`) plus every referenced category, validates them as one candidate, prepares stock and route state, saves them, then publishes the candidate. Failure to restore stock after a failed route-state write can suspend trading until restart; check the error log before retrying. A rejected candidate leaves active configuration in place.
+Use **Reload configs** from the trader menu as an active admin. The server validates the candidate files, saves stock and route state, and refreshes open catalogs. A rejected candidate leaves the active configuration in use. Reload is blocked during active transactions or pending ordinary transaction recovery.
 
-| Config area | Live reload |
+| Config area | Procedure |
 | --- | --- |
-| Listing prices, starting stock/capacity, restock fields, materials, liquid requirements | Supported. Starting stock does not overwrite an existing finite count. |
-| Category content and trader category references | Supported, with valid existing location references. |
-| Trader display names and offer pools | Supported. |
-| Global settings and admin list | Supported. |
-| Banking fees, enabled bank entries, balance settings | Supported with valid physical currency definitions already in catalog. Existing initial grants are not repeated. |
-| Purchased vehicle attachment profiles | Supported for future purchases; existing vehicles are not refitted. |
-| `Locations.json`, including loadouts, opening hours, and safe zones | Restart required. |
-| Catalog currency definitions or `DefaultCurrencyId` | Restart required. |
-| Route schedules, prices, cutoffs, and other permitted route fields | Only while affected route is paused at a stop; see [route restrictions](traveling-traders-and-routes.md#editing-and-recovering-routes). |
-| Route topology, stock mode, stop names, or stop stock limits | Restart and deliberate saved-state handling required. |
+| Category listings, prices, restock, offer pools, and trader profiles | Live reload. Create referenced category files first. |
+| Purchased vehicle attachment sets | Live reload. Applies to later purchases. |
+| Routes and stops | Live reload. Changed route definitions reinitialize with a new arrival. |
+| Static locations, loadouts, opening hours, and safe zones | Restart. |
+| Global switches for static traders, routes, safe zones, banking, bank transfers, P2P, and the garage | Restart. |
+| Catalog currencies, bank settings, market settings, and garage settings | Restart. |
 
-### Reload procedure
-
-1. Back up active config and state. Test complex configuration in a separate profile first.
-2. Write all candidate files completely. Create any new custom category file before referencing it.
-3. Keep locations and currency definitions unchanged for this reload.
-4. Log in as an active admin, open trader, and choose **Reload configs** when no transaction is running.
-5. Read the result notification and validation logs.
-6. Reopen trader. Check a representative purchase, sale, stock count, and policy.
-
-Reload does not install missing defaults. A category file must already exist. Candidate numeric values must satisfy validation; do not rely on startup normalization during reload.
-
-Reload is blocked while a transaction is active, journal is unavailable, or recovery entries remain pending. Use the recovery process below before trying again.
-
-### Stock during reload
-
-- Existing finite listing: keep current stock, capped at the candidate maximum.
-- Raised maximum: does not instantly refill existing finite stock.
-- Lowered maximum: clamps excess stock down.
-- New listing or unlimited-to-finite transition: seed from `InitialStock`.
-- Finite-to-unlimited transition: becomes `-1`.
-- Removed listing: omitted from prepared state.
-
-Existing restock deadlines are retained for matching listings where available; a changed interval may take effect after the pending deadline. New restocking listings start a fresh timer. Stable category/class IDs preserve stock associations; the persisted identity map distinguishes liquid variants.
-
-!!! tip "Separate price tuning from layout work"
-    Tune prices, stock, and offers with reload. Schedule a restart for NPC relocation, safe-zone borders, opening hours, or currency restructuring. Editing both groups together makes the reload reject the entire candidate.
+For a listing that remains finite, reload preserves its count up to the current capacity. New and newly finite listings start at `InitialStock`. Reopen the trader and check a representative listing after reload.
 
 ## Player receipts
 
-**History** retains each player's most recent 50 receipts, newest first, covering trader trades, ATM deposits/withdrawals, player transfers, and player-market trades. ATM opens same receipt history in compact layout. Select a trader receipt for UTC time, location, currency, buy/sell direction, classes, quantities, prices, and purchase requirements. One trader basket is one receipt with several lines. Ammo receipt quantities count rounds. Use recorded line totals for dynamic-price purchases and condition-adjusted sales; a single displayed unit figure may not describe every unit in the line.
-
-```text
-$profile:\RaG_Core\Storage\RaG_Trader\History\<Steam64>.json
-```
-
-Dirty history saves on a five-second interval and during normal cleanup. A crash can lose recent receipt history. Fifty-entry retention makes History a recent record, not an undo button, refund system, full bank statement, or substitute for transaction journals. Turning off trade logging does not turn off receipt history.
+**History** holds each player's 50 most recent receipts, covering trader sales and purchases, ATM activity, transfers, and player-market trades. A basket has one receipt with separate lines. Players can copy a receipt from the Trader or ATM menu. Use the receipt ID, time, and trade details to look up the corresponding operation.
 
 ## Economy telemetry
 
-`EnableEconomyTelemetry: true` records aggregate server trade activity:
-
-```text
-$profile:\RaG_Core\Storage\RaG_Trader\EconomyTelemetry.json
-```
-
-Data covers up to 30 UTC days, successful and failed transaction counts, failure reasons, bought/sold quantities by class, currency totals, and top-20 bought/sold lists. Dirty data flushes every 60 seconds and during shutdown.
-
-Interpret `CurrencyFlow.Bought` as money spent by players buying goods, and `CurrencyFlow.Sold` as money paid to players selling goods. These are trade flows, not total server money supply. ATM movements and external rewards are not a complete part of this trade summary.
-
-Per-day tracking caps are 512 item classes and 32 currencies. Overflow activity is counted in untracked fields; counters saturate at the integer maximum and mark saturation. A top list is not exhaustive once tracking caps are reached.
-
-### Useful balancing checks
-
-- Large sale flow with little purchase flow: money accumulates; review sinks and repeatable sale routes.
-- One class dominates sales: inspect its loot availability, crafting inputs, condition and quantity pricing, and resale price.
-- Repeated stock-limit failures: buyback capacity may be full rather than broken.
-- Repeated delivery failures: test inventory space, payout denominations, vehicle clearance, and attachments.
-- A supposed rare item dominates purchases: check shared stock, restock rate, duplicate routes, and admin test activity.
-
-Use aggregate data alongside [trade logs](settings-stock-and-pricing.md#trade-logging), not as proof of an individual player's intent.
+With `EnableEconomyTelemetry: true`, the server records aggregate trade counts, failure reasons, item quantities, and currency totals in `EconomyTelemetry.json` under Trader storage. It keeps up to 30 UTC days. Money spent on purchases and money paid for sales are trade flows. Wallets, bank transfers, and unrelated rewards can affect total money in circulation.
 
 ## Transaction journals
 
-```text
-$profile:\RaG_Core\Configs\RaG_Trader\Transactions\<transaction-id>.json
-```
-
-Journals record purchase, sale, and bank transaction checkpoints so interrupted work can be reconciled. Entries may reference original balances, reserved stock, delivered/sold entities, recovery vaults, consumed requirements, and packed-vehicle storage. They are operational state; preserve them until recovery completes.
-
-Ordinary failures attempt rollback. A crash, failed persistence write, missing entity, or ambiguous ground-currency movement may need recovery. Never promise that every crash can be repaired automatically: source deliberately retains ambiguous entries and can suspend trading.
+`Transactions/<transaction-id>.json` records ordinary trade and ATM checkpoints. Bank transfers, P2P, and vehicle storage have their own records. An interrupted operation may be held for review when the server cannot establish which side effects completed.
 
 ### Retry recovery
 
-1. Preserve trader config/state, related player/world persistence, and logs.
-2. Read the first journal/recovery error. Correct disk-space, permissions, or missing-mod problems before retrying.
-3. Bring affected players online when recovery needs their inventories. Logs identify player and transaction IDs.
-4. If trader UI remains available, an active admin can choose **Retry recovery** with no transaction in progress.
-5. Read the notification. Pending entries keep trading suspended; successful completion reports trading resumed.
-6. Verify player wallet/bank, stock, items, and vehicle files before resolving a dispute or granting compensation.
-
-The retry does not auto-approve entries marked for manual review. If startup journal initialization fails before trader/network services start, the UI route may be unavailable. Preserve files, repair the underlying issue offline, and restart; do not keep searching for a missing button.
-
-!!! warning "Avoid double compensation"
-    Manually refunding an interrupted trade before recovery finishes can pay the player twice. Preserve the journal, inspect delivered items and balances, then settle the transaction deliberately.
+1. Preserve Trader files, the affected world/player persistence, and logs. Check the first error for missing files, write failures, or a missing mod.
+2. Have affected players connect if recovery needs access to their inventories.
+3. If the trader UI is available, an admin can select **Retry recovery** for ordinary Trader journals. Wait for the result.
+4. Reconcile held records with actual items, money, stock, and vehicles before granting compensation. Use [troubleshooting](troubleshooting.md) to locate the subsystem that reported the hold.
 
 ## Backup sets
 
-Back up these roots together:
+Back up the server while stopped. Keep each set with matching DayZ player and world persistence, plus backups and pending files.
 
-```text
-$profile:\RaG_Core\Configs\RaG_Trader\
-$profile:\RaG_Core\Storage\RaG_Trader\
-```
-
-Also retain matching DayZ player/world persistence, mod builds, and server configuration. Include atomic `.bak` files. Stop the server for a consistent manual backup or use an administration method that provides a coherent snapshot.
-
-| State | Consequence of discarding it |
+| Root | Contents to preserve |
 | --- | --- |
-| `Stock.json` | Shared stock reseeds from `InitialStock`; listing identities, scoped route counts, and arrival delivery markers are lost. |
-| `RouteState.json` | Route progress, chosen destination, pauses, and arrival identity are lost; fresh route state can trigger another arrival delivery. |
-| `Accounts` | Bank/account balances and initialization records are lost. |
-| `BankDirectory.json`, `BankTransfers.json` | Recipient lookup and pending player-transfer recovery can fail. Keep transfer journals with matching accounts. |
-| `Transactions` | Interrupted-trade evidence and recovery links are lost. |
-| `P2P` | Player-market offers, purchase claims, returns, and stored items can be lost. Keep each listing journal with matching item payload and accounts. See [P2P Trader recovery](player-market-server.md#persistence-and-recovery). |
-| `Vehicles` | Keys cannot restore missing stored vehicles. |
-| `History` | Player receipts disappear. |
-| `EconomyTelemetry.json` | Aggregate balancing data disappears. |
+| `$profile:\RaG_Core\Configs\RaG_Trader\` | Configs, `Stock.json`, `StockDelta.json`, `Transactions/`, `Accounts/`, `BankDirectory/`, `BankTransfers.json` |
+| `$profile:\RaG_Core\Storage\RaG_Trader\` | `Routes/`, `P2P/`, `Garage/`, `Vehicles/`, `History/`, `EconomyTelemetry.json` |
 
-Restore only after assessing which transactions happened after the backup. A stock or account backup can predate completed trades; restoring it alone can alter supply or balances. Avoid publishing player-state directories with example configuration.
+Restoring a balance, world vehicle, or stock file by itself can conflict with completed operations in the other files.

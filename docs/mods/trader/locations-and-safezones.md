@@ -1,258 +1,50 @@
 # Locations and safe zones
 
-`Locations.json` controls physical trader groups, entity classes, transforms, opening hours, vehicle spawn points, and optional safe zones.
+Static trader groups live in `Traders/Locations.json`. Enable `EnableStaticTraders` in root `Settings.json`. Traveling traders have their own placement in [Routes/Routes.json](traveling-traders-and-routes.md).
 
-## Structure
+## Trader groups
 
-```json
-{
-  "Version": 1,
-  "Locations": [
-    {
-      "Id": "North Market",
-      "CurrencyId": "euro",
-      "Enabled": true,
-      "Safezone": {
-        "Enabled": true,
-        "Center": [7500.0, 10.0, 7500.0],
-        "Radius": 150.0,
-        "BlockIncomingDamage": true,
-        "BlockOutgoingDamage": true,
-        "ProtectPlayerEquipment": true,
-        "DeleteAnimals": true,
-        "DeleteInfected": true,
-        "BlockWeaponFire": true,
-        "BlockExplosives": true,
-        "BlockBuilding": true,
-        "VehicleSpeedLimitKmh": 30.0,
-        "ShowNotifications": true,
-        "ExitProtectionSeconds": 30,
-        "PreserveHunger": false,
-        "PreserveThirst": false,
-        "PreserveDisease": false,
-        "PreserveTemperature": false,
-        "PreserveBleeding": false,
-        "ExcludedEntityClasses": []
-      },
-      "Traders": [
-        {
-          "TraderId": "tools",
-          "CurrencyId": "",
-          "EntityClassName": "RaG_TrafficCone",
-          "Attachments": [],
-          "Enabled": true,
-          "OpeningHoursEnabled": false,
-          "OpeningHour": 0,
-          "ClosingHour": 24,
-          "Position": [7505.0, 10.0, 7500.0],
-          "Orientation": [180.0, 0.0, 0.0],
-          "VehicleSpawnPoints": []
-        }
-      ]
-    }
-  ]
-}
-```
+Add groups to the top-level `Locations` array. Give each group a unique `Id`. Set `Enabled: false` to disable the group, or disable a single trader in its entry. An optional group `CurrencyId` overrides the catalog default.
 
-## Group fields
-
-| Field | Meaning |
+| Trader field | Purpose |
 | --- | --- |
-| `Id` | Unique group name. Runtime trader ID becomes `<group Id>/<TraderId>`. |
-| `CurrencyId` | Optional currency for this group; blank inherits catalog default. Individual entries, categories, and route stops can override it. |
-| `Enabled` | `false` skips entire group, all traders, and safe zone. |
-| `Safezone` | One optional cylindrical safe zone for group. |
-| `Traders` | Physical trader entries. |
+| `TraderId` | Profile ID in `Trading/Catalog.json`. Use it once per group. |
+| `EntityClassName` | Exact survivor or interactable object class. |
+| `Position`, `Orientation` | Three numbers each, in DayZ position and orientation order. |
+| `Attachments` | Survivor loadout. Each class needs a compatible slot. |
+| `Enabled` | Defaults to `true`. |
+| `CurrencyId` | Optional currency override. |
+| `OpeningHoursEnabled`, `OpeningHour`, `ClosingHour` | Optional DayZ world-time opening hours. |
+| `VehicleSpawnPoints` | Optional vehicle positions and orientations. |
 
-Group ID may contain spaces. Keep stable: it appears in runtime location IDs and trade logs.
-
-## Trader entry fields
-
-| Field | Rules and effect |
-| --- | --- |
-| `TraderId` | Must match unique profile `Id` in `Catalog.json`. Only one entry with given trader ID is allowed per group because runtime ID would collide. |
-| `CurrencyId` | Optional currency for this entry; blank inherits group/default. Category and route-stop currency take priority. |
-| `EntityClassName` | Exact valid `EntityAI` class. Common choices: survivor class or `RaG_TrafficCone`. |
-| `Attachments` | Survivor clothing, gear, held items, or inventory. Invalid class is validation error. |
-| `Enabled` | `false` skips entry. |
-| `OpeningHoursEnabled` | Uses world-time hour checks when `true`. |
-| `OpeningHour` | `0`–`23`; invalid resets to `0`. Inclusive. |
-| `ClosingHour` | `0`–`24`; invalid resets to `24`. Exclusive. |
-| `Position` | `[x, y, z]`, exactly three values. |
-| `Orientation` | `[yaw, pitch, roll]`, exactly three values. |
-| `VehicleSpawnPoints` | Ordered list used by vehicle listings. Each needs valid position and orientation. |
-
-For static locations, entity manager first binds an exact matching map object within 1 metre. Otherwise it spawns entity. This allows map designers to place terminal/NPC themselves while keeping trade binding in JSON.
-
-## Traveling groups
-
-An enabled route references group `Id` values through its stop `LocationId` fields. The whole group becomes route-controlled: its entries appear together only while that stop is active. Leave referenced groups enabled. A group cannot belong to multiple enabled routes. Entries retain their own transforms, loadouts, profiles, currencies, and opening hours.
-
-Static safe zones for those groups are suppressed. The active stop uses its explicit `Safezone` override, or the active group zone if no override is supplied; it is removed on departure. An explicit stop `Safezone` with `Enabled: false` disables protection at that stop. Details and complete examples: [traveling traders and routes](traveling-traders-and-routes.md).
+The server looks for a nearby unbound entity of the exact class at each static location. If none is available, it spawns one at the configured transform. For a full example, see [first custom shop](server-setup-and-class-names.md#build-a-first-custom-shop).
 
 ## Opening hours
 
-Hours read DayZ world date/time:
+With `OpeningHoursEnabled: true`, opening is inclusive and closing is exclusive. `8` to `20` opens from 08:00 through 19:59. `20` to `6` crosses midnight. Equal hours mean always open. The server rechecks hours at checkout.
 
-- `OpeningHour == ClosingHour`: always open.
-- opening less than closing: open from opening inclusive to closing exclusive.
-- opening greater than closing: overnight window.
-
-Examples:
-
-```json
-{
-  "OpeningHoursEnabled": true,
-  "OpeningHour": 8,
-  "ClosingHour": 20
-}
-```
-
-Open `08:00` through `19:59` world time.
-
-```json
-{
-  "OpeningHoursEnabled": true,
-  "OpeningHour": 20,
-  "ClosingHour": 6
-}
-```
-
-Open `20:00` through `05:59` world time.
-
-Opening hours and every other `Locations.json` field require a restart; live reload rejects changes to this file. Offer rotations and seasonal months use real UTC instead of world time; see [rotating and seasonal offers](rotating-and-seasonal-offers.md).
-
-Closing applies at catalog checkout too. Menu opened just before close can reject transaction afterward.
-
-## Safe-zone geometry
-
-Zone uses X/Z radius only:
-
-```text
-(playerX - centerX)^2 + (playerZ - centerZ)^2 <= radius^2
-```
-
-Trigger extends from `-1000` to `+1000` relative to configured Y; protection queries use horizontal radius. Terrain elevation does not reduce horizontal radius. Radius below `1` is corrected to `1`.
-
-Safe-zone center is independent from trader positions. Put center deliberately around market footprint, not blindly on first trader.
+Restart after editing static locations, survivor loadouts, hours, or safe zones.
 
 ## Safe-zone settings
 
-| Setting | Default | Actual effect |
-| --- | ---: | --- |
-| `Enabled` | `false` | Creates zone trigger only when group also enabled and center valid. |
-| `Center` | `[]` | `[x,y,z]`; exactly three values required when enabled. |
-| `Radius` | `150.0` | Horizontal metres; minimum `1`. |
-| `BlockIncomingDamage` | `true` | Blocks player damage when victim inside; also extends incoming protection after exit. Requires non-null damage source. |
-| `BlockOutgoingDamage` | `true` | Blocks damage caused by player while inside. |
-| `ProtectPlayerEquipment` | `true` | Blocks damage to items rooted on protected player; can continue after exit. |
-| `DeleteAnimals` | `true` | Deletes animals entering/staying in trigger and those present at startup. |
-| `DeleteInfected` | `true` | Deletes infected entering/staying and those present at startup. |
-| `BlockWeaponFire` | `true` | Prevents weapon manager firing while inside. |
-| `BlockExplosives` | `true` | Blocks vanilla `ActionArmExplosive`. Does not broadly delete every explosive class or replace incoming-damage protection. |
-| `BlockBuilding` | `true` | Blocks vanilla deploy-object and build-part actions. Custom mod actions may need own integration. |
-| `VehicleSpeedLimitKmh` | `30.0` | Caps velocity of `CarScript` inside. `0` disables. Negative becomes `0`. |
-| `ShowNotifications` | `true` | Sends enter, leave, and exit-expired messages. |
-| `ExitProtectionSeconds` | `30` | Protection after leaving last overlapping zone. Negative becomes `0`. |
-| `PreserveHunger` | `false` | Pauses hunger modifier tick while inside. |
-| `PreserveThirst` | `false` | Pauses thirst modifier tick while inside. |
-| `PreserveDisease` | `false` | Pauses immune-system agent-pool tick; does not cure disease. |
-| `PreserveTemperature` | `false` | Suppresses heat-comfort tick and restores temperature stats after environment update. |
-| `PreserveBleeding` | `false` | Sets bleeding manager blood-loss preservation while inside. Does not remove cuts. |
-| `ExcludedEntityClasses` | `[]` | `IsKindOf` exemptions from animal/infected deletion. |
+Set `EnableSafezones: true` in root `Settings.json` and add a `Safezone` object to the static group or route stop. Set its `Enabled` to `true`. `Center` is a separate `[x, y, z]` position and `Radius` measures horizontal distance in metres. The bundled static zones have `Enabled: false`.
 
-## Incoming and outgoing protection
+| Field | Default | Effect |
+| --- | --- | --- |
+| `Enabled` | `false` | Activates the configured zone. |
+| `Center`, `Radius` | `[]`, `150.0` | Supply three coordinates when enabled and check coverage at the border. |
+| `BlockIncomingDamage`, `BlockOutgoingDamage` | `true`, `true` | Protect players inside and restrict damage they deal to other players. |
+| `ProtectPlayerEquipment` | `true` | Protects items rooted in a protected player's inventory. |
+| `DeleteAnimals`, `DeleteInfected` | `true`, `true` | Removes matching wildlife and infected from the zone. |
+| `ExcludedEntityClasses` | `[]` | Exempts classes and their descendants from deletion. |
+| `BlockWeaponFire` | `true` | Blocks supported weapon firing. |
+| `BlockExplosives` | `true` | Blocks supported arming, trigger attachment, grenade unpinning, and remote trigger actions. |
+| `BlockBuilding` | `true` | Blocks supported deploy and build actions. |
+| `VehicleSpeedLimitKmh` | `30.0` | Caps car speed. `0` disables the cap. |
+| `ShowNotifications` | `true` | Shows zone and exit protection notices. |
+| `ExitProtectionSeconds` | `30` | Grace period after leaving the last overlapping zone. `0` disables it. |
+| `PreserveHunger`, `PreserveThirst`, `PreserveDisease`, `PreserveTemperature`, `PreserveBleeding` | `false` | Pauses the corresponding survival effects in the zone. Existing disease and wounds remain. |
 
-Damage is denied when:
+Exit protection follows the departed zone's incoming damage, outgoing damage, equipment, and weapon-fire settings. Building, explosive, speed, and survival restrictions apply inside the zone. Admin IDs bypass the weapon, building, explosive, and car-speed restrictions. Damage protections still apply.
 
-- victim is inside zone with incoming block; or
-- attacker is inside zone with outgoing block; or
-- relevant post-exit protection remains.
-
-Source player resolves from damage source itself or its hierarchy root. This covers many held weapons/projectiles. Damage hook requires non-null source, so do not describe zone as universal immunity from falling, environment, hunger, thirst, temperature, or every third-party damage system.
-
-Equipment protection follows owning player position and exit state.
-
-## Exit protection
-
-Timer starts only when player leaves last overlapping safe zone. Entering a zone clears old exit timer.
-
-During timer:
-
-- incoming damage protection follows departed zone's `BlockIncomingDamage`;
-- equipment protection follows `ProtectPlayerEquipment`;
-- outgoing damage is blocked;
-- weapon fire is blocked.
-
-Outgoing and weapon blocks during exit window are unconditional once timer exists. This prevents protected player exploiting grace period to attack others.
-
-Building, explosive arming, vehicle speed, and survival preservation do not continue after exit.
-
-## Admin bypasses
-
-Steam64 IDs in `Settings.json` `AdminSteamIds` bypass:
-
-- weapon-fire block;
-- building block;
-- explosive-arming block;
-- car speed limit;
-- key-storage owner restriction.
-
-Admins do not bypass incoming/outgoing damage or equipment protection in current source. They also do not bypass infected/animal deletion.
-
-## Exclusions
-
-Example keep deer but delete other animals:
-
-```json
-{
-  "DeleteAnimals": true,
-  "ExcludedEntityClasses": [
-    "Animal_CervusElaphus"
-  ]
-}
-```
-
-Matching uses inheritance. Excluding broad parent can exempt many subclasses. Use narrowest exact parent/class and test.
-
-## Overlapping zones
-
-Player can be inside several triggers. Preservation is active when any containing zone enables matching feature. Protection and action queries inspect containing zones for applicable rules. Exit protection starts only after player leaves final tracked zone.
-
-Avoid accidental overlap with conflicting configs. Same behavior becomes hard to explain and border testing gets messy.
-
-## Practical designs
-
-### Pure trade protection
-
-- incoming/outgoing/equipment protection on;
-- weapon/build/explosive blocks on;
-- infected/animal deletion on;
-- survival preservation off;
-- 20–30 second exit protection.
-
-### PvE rest stop
-
-- trade protection on;
-- hunger/thirst/temperature preservation on;
-- disease/bleeding preservation only if server wants true recovery pause;
-- lower speed limit and visible notifications.
-
-### Object trader without safe zone
-
-- `Safezone.Enabled: false`;
-- configured object still trades normally;
-- ideal for risky black-market location.
-
-## Border test checklist
-
-- enter/leave message fires once;
-- shots blocked inside;
-- outside shooter cannot damage inside player;
-- inside player cannot damage outside target;
-- exit grace blocks retaliation and expires on time;
-- equipment does not take protected damage;
-- custom explosives/build actions behave as expected;
-- cars cap speed without severe physics collision;
-- infected/animals delete and exclusions survive;
-- overlapping zones do not produce confusing timer state.
+Test the border with an ordinary player, including overlapping zones and any building or weapon mods that supply their own actions.

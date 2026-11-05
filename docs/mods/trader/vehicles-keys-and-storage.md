@@ -1,344 +1,70 @@
 # Vehicles, keys, and storage
 
-RaG Trader has three related systems:
+Vehicle dealers buy and sell vehicles at their configured spawn points. Use a virtual garage for platform storage, or a matching car key for portable packing when the server enables it.
 
-1. buying configured cars and boats at trader spawn points;
-2. selling packed cars or physical cars/boats under ownership rules;
-3. assigning `RaG_CarKey` to `CarScript` vehicles for locking and portable storage.
+## Buying vehicles
 
-With default `CreateVehicleKeyOnPurchase: true`, purchased `CarScript` cars receive an assigned `RaG_CarKey`. It goes into player inventory, or onto the ground at player position when `AllowGroundFallback` permits. Secure the key before leaving. If key creation or assignment fails, purchase fails rather than leaving a paid car without its expected key. Set the switch to `false` only when players must obtain a blank key and assign it themselves. Key system supports cars derived from `CarScript`, not boats.
+List the exact vehicle class in a catalog category. The dealer recognizes classes derived from `CarScript`, `BoatScript`, or `MotorbikeScript`. Each vehicle listing trades one vehicle at a time.
 
-## Vehicle listings
-
-Vehicle class is detected by walking `CfgVehicles` inheritance until `CarScript` or `BoatScript`.
-
-Example:
-
-```json
-{
-  "ClassName": "OffroadHatchback",
-  "AllowDuplicate": false,
-  "BuyPrice": 5000,
-  "SellPrice": 2000,
-  "InitialStock": 2,
-  "MaxStock": 2
-}
-```
-
-Quantity is forced to `1`. Delivery mode and normal ground fallback do not choose vehicle position.
-
-Set `SellPrice: -1` only when vehicle must be buy-only. Positive price enables packed/parked sale rules below.
-
-## Selling vehicles
-
-Vehicle sale quantity is always `1`. Server checks packed vehicle keys first, then physical vehicles around configured spawn points. Exact listing class must match.
-
-### Sell packed keyed car
-
-Carry `RaG_CarKey` that is:
-
-- assigned and marked as containing packed vehicle;
-- linked to exact listed class in stored binary;
-- owned by current player identity;
-- not ruined;
-- removable and not blocked by locked inventory.
-
-On successful sale, server consumes submitted key and permanently deletes packed vehicle file. Stored vehicle uses the listing's base/dynamic sell price and its saved global health fraction when condition pricing is enabled. It must meet `MinimumHealthPercent` and cannot be ruined. Fuel, cargo, and individual parts receive no separate payment.
-
-Other matching spare keys are not consumed. They no longer have packed vehicle, but remain assigned to sold identity. Remove them from circulation; they do not become blank keys.
-
-!!! warning "Packed sale ownership is strict"
-    `RestrictVehicleStorageToOwner: false` and `AdminSteamIds` affect pack/deploy only. They do not let holder/admin sell another owner's packed vehicle.
-
-### Sell physical car or boat
-
-Park exact class within `6` metres of any `VehicleSpawnPoints` position belonging to current trader. Then meet all conditions:
-
-- no crew in vehicle;
-- engine off;
-- not ruined;
-- global health meets listing `MinimumHealthPercent`;
-- ownership check passes.
-
-Ownership:
-
-- assigned `CarScript`: seller must be player recorded at key assignment;
-- assigned car whose saved data has no owner ID: matching owner key in seller inventory is fallback proof;
-- unassigned car or any boat: seller must be last driver recorded when engine started.
-
-Last-driver record changes every time another player starts engine and persists with vehicle. Fresh unassigned vehicle with engine never started has no seller; start it once before sale.
-
-Physical sale payout follows condition pricing from global health when enabled. Quantity pricing has no vehicle effect. Packed sale applies the same condition setting to saved global health. Packing is not a repair or a route to full-condition resale.
-
-!!! danger "Unload before selling"
-    Successful physical sale deletes entire vehicle, attachments, and cargo. Server does not require empty inventory—only empty crew. No separate payment exists for fuel, parts, or contents.
-
-### Sale choice and stock
-
-- If player carries eligible matching packed key, packed vehicle is selected before parked vehicle.
-- Finite-stock cap still applies: vehicle sale adds one stock and fails when listing already at cap.
-- Sellable filter detects matching packed key or exact-class transport near spawn, but server owns final authorization.
-- Basket can include vehicle sale, but each vehicle line quantity remains one.
-- Failed payout restores staged packed file/key when rollback succeeds; physical vehicle stays in world until successful commit.
-
-## Vehicle spawn points
-
-Configured on physical trader entry:
+Set `VehicleSpawnPoints` on the static trader entry or route stop. The trader uses the first clear point in order. Boats require a point in water. Keep room around each point for spawning and driving away.
 
 ```json
 {
   "VehicleSpawnPoints": [
-    {
-      "Position": [7490.0, 10.0, 7505.0],
-      "Orientation": [90.0, 0.0, 0.0]
-    },
-    {
-      "Position": [7480.0, 10.0, 7505.0],
-      "Orientation": [90.0, 0.0, 0.0]
-    }
+    {"Position": [7490.0, 10.0, 7505.0], "Orientation": [90.0, 0.0, 0.0]}
   ]
 }
 ```
 
-Server tries in listed order. Spawn point must pass box collision approximately `6 × 4 × 10` metres. Safe-zone trigger object is ignored; real collidable object blocks point. If all blocked, purchase fails before payment and stock restores.
+Configure parts per exact vehicle class in `Vehicles/Attachments.json`. Use `"Version": 1` and a `Vehicles` array of objects with `ClassName` and `Attachments`. Repeat a part class for repeated slots such as wheels. A missing entry supplies no configured parts. An invalid part or slot can block configuration validation.
 
-### Spawn-point design
+New vehicles and their configured parts start at full health. Cars receive fuel, oil, brake fluid, and coolant. Boats and motorbikes receive fuel. With `CreateVehicleKeyOnPurchase: true`, a purchased `CarScript` gets an assigned `RaG_CarKey`. Look in inventory and, if ground fallback is enabled, at your feet.
 
-- use flat terrain;
-- keep 10+ metre separation;
-- avoid buildings, trees, map clutter, fences, signs, and parked vehicles;
-- orient exit direction away from trader crowd;
-- test largest sold truck, not only hatchback;
-- provide several fallback points for busy market;
-- keep boats in separate water-capable purchase design, but current clearance and general spawn code still need live testing.
+## Selling vehicles
 
-## Purchased vehicle setup
+For a deployed vehicle, park the exact listed class within 6 m of one of the trader's vehicle points. Switch off the engine and empty all seats. Keyed cars require their assigned owner. Unkeyed cars, boats, and motorbikes require the player recorded when the engine last started. Vehicle condition must meet the listing threshold.
 
-After creation:
+If portable packing is available, carry the matching packed key to sell a stored car. The trader checks packed keys before searching for deployed vehicles. The packed sale requires the assigned owner and consumes the submitted key and vehicle snapshot. Retrieve a vehicle from the virtual garage first if you plan to sell it.
 
-- global health set to maximum;
-- configured attachments created and set full health;
-- car fuel, oil, brake, and coolant filled;
-- boat fuel filled;
-- wheels optionally locked to parent via `LockVehicleWheelsOnSpawn`.
+Unload valuables before selling. The sale removes the vehicle, attached parts, and cargo, and pays only for the vehicle. A finite-stock listing also needs room for one more vehicle.
 
-Registry validation checks the configured vehicle attachment set using temporary objects; an invalid class or slot fit blocks startup or rejects reload. If a required attachment fails during actual vehicle creation, vehicle configuration fails, the spawned vehicle is deleted, and the purchase rolls back. Ordinary listing attachment failures also abort delivery.
+## Virtual garage
 
-Category-listing `Attachments` are not applied to vehicle purchase path. Configure purchased vehicle parts only in `VehicleAttachments.json`.
+### Store and retrieve
 
-## `VehicleAttachments.json`
+1. Drive onto a parking platform. Stop, shut off the engine, and have everyone get out. Detach any towing connections. A helicopter must be landed with rotors stopped.
+2. Stand within 3 m of the meter and select **Open virtual garage**.
+3. Select the vehicle under **Eligible parked vehicles** and choose **Store vehicle**. The garage stores the vehicle with its attachments and cargo.
+4. At a suitable meter, select the vehicle under **Your stored vehicles** and choose **Retrieve vehicle**. Keep the platform clear. Use a land platform for land or air vehicles and a water platform for boats.
 
-Example:
+Stored entries show vehicle condition and contents and can be renamed. Clear the name to restore the default label. Garages share each player's stored list across meters.
 
-```json
-{
-  "Version": 1,
-  "Vehicles": [
-    {
-      "ClassName": "OffroadHatchback",
-      "Attachments": [
-        "CarBattery",
-        "CarRadiator",
-        "SparkPlug",
-        "HeadlightH7",
-        "HeadlightH7",
-        "HatchbackHood",
-        "HatchbackTrunk",
-        "HatchbackDoors_Driver",
-        "HatchbackDoors_CoDriver",
-        "HatchbackWheel",
-        "HatchbackWheel",
-        "HatchbackWheel",
-        "HatchbackWheel",
-        "HatchbackWheel"
-      ]
-    }
-  ]
-}
-```
+Access uses assigned vehicle ownership or, for unkeyed vehicles the garage registered at purchase, the recorded buyer. Ordinary unkeyed vehicles found in the world need supported ownership before storage. If the server allows matching key holders, storing a vehicle puts it in the storing player's list. Retrieval belongs to the player who stored it.
 
-Rules:
+### Server setup
 
-- `Version` must be `1`.
-- Vehicle class must inherit `CarScript` or `BoatScript`.
-- Only one profile per exact vehicle class.
-- Every attachment class must exist.
-- Repeat class for repeated slots such as wheels/headlights.
-- Attachment must be compatible with available vehicle slots.
+Set `EnableVirtualGarage: true` in root `Settings.json`. Place `RaG_Parking_MeterPlatform` through your map setup. Keep the platform within 5° of level and check clearance for the largest vehicles you allow. Use a submerged platform with enough water depth for boats. Native cars, boats, and motorbikes are supported. The garage also detects Expansion vehicles when the Expansion vehicle integration is present. Test custom vehicles and their saved contents on your server.
 
-A missing profile means no configured parts are supplied. A present but invalid profile is a blocking configuration error, not an accepted way to request a bare vehicle.
+Edit `Vehicles/Garages.json` and restart.
 
-## Obtaining and assigning key
+| Field | Default | Accepted values |
+| --- | --- | --- |
+| `Version` | `1` | `1` |
+| `MaxVehiclesPerPlayer` | `20` | `1–100` |
+| `AllowVehicleKeyHolders` | `false` | `true` also allows players carrying an eligible matching key to store a vehicle |
+| `PlatformParkingHeight` | `8.0` | `2–25` m search height |
+| `PlatformSpawnClearance` | `0.15` | `0.05–0.5` m height offset for land retrieval |
 
-Blank key class:
+Garage records and snapshots live in `$profile:\RaG_Core\Storage\RaG_Trader\Garage\`. Preserve the whole directory together with world persistence. If a failed store offers cancellation, it returns the garage record to deployed state and leaves the verified original vehicle in the world. For other recovery holds, keep both files and have an admin reconcile the record and world vehicle before taking further action.
 
-```text
-RaG_CarKey
-```
+## Car keys
 
-Hold non-ruined blank key, target non-ruined unkeyed `CarScript`, use **Assign car key**. Server generates four-part UUID and stores same identity on vehicle/key.
+Hold a blank `RaG_CarKey` or one of its colored variants and use **Assign car key** on an unkeyed, non-ruined car. A matching key can unlock the car or lock it with the engine off and all seats empty. A locked car blocks entry, outside door access, and inventory changes.
 
-Requirements:
+Combine an assigned key with a blank key to make a spare. Both remain in your inventory. If every key is lost, an authorized admin can use `RaG_CarKey_Admin` to reset a deployed car so it can be paired again.
 
-- key unassigned;
-- car unassigned;
-- car not ruined;
-- player identity and name available.
+## Portable vehicle packing
 
-An ordinary key cannot clear or move its assignment. Authorized admins can reset the deployed vehicle through the separate admin key described below. Vehicle/key display name changes to include recorded owner and vehicle name.
+Set `EnableVehiclePacking: true` to allow portable packing. Hold the matching key and use **Pack vehicle** on a stopped, non-ruined car with the engine off and nobody inside. When `RestrictVehicleStorageToOwner` is enabled, packing and deployment require the assigned owner or an authorized admin.
 
-For found cars, or car purchases when `CreateVehicleKeyOnPurchase` is disabled, obtain a blank key separately. Add `RaG_CarKey` to vehicle/tools trader or loot economy if players need that path. Purchased boats do not use car keys.
-
-## Locking
-
-Matching key can lock when:
-
-- car assigned;
-- car currently unlocked;
-- engine off;
-- every crew seat empty.
-
-Locked car blocks:
-
-- getting in;
-- opening outside doors;
-- cargo display;
-- attachment category display;
-- cargo insert/removal;
-- attachment insert/removal.
-
-Matching key can unlock locked car. Owner restriction is not checked for lock/unlock: possession of matching key is authority.
-
-Lock is access control, not raid protection. Vehicle still can take damage and other mods/admin tools may move or alter it.
-
-## Spare keys
-
-Combine:
-
-- one assigned `RaG_CarKey`;
-- one unassigned `RaG_CarKey`.
-
-Recipe **Make spare car key** takes about one second, consumes neither, and copies assignment to blank key. Both keys operate same vehicle and reflect stored-vehicle state while registered.
-
-Make spare immediately. Losing every matching key leaves no ordinary player recovery flow. A deployed car can be reset by an authorized admin; a packed car still requires recovery of its matching key/state.
-
-## Packing vehicle
-
-Hold matching key, target car, use **Pack vehicle**. `EnableVehiclePacking` must be `true`. When disabled, keys still lock/unlock and existing packed cars can still deploy; storage files are not erased.
-
-Car must:
-
-- have matching assignment;
-- not be ruined;
-- engine off;
-- speed no more than about `1.0` on speedometer;
-- have no crew;
-- not already be packed under same key ID.
-
-When `RestrictVehicleStorageToOwner: true`, only recorded key owner or Steam64 admin can pack. Owner uses stable identity ID recorded at assignment. Key data without an owner ID falls back to player-name match.
-
-Pack process:
-
-1. saves vehicle to temp binary file;
-2. commits atomic storage and backup;
-3. marks all registered matching keys as containing vehicle;
-4. deletes deployed world vehicle only after successful save.
-
-Stored data recursively uses entity `OnStoreSave`/`OnStoreLoad`, preserving vehicle and nested attachment/cargo state, damage zones, key/lock state, and car fluid fractions.
-
-## Storage files
-
-Path:
-
-```text
-$profile:\RaG_Core\Storage\RaG_Trader\Vehicles\<id0>_<id1>_<id2>_<id3>.bin
-```
-
-Storage format is `4`. Stored data includes assigned owner identity, last-driver identity, and global vehicle health used for sale validation and pricing. Deployment accepts supported formats 1 through 4. If stored data has no sale-health information, selling returns **Deploy and repack this vehicle before selling it**. Deploy, inspect the vehicle, and pack it again to write the required health record. Atomic storage also uses `.bak`, temporary, sale, and deployment tracking files; back up the whole directory rather than only `.bin` files.
-
-Do not rename or hand-edit binary. Filename is key UUID. Losing storage file makes keys report no packed vehicle. Removing a stored mod class can make recursive restore fail.
-
-## Deploying vehicle
-
-Hold key containing packed vehicle and enter placement mode. `RaG_Hologram_Car` shows placement. Use **Deploy vehicle** when hologram valid.
-
-Server validates:
-
-- key assigned and packed file exists;
-- owner/admin authorization when enabled;
-- same vehicle not already registered as deployed;
-- requested position non-zero;
-- within `10` metres of player;
-- vertical difference no more than `4` metres;
-- not sea or pond surface;
-- server hologram collision check passes;
-- loaded vehicle key identity matches held key.
-
-On success, server restores car at requested transform, persists deployment tracking, removes packed storage, and updates matching keys to not stored. If a storage commit or cleanup fails, preserve companion files and inspect logs before retrying.
-
-Current deployment forbids water surfaces and restores `CarScript`; portable storage is not boat storage.
-
-## Owner restriction and admins
-
-```json
-{
-  "RestrictVehicleStorageToOwner": true,
-  "AdminSteamIds": [
-    "76561198000000000"
-  ]
-}
-```
-
-- `true`: assigned owner/admin can pack or deploy.
-- `false`: anyone holding matching key can pack/deploy.
-- admins must use exact Steam64 ID.
-- restriction does not prevent another matching-key holder locking/unlocking.
-- restriction does not transfer ownership when spare key given away.
-- restriction/admin bypass does not grant vehicle sale authority.
-
-## Recovery scenarios
-
-### Admin key for deployed cars
-
-`RaG_CarKey_Admin` is a separate item from ordinary player keys. Server checks the holder's Steam64 ID against `Settings.json` `AdminSteamIds`. Possessing the item alone does not authorize a non-admin.
-
-Authorized admin can lock/unlock an assigned deployed car and use **Reset vehicle key**. Reset clears the vehicle's assignment, owner name/ID, last-driver ID, and lock state. It does not turn old player keys into blank keys. Those keys no longer match the reset vehicle.
-
-For a lost-key deployed car:
-
-1. Confirm the intended vehicle and owner; preserve relevant persistence before intervention.
-2. Hold non-ruined `RaG_CarKey_Admin` as a listed admin and target the deployed car.
-3. Use **Reset vehicle key**.
-4. Have the intended owner assign a fresh ordinary `RaG_CarKey`.
-5. Craft fresh spares and retire old keys. Check lock/unlock and recorded ownership.
-
-Reset is logged with admin ID, vehicle class, and previous key identity. Admin key cannot be assigned as an ordinary key and is not a universal packed-vehicle recovery token. Do not put it in public loot or normal trader listings.
-
-### Packed vehicle, key lost
-
-Binary remains but no ordinary player action can address UUID. Restore matching key from persistence/admin backup or recover through controlled server administration. Do not guess filename/key data.
-
-### Deploy fails after mod removal
-
-Stored binary remains because deletion occurs only after successful restore. Re-enable exact vehicle/item mod versions, restart, deploy, unload incompatible cargo, repack, then migrate.
-
-### Key says packed but no file
-
-Key state refreshes from file when registered server-side. Reconnect/restart. If file and backup absent, stored vehicle data is gone.
-
-### Recovery vault appears
-
-`RaG_TraderTransactionVault` concerns failed trade/currency rollback, not vehicle storage. Do not delete before checking contents and logs.
-
-## Operational tips
-
-- Back up vehicle storage with persistence backups.
-- Keep exact mod set while vehicles remain packed.
-- Tell players to unpack before major vehicle-mod updates.
-- Test nested weapons, magazines, fluids, batteries, locks, damage, and cargo after every storage-code update.
-- Never place deployment hologram on roofs/ledges despite 4-metre vertical allowance.
-- Keep spare key outside vehicle. Key locked inside matching car is useless.
-- Unload every vehicle before sale; cargo and parts are deleted unpaid.
-- Set vehicle resale values using global health pricing; fuel and separately valuable parts do not receive an extra payout.
-- Use wide sell-point spacing and signs so players know exact parking target.
-- Do not enable wheel locking until server understands gameplay effect and removal tools.
+To deploy, hold the packed key, enter placement mode, and use **Deploy vehicle** on a clear land surface within 10 m. Keep matching keys and storage files together. Packed cars use `$profile:\RaG_Core\Storage\RaG_Trader\Vehicles\`, separate from garage records.
