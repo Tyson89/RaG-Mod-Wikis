@@ -7,8 +7,8 @@ Install **RaG Core** and **RaG Trader** on the server and all clients. In `CfgPa
 ## First startup
 
 1. Start the server to copy the bundled configuration into its profile. Stop it before editing the initial setup.
-2. Check the coordinates in `Traders/Locations.json` for your map. Bundled trader and route coordinates are for Chernarus.
-3. Place any ATM, player market board, or garage platform you plan to use through your map placement or mission setup.
+2. Check `Traders/Locations.json` for your map. The bundled Chernarus setup spawns the Green Mountain hub, its terminals, and a separate boat trader.
+3. For custom sites, place terminals through the location group's `Objects` array or your map or mission setup. Enable the features you want in `Settings.json`.
 4. Start the server. Read `ConfigValidationReport.txt` in the Trader config directory, then test a purchase and a sale as a regular player.
 
 ## Configuration files
@@ -20,12 +20,12 @@ All paths below are relative to `$profile:\RaG_Core\Configs\RaG_Trader\`. Keep `
 | `Settings.json` | Feature switches, pricing, stock saves, and admin IDs |
 | `Trading/Catalog.json` | Currencies, trader profiles, category references, and offer pools |
 | `Trading/Categories/<Category>.json` | Listings, prices, stock, and purchase contents |
-| `Traders/Locations.json` | Static trader placement, safe zones, and vehicle spawn points |
+| `Traders/Locations.json` | Static traders, props and terminals, safe zones, and vehicle spawn points |
 | `Routes/Routes.json` | Traveling traders, stops, props, and schedules |
 | `Banking/Settings.json` | Banked currencies, balance limits, starting balances, and ATM fees |
 | `P2P/Settings.json` | Player market boards, limits, fees, and buy orders |
 | `Vehicles/Attachments.json` | Parts installed on purchased vehicles |
-| `Vehicles/Garages.json` | Garage capacity, key-holder access, and platform clearance |
+| `Vehicles/Garages.json` | Garage capacity, access, retrieval rules, and standalone meter sites |
 
 Startup copies missing main files and referenced bundled categories. Create any custom category file before referencing it. See [backup sets](administration-and-recovery.md#backup-sets) for generated state.
 
@@ -83,9 +83,10 @@ Restart, approach the cone, and open the trader. The location's `TraderId` selec
 | `RaG_ATM` | ATM. Enable banking and configure at least one physical currency for banking. |
 | `StaticObj_Misc_AdvertColumn` | Default player market board. Enable P2P and use a class listed in `MarketBoardClasses`. |
 | `RaG_Parking_MeterPlatform` | Virtual garage. Place the combined meter and parking platform on suitable ground or in suitable water. |
+| `RaG_Parking_Meter` | Standalone virtual garage meter. Add a matching site in `Vehicles/Garages.json`. |
 | `RaG_TrafficCone` | Example object trader. Bind it through a static location entry. |
 
-The RaG objects above use scope `1`. Use placement tools that accept scope-1 classes. ATM, board, and garage placement is separate from the static trader entries.
+The RaG objects above use scope `1`. Use placement tools that accept scope-1 classes. To spawn terminals from `Traders/Locations.json`, use [static location objects](locations-and-safezones.md#static-location-objects).
 
 ## Class names
 

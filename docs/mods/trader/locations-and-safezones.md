@@ -19,6 +19,26 @@ Add groups to the top-level `Locations` array. Give each group a unique `Id`. Se
 
 The server looks for a nearby unbound entity of the exact class at each static location. If none is available, it spawns one at the configured transform. For a full example, see [first custom shop](server-setup-and-class-names.md#build-a-first-custom-shop).
 
+## Static location objects
+
+Use the group's `Objects` array to place terminals and props. Each entry needs a `House`-derived `ClassName` and a three-number `Position` and `Orientation`. The server spawns objects for enabled groups when `EnableStaticTraders` is on. An existing object of the same class within 0.1 m is reused. A group can have up to 128 objects. Restart after editing placements.
+
+This fragment shows one of the bundled Green Mountain ATMs. For a custom site, use your own transform and append the object to the group's `Objects` array.
+
+```json
+{
+  "Objects": [
+    {
+      "ClassName": "RaG_ATM",
+      "Position": [3706.667236, 402.002563, 5984.945313],
+      "Orientation": [-93.32019, 0.0, 0.0]
+    }
+  ]
+}
+```
+
+Placement creates the object. Its banking, market, or garage feature must also be enabled. A standalone garage meter needs a [matching site](vehicles-keys-and-storage.md#standalone-meters).
+
 ## Opening hours
 
 With `OpeningHoursEnabled: true`, opening is inclusive and closing is exclusive. `8` to `20` opens from 08:00 through 19:59. `20` to `6` crosses midnight. Equal hours mean always open. The server rechecks hours at checkout.

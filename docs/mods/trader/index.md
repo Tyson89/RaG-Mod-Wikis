@@ -7,7 +7,7 @@ RaG Trader adds NPC and object shops, traveling merchants, banking, a player mar
 - [Player guide](getting-started.md) covers browsing, buying, selling, and receipts.
 - [Clothing try-on and weapon builder](shopping-tools.md) covers outfit previews and configured weapon purchases.
 - [P2P Trader](player-market.md) covers selling your gear, collecting purchases, and fulfilling wanted orders.
-- [Vehicles, keys, and storage](vehicles-keys-and-storage.md) covers vehicle trading, parking platforms, and portable packing.
+- [Vehicles, keys, and storage](vehicles-keys-and-storage.md) covers vehicle trading, garage meters, and portable packing.
 
 ## Server owners
 
@@ -18,4 +18,4 @@ RaG Trader adds NPC and object shops, traveling merchants, banking, a player mar
 - [Economy recipes and testing](economy-recipes.md) gives examples for stock, materials, and regional shops.
 - [Administration and recovery](administration-and-recovery.md) and [Troubleshooting](troubleshooting.md) cover validation, diagnostics, and saved state.
 
-The bundled locations are for Chernarus. Static traders operate at Sosnovy Pass, Mogilevka, Prison, and a boat trader location. Traveling traders and the player market are off by default. Banking and the virtual garage need placed terminals.
+The bundled Chernarus setup has six shops at Green Mountain and a separate boat trader. Green Mountain includes two ATMs, a garage platform, and a player market board. Traveling traders and the player market are off by default.

@@ -1,6 +1,6 @@
 # P2P Trader
 
-Choose **Player market** at a market board. Everyone on the server shares the same market across boards. Trades use the configured account balance. For a banked currency such as Euro, deposit cash at an ATM first.
+Choose **Player market** at a market board. Everyone on the server shares the same market across boards. Buying a sale listing uses the configured account balance. For a banked currency such as Euro, deposit cash at an ATM first. Wanted orders can also use cash.
 
 ## Buy and collect
 
@@ -12,7 +12,7 @@ Choose **Player market** at a market board. Everyone on the server shares the sa
 ## List and sell
 
 1. Choose **List item** and select an eligible item from your inventory.
-2. Enter your asking price for the whole item. Check the listing fee, commission, and expected payout before confirming.
+2. Enter your asking price for the whole item. Check the listing fee, commission, and expected payout, then choose **Post listing** to confirm.
 3. Use **My listings** to edit an active asking price, cancel a listing, or collect sale proceeds. Proceeds go to your account balance.
 4. Cancelled and expired listings go to **Returns**. Collect your item there or relist it directly if it still meets market rules.
 
@@ -20,9 +20,12 @@ Listing stores the actual item and removes it from your inventory. Check any att
 
 ## Wanted orders
 
-If your server enables buy orders, select **Create wanted order**. Pick the exact item class, set your offer, and specify any minimum condition, quantity, liquid, ammo, or contents requirements. The market reserves the full offer from your balance. A cancelled or expired unfilled order refunds the reservation.
+If your server enables buy orders, select **Create wanted order**. Pick the exact item class, set your offer, and specify any minimum condition, quantity, liquid, ammo, or contents requirements. With a physical currency, the market reserves the full offer from your carried cash if you have enough. Otherwise it takes the full amount from your account. Account currencies always use their account balance.
 
-To fill an order, select a wanted offer in **Browse** and choose a matching item from your inventory. Confirm the delivery after checking your net payout. You hand over the whole item and receive the payout in your account. The requester collects it under **Purchased**.
+To fill an order, select a wanted offer in **Browse** and choose a matching item from your inventory. Check the net payout and confirm delivery of the whole item. The requester collects it under **Purchased**.
+
+- **Account-funded order**. The supplier receives the payout in their account. Cancelling or expiring an unfilled order returns the reserved balance to the requester.
+- **Cash-funded order**. The supplier chooses **Collect cash** under **Purchased**. For a cancelled or expired unfilled order, the requester chooses **Collect cash** under **Returns**. Leave room in your inventory for the money.
 
 If a purchase, claim, or order shows a recovery message, keep the receipt or listing details and contact an admin before trying the operation again.
 

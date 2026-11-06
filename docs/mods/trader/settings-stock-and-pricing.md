@@ -13,7 +13,7 @@ These defaults come from the bundled Trader root `Settings.json`. Keep `"Version
 | `InteractionDistance` | `3.0` | Server interaction range in metres. Minimum `1.0`. |
 | `MaxBasketEntries` | `50` | Server limit per basket, `1–100`. The UI supports up to 50. |
 | `StockSaveIntervalSeconds` | `5` | Stock save interval. Minimum `1` second. |
-| `EnableTradeLogging`, `EnableEconomyTelemetry` | `true`, `true` | Write successful trade logs and aggregate trade statistics. |
+| `EnableTradeLogging`, `EnableEconomyTelemetry` | `true`, `true` | Record completed shop trades and aggregate trade statistics, respectively. |
 | `EnableAutomaticRestock` | `true` | Adds ordinary timed supply for eligible shared-stock listings. |
 | `EnableDynamicPricing`, `DynamicPriceRangePercent` | `false`, `25.0` | Stock-based price adjustment. Range `0–90` percent. |
 | `EnableConditionSellPricing`, `EnableQuantitySellPricing` | `true`, `true` | Scale sale prices by health and contents. |
@@ -64,4 +64,4 @@ Loose ammunition uses the exact number of rounds sold, with condition scaling an
 
 ## Trade logging
 
-Successful trades are logged under `$profile:\RaG_Core\Logs\RaG_TraderLogger\Trades_TRADE_YYYY-MM-DD.log` when enabled. Use player receipts and [economy telemetry](administration-and-recovery.md#economy-telemetry) for additional context.
+`EnableTradeLogging` controls completed shop trade entries in the `Trades` audit log. Banking, P2P, garage, recovery, and admin activity have separate [server audit logs](administration-and-recovery.md#server-audit-logs).

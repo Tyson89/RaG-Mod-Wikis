@@ -39,7 +39,7 @@ Use `Type: "account"` with an empty `CurrencyItems` array to trade with stored c
 
 ## `Banking/Settings.json`
 
-Enable `EnableBanking` in the Trader root `Settings.json`, add bank entries for physical currencies, and place `RaG_ATM`. Restart after banking configuration changes.
+Enable `EnableBanking` in the Trader root `Settings.json` and add bank entries for physical currencies. Use the bundled Green Mountain ATMs or place `RaG_ATM` at a custom site. Restart after banking configuration changes.
 
 ```json
 {
@@ -63,7 +63,10 @@ Enable `EnableBanking` in the Trader root `Settings.json`, add bank entries for 
 
 ## Use an ATM
 
-Select a currency and enter an amount for **Deposit** or **Withdraw**, or use **Deposit all** or **Withdraw all**. The preview shows the fee and how much is credited or debited. Keep room in your inventory when withdrawing. The ATM action uses a 3 m range and the server checks `InteractionDistance`.
+Select a currency and enter an amount for **Deposit** or **Withdraw**. The preview shows the fee and how much is credited or debited. Keep room in your inventory when withdrawing. The ATM action uses a 3 m range and the server checks `InteractionDistance`.
+
+- **Deposit all** uses the largest deposit the wallet and bank cap allow after fees. The deposit must credit at least one unit.
+- **Withdraw all** uses the largest amount the bank balance can cover with its fee. The amount received can be lower than the starting bank balance.
 
 ## Player-to-player bank transfers
 
@@ -71,7 +74,7 @@ Enable `EnableBankTransfers` alongside `EnableBanking` in root `Settings.json`. 
 
 Transfers use stored balance, with no ATM deposit or withdrawal fee. Recipient caps still apply. Both players get receipts. If a transfer is held for recovery, check **History** and ask an admin to inspect it before sending again.
 
-The default account files are `Accounts/<Steam64>.json` in the Trader config directory. Preserve them with `BankDirectory/<Steam64>.json` and `BankTransfers.json`.
+The default account files are `Accounts/<Steam64>.json` in the Trader config directory. Preserve them with `Banking/Directory/<Steam64>.json` and `BankTransfers.json`.
 
 ## Paying a trader from bank
 

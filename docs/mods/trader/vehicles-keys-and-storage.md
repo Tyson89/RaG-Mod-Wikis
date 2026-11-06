@@ -1,12 +1,12 @@
 # Vehicles, keys, and storage
 
-Vehicle dealers buy and sell vehicles at their configured spawn points. Use a virtual garage for platform storage, or a matching car key for portable packing when the server enables it.
+Vehicle dealers buy and sell vehicles at their configured spawn points. Use a virtual garage at a parking meter, or a matching car key for portable packing when the server enables it.
 
 ## Buying vehicles
 
 List the exact vehicle class in a catalog category. The dealer recognizes classes derived from `CarScript`, `BoatScript`, or `MotorbikeScript`. Each vehicle listing trades one vehicle at a time.
 
-Set `VehicleSpawnPoints` on the static trader entry or route stop. The trader uses the first clear point in order. Boats require a point in water. Keep room around each point for spawning and driving away.
+Set `VehicleSpawnPoints` on the static trader entry or route stop. The trader uses the first clear point in order. Boats require a point in water. Keep room around each point for spawning and driving away. For a blocked point, check the server warning for the blocking object and its position.
 
 ```json
 {
@@ -32,18 +32,18 @@ Unload valuables before selling. The sale removes the vehicle, attached parts, a
 
 ### Store and retrieve
 
-1. Drive onto a parking platform. Stop, shut off the engine, and have everyone get out. Detach any towing connections. A helicopter must be landed with rotors stopped.
+1. Park on the garage platform or in the designated area beside a standalone meter. Stop, shut off the engine, and have everyone get out. Detach any towing connections. A helicopter must be landed with rotors stopped.
 2. Stand within 3 m of the meter and select **Open virtual garage**.
 3. Select the vehicle under **Eligible parked vehicles** and choose **Store vehicle**. The garage stores the vehicle with its attachments and cargo.
-4. At a suitable meter, select the vehicle under **Your stored vehicles** and choose **Retrieve vehicle**. Keep the platform clear. Use a land platform for land or air vehicles and a water platform for boats.
+4. Return to the meter where you stored the vehicle, select it under **Your stored vehicles**, and choose **Retrieve vehicle**. Keep the retrieval area clear. If your server allows retrieval at other meters, use one that supports your vehicle type and has a suitable surface.
 
-Stored entries show vehicle condition and contents and can be renamed. Clear the name to restore the default label. Garages share each player's stored list across meters.
+Stored entries show vehicle condition and contents and can be renamed. Clear the name to restore the default label. Your stored list is visible at every meter, including vehicles that must be retrieved elsewhere.
 
 Access uses assigned vehicle ownership or, for unkeyed vehicles the garage registered at purchase, the recorded buyer. Ordinary unkeyed vehicles found in the world need supported ownership before storage. If the server allows matching key holders, storing a vehicle puts it in the storing player's list. Retrieval belongs to the player who stored it.
 
 ### Server setup
 
-Set `EnableVirtualGarage: true` in root `Settings.json`. Place `RaG_Parking_MeterPlatform` through your map setup. Keep the platform within 5° of level and check clearance for the largest vehicles you allow. Use a submerged platform with enough water depth for boats. Native cars, boats, and motorbikes are supported. The garage also detects Expansion vehicles when the Expansion vehicle integration is present. Test custom vehicles and their saved contents on your server.
+Set `EnableVirtualGarage: true` in root `Settings.json`. Place a combined `RaG_Parking_MeterPlatform` or a standalone `RaG_Parking_Meter` through the static location's `Objects` array or your map setup. Keep platforms within 5° of level. Use a submerged platform with enough depth for boats. Native cars, boats, and motorbikes are supported. The garage also detects Expansion vehicles when the Expansion vehicle integration is present.
 
 Edit `Vehicles/Garages.json` and restart.
 
@@ -53,7 +53,36 @@ Edit `Vehicles/Garages.json` and restart.
 | `MaxVehiclesPerPlayer` | `20` | `1–100` |
 | `AllowVehicleKeyHolders` | `false` | `true` also allows players carrying an eligible matching key to store a vehicle |
 | `PlatformParkingHeight` | `8.0` | `2–25` m search height |
-| `PlatformSpawnClearance` | `0.15` | `0.05–0.5` m height offset for land retrieval |
+| `PlatformSpawnClearance` | `0.15` | `0.05–0.5` m height offset for land retrieval at either meter type |
+| `RestrictRetrievalToStorageMeter` | `true` | Require the original meter. Set `false` to allow any suitable meter. |
+| `StandaloneMeters` | One example site | Up to 256 site definitions for standalone meters. |
+
+Keep platform positions and standalone meter IDs stable while vehicles are stored. With the retrieval restriction enabled, the server identifies a platform by its world and position and a standalone meter by its world and site ID.
+
+### Standalone meters
+
+Place `RaG_Parking_Meter` within 1 m of its configured `MeterPosition`. The config defines the parking area and retrieval point. Replace the example coordinates with your placement.
+
+```json
+{
+  "Id": "town_parking",
+  "MeterPosition": [5000.0, 100.0, 5000.0],
+  "ZoneCenter": [5000.0, 102.0, 5010.0],
+  "ZoneSize": [12.0, 6.0, 16.0],
+  "ZoneYaw": 0.0,
+  "Spawn": {
+    "Position": [5000.0, 100.0, 5010.0],
+    "Orientation": [0.0, 0.0, 0.0]
+  },
+  "AllowedVehicleTypes": ["Land"]
+}
+```
+
+- Use a unique `Id` of 1–64 letters, digits, underscores, or hyphens. IDs are case-insensitive. Keep meter positions more than 2 m apart and each meter within 150 m of its zone center.
+- `ZoneSize` is the full width, height, and depth in metres. Width and depth accept `2–120`, and height accepts `2–30`. `ZoneYaw` rotates the box. The spawn point and the vehicle's retrieval footprint must fit inside it.
+- Use `Spawn.Orientation` with yaw only. `AllowedVehicleTypes` accepts `Land`, `Air`, or `Water`, or the combination `Land` and `Air`. Water sites need enough depth across the retrieval footprint.
+
+### Saved vehicles
 
 Garage records and snapshots live in `$profile:\RaG_Core\Storage\RaG_Trader\Garage\`. Preserve the whole directory together with world persistence. If a failed store offers cancellation, it returns the garage record to deployed state and leaves the verified original vehicle in the world. For other recovery holds, keep both files and have an admin reconcile the record and world vehicle before taking further action.
 

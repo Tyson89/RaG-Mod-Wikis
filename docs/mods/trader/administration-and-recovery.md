@@ -17,7 +17,7 @@ Use **Reload configs** from the trader menu as an active admin. The server valid
 | Category listings, prices, restock, offer pools, and trader profiles | Live reload. Create referenced category files first. |
 | Purchased vehicle attachment sets | Live reload. Applies to later purchases. |
 | Routes and stops | Live reload. Changed route definitions reinitialize with a new arrival. |
-| Static locations, loadouts, opening hours, and safe zones | Restart. |
+| Static locations, props and terminals, loadouts, opening hours, and safe zones | Restart. |
 | Global switches for static traders, routes, safe zones, banking, bank transfers, P2P, and the garage | Restart. |
 | Catalog currencies, bank settings, market settings, and garage settings | Restart. |
 
@@ -31,9 +31,22 @@ For a listing that remains finite, reload preserves its count up to the current 
 
 With `EnableEconomyTelemetry: true`, the server records aggregate trade counts, failure reasons, item quantities, and currency totals in `EconomyTelemetry.json` under Trader storage. It keeps up to 30 UTC days. Money spent on purchases and money paid for sales are trade flows. Wallets, bank transfers, and unrelated rewards can affect total money in circulation.
 
+## Server audit logs
+
+Look under `$profile:\RaG_Core\Logs\RaG_TraderLogger\`. Each audit category has its own folder and per-session file. For example, `Trades/Trades_HH-MM-SS_YYYY-MM-DD.log` uses the server session's UTC start time.
+
+| Folder | What it records |
+| --- | --- |
+| `Trades/` | Completed shop purchases and sales when `EnableTradeLogging` is on. |
+| `P2P/` | Market operations, listing IDs, fees, and wanted-order funding and claims. |
+| `Banking/` | ATM deposits and withdrawals, fees, and player transfers. |
+| `Garage/` | Garage operations, vehicle records, and outcomes. |
+| `Recovery/` | Recovery outcomes and records held for review. |
+| `Admin/` | Config reloads, route controls, and admin recovery actions. |
+
 ## Transaction journals
 
-`Transactions/<transaction-id>.json` records ordinary trade and ATM checkpoints. Bank transfers, P2P, and vehicle storage have their own records. An interrupted operation may be held for review when the server cannot establish which side effects completed.
+`Transactions/<transaction-id>.json` records shop trades, ATM operations, and P2P cash reserves and claims. Keep these journals with the relevant bank transfer, P2P listing, or vehicle storage records. An interrupted operation may be held for review when the server cannot establish what completed.
 
 ### Retry recovery
 
@@ -48,7 +61,7 @@ Back up the server while stopped. Keep each set with matching DayZ player and wo
 
 | Root | Contents to preserve |
 | --- | --- |
-| `$profile:\RaG_Core\Configs\RaG_Trader\` | Configs, `Stock.json`, `StockDelta.json`, `Transactions/`, `Accounts/`, `BankDirectory/`, `BankTransfers.json` |
+| `$profile:\RaG_Core\Configs\RaG_Trader\` | Configs, `Stock.json`, `StockDelta.json`, `Transactions/`, `Accounts/`, `Banking/Directory/`, `BankTransfers.json` |
 | `$profile:\RaG_Core\Storage\RaG_Trader\` | `Routes/`, `P2P/`, `Garage/`, `Vehicles/`, `History/`, `EconomyTelemetry.json` |
 
 Restoring a balance, world vehicle, or stock file by itself can conflict with completed operations in the other files.
