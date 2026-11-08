@@ -25,6 +25,10 @@ These defaults come from the bundled Trader root `Settings.json`. Keep `"Version
 | `RestrictVehicleStorageToOwner` | `true` | Restricts key packing and deployment to the owner or an admin. |
 | `AdminSteamIds` | `[]` | Quoted Steam64 IDs for admin controls. |
 
+These are the bundled first-start settings. Set `AllowGroundFallback` explicitly: the bundled JSON enables it, but the script's initializer is `false`. Omitting that field is not equivalent to using the shipped file. `AllowGroundFallback` does not override an explicitly configured `DeliveryMode: "ground"`, vehicle spawn checks, or the player market's inventory-only collection.
+
+`Version` must remain `1`. Settings validation clamps `InteractionDistance` to at least `1`, `MaxBasketEntries` to `1–100`, `StockSaveIntervalSeconds` to at least `1`, `DynamicPriceRangePercent` to `0–90`, and `MinimumSellPricePercent` to `0–100`. Check effective values after editing. Use the [reload rules](administration-and-recovery.md#live-configuration-reload) before changing a running server.
+
 A checkout line accepts up to 100 ordinary objects or 10,000 loose rounds. A vehicle or ordinary ground-delivery line has quantity one. The server also limits object work per checkout to 500, including contents or materials it has to process.
 
 ## Stock
@@ -60,7 +64,7 @@ For an eligible item without quantity scaling, multiply its base sale price by i
 
 For quantity-scaled items, multiply by condition and fullness. Fullness uses magazine rounds, energy, or item quantity in that order. Splittable quantity items still use fullness when the general quantity switch is off. Sum values within the line before rounding down. The condition minimum does not apply to these lines. A line that rounds to zero cannot complete. At a fixed sale price of 200, a half-full magazine with 60% health pays 60.
 
-Loose ammunition uses the exact number of rounds sold, with condition scaling and no stack-fullness factor. Vehicles use global health. Listing `MinimumHealthPercent` governs eligibility separately.
+Loose ammunition uses the exact number of rounds sold, with condition scaling and no stack-fullness factor. Its condition factor also uses `MinimumSellPricePercent`; round values are summed and the line total rounds down, so a line can still be worth zero and fail. Vehicles use global health. Listing `MinimumHealthPercent` governs eligibility separately.
 
 ## Trade logging
 

@@ -188,6 +188,7 @@ nav:
       - P2P Trader player market: mods/trader/player-market.md
       - Server guides:
           - Setup and class names: mods/trader/server-setup-and-class-names.md
+          - Complete JSON configuration reference: mods/trader/configuration-reference.md
           - Catalog, categories, and listings: mods/trader/catalog-and-listings.md
           - Settings, stock, and pricing: mods/trader/settings-stock-and-pricing.md
           - Locations and safe zones: mods/trader/locations-and-safezones.md

@@ -31,9 +31,23 @@ One market serves all configured boards. The board action has a 5 m interaction 
 
 Per-player caps accept `1–100`. Server caps accept `1–50000`. Expiry and retention accept up to one year in seconds. Class lists apply to nested items as well as the main item. Currency items, ruined items, and protected or unsafe inventory can be rejected.
 
+`MinimumPrice` must be positive and `MaximumPrice` at least that value. `ListingFee` and `MinimumSalesCommission` accept `0–MaximumPrice`; commission percentage and minimum condition accept `0–100`. Allow and deny lists each accept up to 256 class strings; class and board strings must contain `1–128` characters. Invalid policy can disable market initialization; check logs before opening it to players.
+
 When commission is positive, the market rounds the percentage charge up, applies the configured minimum, then caps the result at the sale price. A zero percentage disables commission. Wanted orders reserve the full price and pay the supplier after commission. An unfilled order returns its reservation on cancellation or expiry.
 
+For a price of 101 and 2% commission, the fee is 3 and the net payout is 98. A minimum commission of 5 raises that fee to 5 and leaves 96. A 100% commission can leave no payout. The sale-listing fee is separate, paid from account balance when posting; cancellation or expiry does not refund it. Editing an active price or directly relisting a returned stored item adds no new listing fee. Wanted orders reserve their offer without a sale-listing fee.
+
+Normal sale proceeds are credited automatically, including for offline sellers. If credit cannot complete, for example because of a bank cap, the item sale can complete with proceeds still pending. **Collect proceeds** retries the pending credit; it does not give a second payout. Keep room under balance caps and inspect recovery messages before manual compensation.
+
 For an item currency, the server uses carried cash when it covers the full order price, otherwise it uses the account for the full amount. Cash funding requires denominations that can deliver both the refund and the net payout. Cash is collected at the board into inventory. Account-funded orders settle to accounts.
+
+## Item contents and expiration
+
+Market policies inspect the entire stored hierarchy for allowed/denied classes and minimum condition. An item may contain at most 128 nested objects in addition to its root. Listing and fulfillment reject RaG vehicle keys, registered currency items, ruined root items, unavailable inventory, and incompatible server policy. Ordinary dealership vehicles belong in vehicle trading, not inventory sale listings.
+
+The market captures condition, quantity, liquid, ammunition, charge, wetness, temperature, frozen status, and food stage where supported. Detailed inspection covers up to four nested levels, with 20 entries per inspection page and up to 32 attachment classes in the assembled preview. A truncated or unavailable inspection is not proof that a container is empty.
+
+`ListingExpirySeconds` sets an absolute lifetime at posting; an active-price edit does not restart it. Direct relisting starts a new lifetime. Expiration returns unsold goods or unfilled order funds; it does not erase uncollected purchases, returns, or proceeds. `SettledRetentionSeconds` applies only after a record is fully settled. Expiry is processed in batches, so a displayed timeout need not mean immediate physical cleanup.
 
 ## Persistence and recovery
 

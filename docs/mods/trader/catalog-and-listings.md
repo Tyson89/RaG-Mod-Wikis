@@ -32,6 +32,8 @@ Save this example as `Trading/Categories/Trail_Supplies.json`. Add `"Trail_Suppl
 
 Use 1–64 letters, digits, underscores, or hyphens in the filename stem. A category may set `CurrencyId` to override the default for its listings. Traders that share a category share its listing IDs and ordinary stock. Use different category files when regional shops need distinct stock or prices.
 
+The category wrapper contains `DisplayName` (menu label), optional `CurrencyId`, and `Listings` (offer objects). Its `Id` comes from the filename; do not add an `Id` or `Version` field. Only categories referenced by profiles are loaded, once per filename, up to 500 files. An unreferenced JSON file creates no shop. Missing or unsafe filenames can skip a category; malformed JSON in a referenced file can reject loading.
+
 ## Listing fields
 
 | Field | Default | Effect |
@@ -50,6 +52,10 @@ Use 1–64 letters, digits, underscores, or hyphens in the filename stem. A cate
 | `Attachments` | `[]` | Classes attached to each purchased object. Vehicle parts come from `Vehicles/Attachments.json`. |
 
 Set at least one positive price. When both prices are enabled, keep `SellPrice` at or below `BuyPrice`. Loose ammo prices are per round. Other prices are per object. Check [ammo price relationships](ammo-liquids-and-purchase-contents.md#price-boxes-magazines-and-rounds-together) when a purchase supplies ammunition that players can resell.
+
+`0` prices are normalized to disabled with a warning; they do not create free offers. `MinimumHealthPercent` accepts `0–100`; `SpawnQuantity` must be nonnegative. `RequiredItems` and `Attachments` each allow up to 500 entries, but the complete checkout still shares the 500-object work limit. Materials are whole eligible objects of the exact class, not quantity units from one stack. Normal sales do not refund the materials spent on purchase.
+
+Listing `Id`, `DisplayName`, `Price`, `LiquidType`, and `ConfigError` are runtime fields, not listing JSON settings. Put currency on the category, location, or route stop; the listing has no configurable `CurrencyId` or nested `Prices` array.
 
 ## Listing IDs
 

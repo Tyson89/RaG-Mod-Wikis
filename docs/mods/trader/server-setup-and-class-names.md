@@ -29,6 +29,8 @@ All paths below are relative to `$profile:\RaG_Core\Configs\RaG_Trader\`. Keep `
 
 Startup copies missing main files and referenced bundled categories. Create any custom category file before referencing it. See [backup sets](administration-and-recovery.md#backup-sets) for generated state.
 
+Use the [complete JSON reference](configuration-reference.md) to find every editable field, distinguish omitted-field initializers from bundled values, and select the switches needed for each feature. The included positions target Chernarus; they are examples, not automatic map conversion.
+
 ## Build a first custom shop
 
 Save `Trading/Categories/Starter_Supplies.json`.
@@ -96,3 +98,11 @@ The RaG objects above use scope `1`. Use placement tools that accept scope-1 cla
 - `RaG_TraderTransactionVault` and `RaG_Hologram_Car` are managed by the mod. Keep them out of loot and map placement.
 
 Trader stock comes from its own configuration and saved counts. Configure Central Economy loot separately if you want players to find notes, keys, or shop goods in the world.
+
+## Modded items and integrations
+
+Catalog items and attachment sets use existing classes supplied by the installed mods. Ordinary listings and vehicle sets select exact classes; a base-class listing does not automatically create offers for every subclass. P2P allow/deny lists intentionally use inheritance matching. Test custom inventory, quantities, liquids, vehicle placement, and attachment slots with the intended server and client mod set.
+
+The virtual garage has an `EXPANSIONMODVEHICLE` integration for supported Expansion vehicle ownership, keys, aircraft, boats, towing, and engine state. This does not make every other dealership, RaG key, or portable-packing operation support every Expansion vehicle class. See [vehicle type limits](vehicles-keys-and-storage.md#compatibility-and-ownership-limits).
+
+Script extensions can customize trader access, offers, prices, delivery, P2P policy, accounts, and stock through `RaG_TraderModdingHooks`. These are integration points, not additional JSON options or a guarantee of compatibility with another economy mod. External account providers must implement contract version `1` with idempotent operations, durable checkpoints, and offline account support. External stock providers need durable stock and compare-and-restore support. Unsupported provider contracts are rejected; check logs and update the integration before enabling trading or recovery.

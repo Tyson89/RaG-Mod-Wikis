@@ -11,7 +11,7 @@ Add groups to the top-level `Locations` array. Give each group a unique `Id`. Se
 | `TraderId` | Profile ID in `Trading/Catalog.json`. Use it once per group. |
 | `EntityClassName` | Exact survivor or interactable object class. |
 | `Position`, `Orientation` | Three numbers each, in DayZ position and orientation order. |
-| `Attachments` | Survivor loadout. Each class needs a compatible slot. |
+| `Attachments` | Survivor loadout. Placement tries an attachment slot, then free hands, then inventory. |
 | `Enabled` | Defaults to `true`. |
 | `CurrencyId` | Optional currency override. |
 | `OpeningHoursEnabled`, `OpeningHour`, `ClosingHour` | Optional DayZ world-time opening hours. |
@@ -66,5 +66,7 @@ Set `EnableSafezones: true` in root `Settings.json` and add a `Safezone` object 
 | `PreserveHunger`, `PreserveThirst`, `PreserveDisease`, `PreserveTemperature`, `PreserveBleeding` | `false` | Pauses the corresponding survival effects in the zone. Existing disease and wounds remain. |
 
 Exit protection follows the departed zone's incoming damage, outgoing damage, equipment, and weapon-fire settings. Building, explosive, speed, and survival restrictions apply inside the zone. Admin IDs bypass the weapon, building, explosive, and car-speed restrictions. Damage protections still apply.
+
+In overlapping zones, applicable restrictions combine. Cleanup exemptions affect animal/infected deletion only; `ExcludedEntityClasses` does not exempt players from damage or action policy. Equipment protection follows items rooted in a protected player's inventory, not every dropped object or parked vehicle in the area.
 
 Test the border with an ordinary player, including overlapping zones and any building or weapon mods that supply their own actions.

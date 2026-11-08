@@ -26,6 +26,8 @@ Add this fragment to the profile. Each class must appear in a category reference
 | `RotationHours` | Duration of a window, from 1 to 8760 hours. Defaults to 24. |
 | `Months` | Calendar months 1–12. An empty list allows all months. |
 
+A profile supports up to 64 pools. Pool IDs must be nonempty and unique within that profile; each class must already be offered there. Classes outside every pool remain available year-round. Pool selection follows the configured order rather than drawing a random set.
+
 The selection advances one position each window and wraps around the list. The example cycles through pairs of rifles during December, January, and February. The current window uses UTC, so restarting within the window keeps the same selection. Set `ActiveOffers` to the pool size to show every class during the selected months.
 
 An inactive class is unavailable for buying and selling at that profile. Keep a separate unrestricted buyback profile if players need to sell it year-round. Rotation changes availability. Stock and restock still follow the listing and any route rules.

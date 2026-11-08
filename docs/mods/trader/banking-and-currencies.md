@@ -57,6 +57,19 @@ Enable `EnableBanking` in the Trader root `Settings.json` and add bank entries f
 }
 ```
 
+| Field | Default | Effect |
+| --- | --- | --- |
+| `Version` | `1` | Required schema version. |
+| `DepositFeePercent` | `0.0` | Fee removed from the cash amount deposited; the remainder reaches the account. |
+| `WithdrawalFeePercent` | `0.0` | Fee added to the requested cash amount when debiting the account. |
+| `Currencies` | Bundled `euro` entry | Bank policies for catalog item currencies. The script initializer is an empty array. |
+| `Currencies[].CurrencyId` | Empty | Existing item currency ID. Each bank currency must occur once. |
+| `Currencies[].Enabled` | `true` | Makes this currency available for banking. Disabled entries do not enable ATM or bank-payment use. |
+| `Currencies[].MaxBankBalance` | `-1` | Maximum stored balance; `-1` removes the policy cap. `0` allows no positive balance. |
+| `Currencies[].InitialBalance` | `0` | One-time starting balance when this player's bank currency is first initialized. |
+
+Balance limits require `MaxBankBalance >= -1`, `InitialBalance >= 0`, and starting balance no greater than a finite cap. Removing a policy cap does not remove the whole-number storage limit. Prices, balances, and totals must fit signed 32-bit integers, up to `2147483647`; operations that would overflow are rejected.
+
 - `MaxBankBalance: -1` leaves the balance uncapped by policy. A nonnegative cap limits incoming funds such as deposits, transfers, and market proceeds.
 - `InitialBalance` is a one-time balance for that player and banked currency. It applies when the enabled currency is first initialized. Existing initialized balances keep their value.
 - Fees accept `0–100` percent with up to two decimal places. Round each fee up to a whole currency unit. A 101-unit deposit at 2% credits 98. A 101-unit withdrawal at 2% debits 104 and delivers 101 in notes.

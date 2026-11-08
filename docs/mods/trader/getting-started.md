@@ -10,6 +10,10 @@ Browse categories or search by item name or class. Use **Search all categories**
 
 Select an item and use **Compatible only** to find related attachments, magazines, or ammunition. Clear search or category filters if you expect more matches. Use [clothing try-on or the weapon builder](shopping-tools.md) to preview a purchase.
 
+The filter menu offers all listings, buyable listings, sellable listings, in-stock listings, favorites, and recent purchases. **Sellable only** additionally checks your available items. Filters combine, so an item can disappear because another filter is still active. Change the currency selector when browsing a shop with several category currencies.
+
+Click an item's star to save it. Favorites keep up to 200 classes and recent purchases keep 50 unique classes in your local DayZ profile. They follow the item class across traders, not a particular price, liquid variant, or server listing. Escape or the configured UI Back input closes the current overlay before leaving the menu.
+
 Check stock, quantity, currency, and the selected offer's purchase contents. Loose ammunition trades by the **round**. Boxes and magazines trade by the **object**. Dynamic pricing and sale condition can change the total, so read the quote for the full selection. See [ammo, liquids, and contents](ammo-liquids-and-purchase-contents.md).
 
 ## Buying
@@ -42,6 +46,14 @@ Ctrl-click to select several listings. The quantity field applies to each select
 - With a filled basket, **Buy** checks out the basket.
 - **Sell** uses the current selection. **Sell all eligible** has its own review.
 - Each checkout uses one trade direction and one currency. The interface supports up to 50 basket lines, subject to the server limit. Vehicles and ordinary ground-delivery listings allow one object per line.
+
+One basket is one transaction. An invalid line, missing material, changed price, insufficient stock, or failed delivery can reject checkout; reduce the basket and refresh the quote. Interrupted operations can require recovery rather than an immediate rollback, so check the result and receipt before resubmitting.
+
+## Safe zones and traveling traders
+
+A trader is not automatically a safe zone. Server owners choose each zone's protections: damage, weapon use, explosives, building, wildlife, vehicle speed, and survival preservation. An enabled exit-protection countdown gives temporary protection after leaving; it does not keep every in-zone restriction active. Existing disease or wounds are not cured by preservation settings.
+
+Traveling merchants appear at stops and disappear during travel. They do not walk the route in the world. Their timer, current-stop rules, and closing cutoffs matter: a trader can still be visible after buying or selling closes. Enabled map markers identify present merchants; optional notifications announce arrival and warn before departure. Availability follows server schedules and seasonal offers.
 
 ## Banking, market, and storage
 

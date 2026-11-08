@@ -92,8 +92,18 @@ Hold a blank `RaG_CarKey` or one of its colored variants and use **Assign car ke
 
 Combine an assigned key with a blank key to make a spare. Both remain in your inventory. If every key is lost, an authorized admin can use `RaG_CarKey_Admin` to reset a deployed car so it can be paired again.
 
+Spare crafting needs one assigned ordinary key and one blank ordinary key; ruined and admin keys are ineligible. Copying a key copies its assignment, not vehicle ownership. A matching key permits supported lock/unlock actions, but does not by itself authorize selling an owner-assigned car or packing it under owner-only policy. Resetting a vehicle invalidates its previous key assignment; pair it again and replace spare copies.
+
 ## Portable vehicle packing
 
 Set `EnableVehiclePacking: true` to allow portable packing. Hold the matching key and use **Pack vehicle** on a stopped, non-ruined car with the engine off and nobody inside. When `RestrictVehicleStorageToOwner` is enabled, packing and deployment require the assigned owner or an authorized admin.
 
 To deploy, hold the packed key, enter placement mode, and use **Deploy vehicle** on a clear land surface within 10 m. Keep matching keys and storage files together. Packed cars use `$profile:\RaG_Core\Storage\RaG_Trader\Vehicles\`, separate from garage records.
+
+## Compatibility and ownership limits
+
+- Ordinary dealers recognize `CarScript`, `BoatScript`, and `MotorbikeScript` classes. RaG key assignment and portable packing operate on supported cars, rather than every boat, motorbike, or aircraft.
+- The garage supports native cars, boats, and motorbikes, plus detected Expansion vehicles when that integration is compiled in. Aircraft storage does not imply aircraft support in the ordinary dealer or RaG portable-packing system.
+- `AllowVehicleKeyHolders` belongs to the virtual garage. `RestrictVehicleStorageToOwner` belongs to portable key packing/deployment. They govern different storage systems.
+- Garage retrieval normally belongs to the storing player at the original meter. A key copy does not copy a garage entry. Enabling key-holder storage lets an eligible key holder put the vehicle into their own garage list; consider that access policy before enabling it.
+- A standalone water-only site cannot combine `Water` with `Land` or `Air`. Platforms and standalone sites must have suitable surfaces, clearance, and enough room for the vehicle footprint. A vehicle's apparent position near a meter is insufficient if its bounds do not fit.

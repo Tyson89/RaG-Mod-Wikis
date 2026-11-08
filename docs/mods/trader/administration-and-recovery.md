@@ -21,6 +21,8 @@ Use **Reload configs** from the trader menu as an active admin. The server valid
 | Global switches for static traders, routes, safe zones, banking, bank transfers, P2P, and the garage | Restart. |
 | Catalog currencies, bank settings, market settings, and garage settings | Restart. |
 
+Other root settings, such as pricing, restock, logging, delivery fallback, purchase keys, wheel locking, portable packing, ownership restriction, interaction range, basket limit, and admin IDs, can be applied by a supported reload. The requesting player must already be an active admin; editing the file alone grants no live access. Reload and recovery requests are rate-limited to one per 10 seconds. `Vehicles/Garages.json` is not reloaded by this action.
+
 For a listing that remains finite, reload preserves its count up to the current capacity. New and newly finite listings start at `InitialStock`. Reopen the trader and check a representative listing after reload.
 
 ## Player receipts
